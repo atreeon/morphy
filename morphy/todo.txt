@@ -1,0 +1,5 @@
+TODO
+1 check that my passed in subtypes all implement the class specified
+
+PROBABLY NOT POSSIBLE
+4 automatically discover all classes that implement the extensionMethodClass and add that to my list of types - don't think this is possible though (https://github.com/dart-lang/sdk/issues/40386)
