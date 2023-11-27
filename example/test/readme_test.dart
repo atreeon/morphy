@@ -191,24 +191,24 @@ main() {
   });
 
   test("16 Json polymorphism", () {
-    var toJsonAs = [
+    var xObjects = [
       X(val: "x"),
       Y(val: "xy", valY: 1),
       Z(val: "xyz", valY: 2, valZ: 4.34),
     ];
 
-    var result = toJsonAs.map((e) => e.toJson_2({})).toList();
+    var resultInJsonFormat = xObjects.map((e) => e.toJson_2({})).toList();
 
-    var resultJson = [
+    var expectedJson = [
       {'val': 'x', '_className_': 'X'},
       {'val': 'xy', 'valY': 1, '_className_': 'Y'},
       {'val': 'xyz', 'valY': 2, 'valZ': 4.34, '_className_': 'Z'}
     ];
 
-    expect(result, resultJson);
+    expect(resultInJsonFormat, expectedJson);
 
-    var resultObjects = resultJson.map((e) => X.fromJson(e)).toList();
+    var resultXObjects = expectedJson.map((e) => X.fromJson(e)).toList();
 
-    expect(resultObjects, toJsonAs);
+    expect(resultXObjects, xObjects);
   });
 }

@@ -201,35 +201,38 @@ The subtypes must be specified in the explicitSubTypes and in the correct order 
       double get valZ;
     }
 
-    var toJsonAs = [
+    var xObjects = [
       X(val: "x"),
       Y(val: "xy", valY: 1),
       Z(val: "xyz", valY: 2, valZ: 4.34),
     ];
 
-We can then just convert our list of A objects to JSON preserving their original type.
+We can then just convert our list of X objects to JSON preserving their original type.
 
-    var result = toJsonAs.map((e) => e.toJson_2({})).toList();
+    var resultInJsonFormat = xObjects.map((e) => e.toJson_2({})).toList();
 
-    var resultJson = [
+    var expectedJson = [
       {'val': 'x', '_className_': 'X'},
       {'val': 'xy', 'valY': 1, '_className_': 'Y'},
       {'val': 'xyz', 'valY': 2, 'valZ': 4.34, '_className_': 'Z'}
     ];
 
-    expect(result, resultJson);
+    expect(resultInJsonFormat, expectedJson);
 
 and then convert them back again, continuing to preserve their original type
 
-    var resultObjects = resultJson.map((e) => X.fromJson(e)).toList();
+    var resultXObjects = expectedJson.map((e) => X.fromJson(e)).toList();
 
-    expect(resultObjects, toJsonAs);
+    expect(resultXObjects, xObjects);
 
 Also generics work and more complicated inheritance hierarchies. (see the tests ex52 in the example folder)
 
 ### Multiple Inheritance
 
 We also allow multiple inheritance.
+
+    @Morphy(generateJson: true)
+    abstract class $FrankensteinsDogCat implements $Dog, $Cat {}
 
     var frankie = FrankensteinsDogCat(whiskerLength: 13.75, woofSound: "rowf", name: "frankie", age: 1);
 
