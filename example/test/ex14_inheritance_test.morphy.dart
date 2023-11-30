@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex14_inheritance_test.dart';
 
@@ -14,6 +15,9 @@ class A extends $A {
   A({
     required this.a,
   });
+  A._({
+    required this.a,
+  });
   String toString() => "(A-a:${a.toString()})";
   int get hashCode => hashObjects([a.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? a,
   }) {
-    return A(
+    return A._(
       a: a == null ? this.a as String : a.value as String,
     );
   }
@@ -50,6 +54,10 @@ class B extends $B implements A {
     required this.a,
     required this.b,
   });
+  B._({
+    required this.a,
+    required this.b,
+  });
   String toString() => "(B-a:${a.toString()}|b:${b.toString()})";
   int get hashCode => hashObjects([a.hashCode, b.hashCode]);
   bool operator ==(Object other) =>
@@ -61,7 +69,7 @@ class B extends $B implements A {
   B copyWith_A({
     Opt<String>? a,
   }) {
-    return B(
+    return B._(
       a: a == null ? this.a as String : a.value as String,
       b: (this as B).b,
     );
@@ -71,7 +79,7 @@ class B extends $B implements A {
     Opt<String>? a,
     Opt<int>? b,
   }) {
-    return B(
+    return B._(
       a: a == null ? this.a as String : a.value as String,
       b: b == null ? this.b as int : b.value as int,
     );
@@ -102,6 +110,11 @@ class C extends $C implements B {
     required this.b,
     required this.c,
   });
+  C._({
+    required this.a,
+    required this.b,
+    required this.c,
+  });
   String toString() =>
       "(C-a:${a.toString()}|b:${b.toString()}|c:${c.toString()})";
   int get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);
@@ -116,7 +129,7 @@ class C extends $C implements B {
     Opt<String>? a,
     Opt<int>? b,
   }) {
-    return C(
+    return C._(
       a: a == null ? this.a as String : a.value as String,
       b: b == null ? this.b as int : b.value as int,
       c: (this as C).c,
@@ -126,7 +139,7 @@ class C extends $C implements B {
   C copyWith_A({
     Opt<String>? a,
   }) {
-    return C(
+    return C._(
       a: a == null ? this.a as String : a.value as String,
       b: (this as C).b,
       c: (this as C).c,
@@ -138,7 +151,7 @@ class C extends $C implements B {
     Opt<int>? b,
     Opt<bool>? c,
   }) {
-    return C(
+    return C._(
       a: a == null ? this.a as String : a.value as String,
       b: b == null ? this.b as int : b.value as int,
       c: c == null ? this.c as bool : c.value as bool,

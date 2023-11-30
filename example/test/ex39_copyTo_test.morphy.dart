@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex39_copyTo_test.dart';
 
@@ -19,7 +20,7 @@ extension $$Super_changeTo_E on $$Super {
     required String y,
     Opt<String>? x,
   }) {
-    return B(
+    return B._(
       y: y as String,
       x: x == null ? this.x as String : x.value as String,
     );
@@ -46,6 +47,10 @@ class A extends $A implements Super {
     required this.x,
     required this.z,
   });
+  A._({
+    required this.x,
+    required this.z,
+  });
   String toString() => "(A-x:${x.toString()}|z:${z.toString()})";
   int get hashCode => hashObjects([x.hashCode, z.hashCode]);
   bool operator ==(Object other) =>
@@ -57,7 +62,7 @@ class A extends $A implements Super {
   A copyWith_Super({
     Opt<String>? x,
   }) {
-    return A(
+    return A._(
       x: x == null ? this.x as String : x.value as String,
       z: (this as A).z,
     );
@@ -67,7 +72,7 @@ class A extends $A implements Super {
     Opt<String>? x,
     Opt<String>? z,
   }) {
-    return A(
+    return A._(
       x: x == null ? this.x as String : x.value as String,
       z: z == null ? this.z as String : z.value as String,
     );
@@ -96,6 +101,10 @@ class B extends $B implements Super {
     required this.x,
     required this.y,
   });
+  B._({
+    required this.x,
+    required this.y,
+  });
   String toString() => "(B-x:${x.toString()}|y:${y.toString()})";
   int get hashCode => hashObjects([x.hashCode, y.hashCode]);
   bool operator ==(Object other) =>
@@ -107,7 +116,7 @@ class B extends $B implements Super {
   B copyWith_Super({
     Opt<String>? x,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as String : x.value as String,
       y: (this as B).y,
     );
@@ -117,7 +126,7 @@ class B extends $B implements Super {
     Opt<String>? x,
     Opt<String>? y,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as String : x.value as String,
       y: y == null ? this.y as String : y.value as String,
     );

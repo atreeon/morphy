@@ -15,7 +15,7 @@ part 'ex21_custom_constructors_test.morphy.dart';
 //In this example class A has an underscore thereby hiding its default constructor.
 //Instead we create a function called A_DifferentConstructor.
 
-@Morphy(privateConstructor: true)
+@Morphy(hidePublicConstructor: true)
 abstract class $A {
   String get a;
 }

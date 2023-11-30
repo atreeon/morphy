@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex11_generic_subclass_test.dart';
 
@@ -40,6 +41,11 @@ class B extends $B implements A<int, String> {
     required this.y,
     required this.z,
   });
+  B._({
+    required this.x,
+    required this.y,
+    required this.z,
+  });
   const B.constant({
     required this.x,
     required this.y,
@@ -59,7 +65,7 @@ class B extends $B implements A<int, String> {
     Opt<T1>? x,
     Opt<T2>? y,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as int : x.value as int,
       y: y == null ? this.y as String : y.value as String,
       z: (this as B).z,
@@ -71,7 +77,7 @@ class B extends $B implements A<int, String> {
     Opt<String>? y,
     Opt<String>? z,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as int : x.value as int,
       y: y == null ? this.y as String : y.value as String,
       z: z == null ? this.z as String : z.value as String,

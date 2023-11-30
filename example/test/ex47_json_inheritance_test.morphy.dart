@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex47_json_inheritance_test.dart';
 
@@ -18,6 +19,9 @@ class A extends $A {
   A({
     required this.id,
   });
+  A._({
+    required this.id,
+  });
   String toString() => "(A-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -26,7 +30,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? id,
   }) {
-    return A(
+    return A._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -76,7 +80,7 @@ extension $A_changeTo_E on $A {
   B changeTo_B({
     Opt<String>? id,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -85,7 +89,7 @@ extension $A_changeTo_E on $A {
     required List<int> items,
     Opt<String>? id,
   }) {
-    return C(
+    return C._(
       items: items as List<int>,
       id: id == null ? this.id as String : id.value as String,
     );
@@ -114,6 +118,9 @@ class B extends $B implements A {
   B({
     required this.id,
   });
+  B._({
+    required this.id,
+  });
   String toString() => "(B-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -122,7 +129,7 @@ class B extends $B implements A {
   B copyWith_A({
     Opt<String>? id,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -130,7 +137,7 @@ class B extends $B implements A {
   B copyWith_B({
     Opt<String>? id,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -193,6 +200,10 @@ class C extends $C implements A {
     required this.id,
     required this.items,
   });
+  C._({
+    required this.id,
+    required this.items,
+  });
   String toString() => "(C-id:${id.toString()}|items:${items.toString()})";
   int get hashCode => hashObjects([id.hashCode, items.hashCode]);
   bool operator ==(Object other) =>
@@ -204,7 +215,7 @@ class C extends $C implements A {
   C copyWith_A({
     Opt<String>? id,
   }) {
-    return C(
+    return C._(
       id: id == null ? this.id as String : id.value as String,
       items: (this as C).items,
     );
@@ -214,7 +225,7 @@ class C extends $C implements A {
     Opt<String>? id,
     Opt<List<int>>? items,
   }) {
-    return C(
+    return C._(
       id: id == null ? this.id as String : id.value as String,
       items: items == null ? this.items as List<int> : items.value as List<int>,
     );

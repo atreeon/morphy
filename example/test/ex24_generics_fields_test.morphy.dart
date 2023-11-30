@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex24_generics_fields_test.dart';
 
@@ -16,6 +17,9 @@ class A extends $A {
   A({
     required this.xItems,
   });
+  A._({
+    required this.xItems,
+  });
   String toString() => "(A-xItems:${xItems.toString()})";
   int get hashCode => hashObjects([xItems.hashCode]);
   bool operator ==(Object other) =>
@@ -26,7 +30,7 @@ class A extends $A {
   A copyWith_A({
     Opt<List<X>>? xItems,
   }) {
-    return A(
+    return A._(
       xItems: xItems == null ? this.xItems as List<X> : xItems.value as List<X>,
     );
   }
@@ -44,6 +48,9 @@ class X extends $X {
   X({
     required this.value,
   });
+  X._({
+    required this.value,
+  });
   String toString() => "(X-value:${value.toString()})";
   int get hashCode => hashObjects([value.hashCode]);
   bool operator ==(Object other) =>
@@ -52,7 +59,7 @@ class X extends $X {
   X copyWith_X({
     Opt<String>? value,
   }) {
-    return X(
+    return X._(
       value: value == null ? this.value as String : value.value as String,
     );
   }

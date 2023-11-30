@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex8_enums_test.dart';
 
@@ -20,6 +21,10 @@ class Pet extends $Pet {
     required this.type,
     required this.blim,
   });
+  Pet._({
+    required this.type,
+    required this.blim,
+  });
   String toString() => "(Pet-type:${type.toString()}|blim:${blim.toString()})";
   int get hashCode => hashObjects([type.hashCode, blim.hashCode]);
   bool operator ==(Object other) =>
@@ -32,7 +37,7 @@ class Pet extends $Pet {
     Opt<String>? type,
     Opt<eBlim>? blim,
   }) {
-    return Pet(
+    return Pet._(
       type: type == null ? this.type as String : type.value as String,
       blim: blim == null ? this.blim as eBlim : blim.value as eBlim,
     );

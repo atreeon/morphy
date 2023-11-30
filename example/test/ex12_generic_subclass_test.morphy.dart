@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex12_generic_subclass_test.dart';
 
@@ -40,6 +41,11 @@ class B<Ta, Tb> extends $B<Ta, Tb> implements A<Ta, Tb> {
     required this.y,
     required this.z,
   });
+  B._({
+    required this.x,
+    required this.y,
+    required this.z,
+  });
   String toString() =>
       "(B-x:${x.toString()}|y:${y.toString()}|z:${z.toString()})";
   int get hashCode => hashObjects([x.hashCode, y.hashCode, z.hashCode]);
@@ -54,7 +60,7 @@ class B<Ta, Tb> extends $B<Ta, Tb> implements A<Ta, Tb> {
     Opt<Ta>? x,
     Opt<Tb>? y,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as Ta : x.value as Ta,
       y: y == null ? this.y as Tb : y.value as Tb,
       z: (this as B).z,
@@ -66,7 +72,7 @@ class B<Ta, Tb> extends $B<Ta, Tb> implements A<Ta, Tb> {
     Opt<Tb>? y,
     Opt<String>? z,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as Ta : x.value as Ta,
       y: y == null ? this.y as Tb : y.value as Tb,
       z: z == null ? this.z as String : z.value as String,

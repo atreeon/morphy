@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex27_bug.dart';
 
@@ -18,6 +19,10 @@ class UserLectureInfoPopupVM extends $UserLectureInfoPopupVM {
     required this.lectureId,
     required this.isExcluded,
   });
+  UserLectureInfoPopupVM._({
+    required this.lectureId,
+    required this.isExcluded,
+  });
   String toString() =>
       "(UserLectureInfoPopupVM-lectureId:${lectureId.toString()}|isExcluded:${isExcluded.toString()})";
   int get hashCode => hashObjects([lectureId.hashCode, isExcluded.hashCode]);
@@ -31,7 +36,7 @@ class UserLectureInfoPopupVM extends $UserLectureInfoPopupVM {
     Opt<String>? lectureId,
     Opt<bool>? isExcluded,
   }) {
-    return UserLectureInfoPopupVM(
+    return UserLectureInfoPopupVM._(
       lectureId: lectureId == null
           ? this.lectureId as String
           : lectureId.value as String,
@@ -72,6 +77,12 @@ class UserLectureInfoPopupVM_worstWords
     required this.worstWordDue,
     required this.stageOfStages,
   });
+  UserLectureInfoPopupVM_worstWords._({
+    required this.lectureId,
+    required this.isExcluded,
+    required this.worstWordDue,
+    required this.stageOfStages,
+  });
   String toString() =>
       "(UserLectureInfoPopupVM_worstWords-lectureId:${lectureId.toString()}|isExcluded:${isExcluded.toString()}|worstWordDue:${worstWordDue.toString()}|stageOfStages:${stageOfStages.toString()})";
   int get hashCode => hashObjects([
@@ -92,7 +103,7 @@ class UserLectureInfoPopupVM_worstWords
     Opt<String>? lectureId,
     Opt<bool>? isExcluded,
   }) {
-    return UserLectureInfoPopupVM_worstWords(
+    return UserLectureInfoPopupVM_worstWords._(
       lectureId: lectureId == null
           ? this.lectureId as String
           : lectureId.value as String,
@@ -110,7 +121,7 @@ class UserLectureInfoPopupVM_worstWords
     Opt<String>? worstWordDue,
     Opt<String>? stageOfStages,
   }) {
-    return UserLectureInfoPopupVM_worstWords(
+    return UserLectureInfoPopupVM_worstWords._(
       lectureId: lectureId == null
           ? this.lectureId as String
           : lectureId.value as String,

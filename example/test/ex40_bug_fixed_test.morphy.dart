@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex40_bug_fixed_test.dart';
 
@@ -58,6 +59,14 @@ class Monitor_PurpleAir extends $Monitor_PurpleAir implements MonitorI {
     required this.isExcluded,
     required this.purpleAirSensorApiId,
   });
+  Monitor_PurpleAir._({
+    required this.monitorId,
+    required this.locationId,
+    required this.monitorName,
+    required this.monitorPostcode,
+    required this.isExcluded,
+    required this.purpleAirSensorApiId,
+  });
   String toString() =>
       "(Monitor_PurpleAir-monitorId:${monitorId.toString()}|locationId:${locationId.toString()}|monitorName:${monitorName.toString()}|monitorPostcode:${monitorPostcode.toString()}|isExcluded:${isExcluded.toString()}|purpleAirSensorApiId:${purpleAirSensorApiId.toString()})";
   int get hashCode => hashObjects([
@@ -85,7 +94,7 @@ class Monitor_PurpleAir extends $Monitor_PurpleAir implements MonitorI {
     Opt<String>? monitorPostcode,
     Opt<bool>? isExcluded,
   }) {
-    return Monitor_PurpleAir(
+    return Monitor_PurpleAir._(
       monitorId: monitorId == null
           ? this.monitorId as String
           : monitorId.value as String,
@@ -112,7 +121,7 @@ class Monitor_PurpleAir extends $Monitor_PurpleAir implements MonitorI {
     Opt<bool>? isExcluded,
     Opt<String>? purpleAirSensorApiId,
   }) {
-    return Monitor_PurpleAir(
+    return Monitor_PurpleAir._(
       monitorId: monitorId == null
           ? this.monitorId as String
           : monitorId.value as String,

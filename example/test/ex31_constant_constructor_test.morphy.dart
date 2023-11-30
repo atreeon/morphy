@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex31_constant_constructor_test.dart';
 
@@ -18,6 +19,9 @@ class A extends $A {
   A({
     required this.a,
   });
+  A._({
+    required this.a,
+  });
   const A.constant({
     required this.a,
   });
@@ -29,7 +33,7 @@ class A extends $A {
   A copyWith_A({
     Opt<int>? a,
   }) {
-    return A(
+    return A._(
       a: a == null ? this.a as int : a.value as int,
     );
   }

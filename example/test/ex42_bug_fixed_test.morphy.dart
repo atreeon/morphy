@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex42_bug_fixed_test.dart';
 
@@ -18,6 +19,15 @@ class Task3 extends $Task3 {
 
   ///
   Task3({
+    required this.id,
+    this.parentId,
+    required this.description,
+    required this.orderId,
+    this.hasChildren,
+    required this.parentHierarchy,
+    required this.isCollapsed,
+  });
+  Task3._({
     required this.id,
     this.parentId,
     required this.description,
@@ -57,7 +67,7 @@ class Task3 extends $Task3 {
     Opt<List<String?>>? parentHierarchy,
     Opt<bool>? isCollapsed,
   }) {
-    return Task3(
+    return Task3._(
       id: id == null ? this.id as String : id.value as String,
       parentId: parentId == null
           ? this.parentId as String?

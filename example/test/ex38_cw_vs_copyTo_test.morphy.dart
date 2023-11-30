@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex38_cw_vs_copyTo_test.dart';
 
@@ -40,6 +41,9 @@ class SubA extends $SubA implements Super {
   SubA({
     required this.x,
   });
+  SubA._({
+    required this.x,
+  });
   String toString() => "(SubA-x:${x.toString()})";
   int get hashCode => hashObjects([x.hashCode]);
   bool operator ==(Object other) =>
@@ -48,7 +52,7 @@ class SubA extends $SubA implements Super {
   SubA copyWith_Super({
     Opt<String>? x,
   }) {
-    return SubA(
+    return SubA._(
       x: x == null ? this.x as String : x.value as String,
     );
   }
@@ -56,7 +60,7 @@ class SubA extends $SubA implements Super {
   SubA copyWith_SubA({
     Opt<String>? x,
   }) {
-    return SubA(
+    return SubA._(
       x: x == null ? this.x as String : x.value as String,
     );
   }
@@ -68,7 +72,7 @@ extension $SubA_changeTo_E on $SubA {
     required List<C> cs,
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       z: z as String,
       cs: cs as List<C>,
       x: x == null ? this.x as String : x.value as String,
@@ -102,6 +106,11 @@ class SubB extends $SubB implements Super {
     required this.cs,
     required this.x,
   });
+  SubB._({
+    required this.z,
+    required this.cs,
+    required this.x,
+  });
   String toString() =>
       "(SubB-z:${z.toString()}|cs:${cs.toString()}|x:${x.toString()})";
   int get hashCode => hashObjects([z.hashCode, cs.hashCode, x.hashCode]);
@@ -115,7 +124,7 @@ class SubB extends $SubB implements Super {
   SubB copyWith_Super({
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       x: x == null ? this.x as String : x.value as String,
       z: (this as SubB).z,
       cs: (this as SubB).cs,
@@ -127,7 +136,7 @@ class SubB extends $SubB implements Super {
     Opt<List<C>>? cs,
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       z: z == null ? this.z as String : z.value as String,
       cs: cs == null ? this.cs as List<C> : cs.value as List<C>,
       x: x == null ? this.x as String : x.value as String,
@@ -147,6 +156,9 @@ class C extends $C {
   C({
     required this.m,
   });
+  C._({
+    required this.m,
+  });
   String toString() => "(C-m:${m.toString()})";
   int get hashCode => hashObjects([m.hashCode]);
   bool operator ==(Object other) =>
@@ -155,7 +167,7 @@ class C extends $C {
   C copyWith_C({
     Opt<String>? m,
   }) {
-    return C(
+    return C._(
       m: m == null ? this.m as String : m.value as String,
     );
   }

@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex46_json_test.dart';
 
@@ -18,6 +19,9 @@ class Pet extends $Pet {
   Pet({
     required this.kind,
   });
+  Pet._({
+    required this.kind,
+  });
   String toString() => "(Pet-kind:${kind.toString()})";
   int get hashCode => hashObjects([kind.hashCode]);
   bool operator ==(Object other) =>
@@ -26,7 +30,7 @@ class Pet extends $Pet {
   Pet copyWith_Pet({
     Opt<String>? kind,
   }) {
-    return Pet(
+    return Pet._(
       kind: kind == null ? this.kind as String : kind.value as String,
     );
   }

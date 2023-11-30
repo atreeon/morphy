@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex32_self_referencing_class_test.dart';
 
@@ -18,6 +19,10 @@ class A extends $A {
     this.a,
     required this.b,
   });
+  A._({
+    this.a,
+    required this.b,
+  });
   const A.constant({
     this.a,
     required this.b,
@@ -34,7 +39,7 @@ class A extends $A {
     Opt<A?>? a,
     Opt<int>? b,
   }) {
-    return A(
+    return A._(
       a: a == null ? this.a as A? : a.value as A?,
       b: b == null ? this.b as int : b.value as int,
     );

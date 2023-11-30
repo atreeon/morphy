@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex30_override_subclassproperty_test.dart';
 
@@ -14,6 +15,9 @@ class A extends $A {
   A({
     required this.a,
   });
+  A._({
+    required this.a,
+  });
   String toString() => "(A-a:${a.toString()})";
   int get hashCode => hashObjects([a.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class A extends $A {
   A copyWith_A({
     Opt<Person>? a,
   }) {
-    return A(
+    return A._(
       a: a == null ? this.a as Person : a.value as Person,
     );
   }
@@ -48,6 +52,9 @@ class B extends $B implements A {
   B({
     required this.a,
   });
+  B._({
+    required this.a,
+  });
   String toString() => "(B-a:${a.toString()})";
   int get hashCode => hashObjects([a.hashCode]);
   bool operator ==(Object other) =>
@@ -56,7 +63,7 @@ class B extends $B implements A {
   B copyWith_A({
     Opt<Person>? a,
   }) {
-    return B(
+    return B._(
       a: a == null ? this.a as Employee : a.value as Employee,
     );
   }
@@ -64,7 +71,7 @@ class B extends $B implements A {
   B copyWith_B({
     Opt<Employee>? a,
   }) {
-    return B(
+    return B._(
       a: a == null ? this.a as Employee : a.value as Employee,
     );
   }

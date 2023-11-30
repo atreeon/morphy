@@ -1,3 +1,6 @@
+## 1.0.5
+- Fixed bug introduced with change to custom constructors
+
 ## 1.0.4
 - Relaxed dependency versions
 - Fixed bug for abstract class json serialize & deserialize

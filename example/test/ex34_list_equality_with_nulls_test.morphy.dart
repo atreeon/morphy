@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex34_list_equality_with_nulls_test.dart';
 
@@ -14,6 +15,9 @@ class A extends $A {
   A({
     required this.a,
   });
+  A._({
+    required this.a,
+  });
   String toString() => "(A-a:${a.toString()})";
   int get hashCode => hashObjects([a.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? a,
   }) {
-    return A(
+    return A._(
       a: a == null ? this.a as String : a.value as String,
     );
   }
@@ -40,6 +44,9 @@ class B extends $B {
   B({
     this.b,
   });
+  B._({
+    this.b,
+  });
   String toString() => "(B-b:${b.toString()})";
   int get hashCode => hashObjects([b.hashCode]);
   bool operator ==(Object other) =>
@@ -50,7 +57,7 @@ class B extends $B {
   B copyWith_B({
     Opt<List<int>?>? b,
   }) {
-    return B(
+    return B._(
       b: b == null ? this.b as List<int>? : b.value as List<int>?,
     );
   }

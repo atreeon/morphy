@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex4_inheritance_test.dart';
 
@@ -36,6 +37,10 @@ class A extends $A implements Z {
     required this.aValue,
     required this.zValue,
   });
+  A._({
+    required this.aValue,
+    required this.zValue,
+  });
   String toString() =>
       "(A-aValue:${aValue.toString()}|zValue:${zValue.toString()})";
   int get hashCode => hashObjects([aValue.hashCode, zValue.hashCode]);
@@ -48,7 +53,7 @@ class A extends $A implements Z {
   A copyWith_Z({
     Opt<String>? zValue,
   }) {
-    return A(
+    return A._(
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
       aValue: (this as A).aValue,
     );
@@ -58,7 +63,7 @@ class A extends $A implements Z {
     Opt<String>? aValue,
     Opt<String>? zValue,
   }) {
-    return A(
+    return A._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
     );
@@ -89,6 +94,11 @@ class B extends $B implements A {
     required this.bValue,
     required this.zValue,
   });
+  B._({
+    required this.aValue,
+    required this.bValue,
+    required this.zValue,
+  });
   String toString() =>
       "(B-aValue:${aValue.toString()}|bValue:${bValue.toString()}|zValue:${zValue.toString()})";
   int get hashCode =>
@@ -104,7 +114,7 @@ class B extends $B implements A {
     Opt<String>? aValue,
     Opt<String>? zValue,
   }) {
-    return B(
+    return B._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
       bValue: (this as B).bValue,
@@ -114,7 +124,7 @@ class B extends $B implements A {
   B copyWith_Z({
     Opt<String>? zValue,
   }) {
-    return B(
+    return B._(
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
       aValue: (this as B).aValue,
       bValue: (this as B).bValue,
@@ -126,7 +136,7 @@ class B extends $B implements A {
     Opt<String>? bValue,
     Opt<String>? zValue,
   }) {
-    return B(
+    return B._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
@@ -160,6 +170,12 @@ class C extends $C implements B {
     required this.cValue,
     required this.zValue,
   });
+  C._({
+    required this.aValue,
+    required this.bValue,
+    required this.cValue,
+    required this.zValue,
+  });
   String toString() =>
       "(C-aValue:${aValue.toString()}|bValue:${bValue.toString()}|cValue:${cValue.toString()}|zValue:${zValue.toString()})";
   int get hashCode => hashObjects(
@@ -177,7 +193,7 @@ class C extends $C implements B {
     Opt<String>? bValue,
     Opt<String>? zValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
@@ -189,7 +205,7 @@ class C extends $C implements B {
     Opt<String>? aValue,
     Opt<String>? zValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
       bValue: (this as C).bValue,
@@ -200,7 +216,7 @@ class C extends $C implements B {
   C copyWith_Z({
     Opt<String>? zValue,
   }) {
-    return C(
+    return C._(
       zValue: zValue == null ? this.zValue as String : zValue.value as String,
       aValue: (this as C).aValue,
       bValue: (this as C).bValue,
@@ -214,7 +230,7 @@ class C extends $C implements B {
     Opt<String>? cValue,
     Opt<String>? zValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
       cValue: cValue == null ? this.cValue as String : cValue.value as String,

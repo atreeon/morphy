@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex44_a_copy_super_to_sub_generic_test.dart';
 
@@ -14,6 +15,9 @@ class Super extends $Super {
   Super({
     required this.id,
   });
+  Super._({
+    required this.id,
+  });
   String toString() => "(Super-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class Super extends $Super {
   Super copyWith_Super({
     Opt<String>? id,
   }) {
-    return Super(
+    return Super._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -34,7 +38,7 @@ extension $Super_changeTo_E on $Super {
     required T code,
     Opt<String>? id,
   }) {
-    return Sub(
+    return Sub._(
       description: description as String,
       code: code as T,
       id: id == null ? this.id as String : id.value as String,
@@ -64,6 +68,11 @@ class Sub<T> extends $Sub<T> implements Super {
     required this.code,
     required this.id,
   });
+  Sub._({
+    required this.description,
+    required this.code,
+    required this.id,
+  });
   String toString() =>
       "(Sub-description:${description.toString()}|code:${code.toString()}|id:${id.toString()})";
   int get hashCode =>
@@ -78,7 +87,7 @@ class Sub<T> extends $Sub<T> implements Super {
   Sub copyWith_Super({
     Opt<String>? id,
   }) {
-    return Sub(
+    return Sub._(
       id: id == null ? this.id as String : id.value as String,
       description: (this as Sub).description,
       code: (this as Sub).code,
@@ -90,7 +99,7 @@ class Sub<T> extends $Sub<T> implements Super {
     Opt<T>? code,
     Opt<String>? id,
   }) {
-    return Sub(
+    return Sub._(
       description: description == null
           ? this.description as String
           : description.value as String,

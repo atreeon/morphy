@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex48_json_with_subtype_test.dart';
 
@@ -24,6 +25,11 @@ class A extends $A {
     required this.x,
     required this.xs,
   });
+  A._({
+    required this.id,
+    required this.x,
+    required this.xs,
+  });
   String toString() =>
       "(A-id:${id.toString()}|x:${x.toString()}|xs:${xs.toString()})";
   int get hashCode => hashObjects([id.hashCode, x.hashCode, xs.hashCode]);
@@ -39,7 +45,7 @@ class A extends $A {
     Opt<X>? x,
     Opt<List<X>>? xs,
   }) {
-    return A(
+    return A._(
       id: id == null ? this.id as String : id.value as String,
       x: x == null ? this.x as X : x.value as X,
       xs: xs == null ? this.xs as List<X> : xs.value as List<X>,
@@ -94,6 +100,9 @@ class X extends $X {
   X({
     required this.items,
   });
+  X._({
+    required this.items,
+  });
   String toString() => "(X-items:${items.toString()})";
   int get hashCode => hashObjects([items.hashCode]);
   bool operator ==(Object other) =>
@@ -104,7 +113,7 @@ class X extends $X {
   X copyWith_X({
     Opt<List<int>>? items,
   }) {
-    return X(
+    return X._(
       items: items == null ? this.items as List<int> : items.value as List<int>,
     );
   }

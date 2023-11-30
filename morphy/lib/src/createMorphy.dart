@@ -12,7 +12,7 @@ String createMorphy(
   List<NameTypeClassComment> classGenerics,
   bool hasConstContructor,
   bool generateJson,
-  bool hasPrivateConstructor,
+  bool hidePublicConstructor,
   List<Interface> explicitForJson,
 ) {
   //recursively go through otherClasses and get my fieldnames &
@@ -25,7 +25,7 @@ String createMorphy(
   //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    sb.writeln(createJsonHeader(className, classGenerics, hasPrivateConstructor));
+    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor));
   }
 
   sb.write(getClassDefinition(isAbstract, className));
@@ -50,22 +50,34 @@ String createMorphy(
     sb.write(getClassComment(interfacesFromImplements, classComment));
 
     //constructor
-    var constructorName = getConstructorName(classNameTrim, hasPrivateConstructor);
+    // var constructorName = getConstructorName(classNameTrim, hidePublicConstructor);
     if (allFields.isEmpty) {
-      sb.writeln("${constructorName}();");
+      if (!hidePublicConstructor) {
+        sb.writeln("${classNameTrim}();");
+      }
+      sb.writeln("${classNameTrim}._();");
     } else {
-      sb.writeln("${constructorName}({");
-      sb.writeln(getConstructorRows(allFields));
-      sb.writeln("});");
-
-      if (hasPrivateConstructor && generateJson) {
-        sb.writeln("${constructorName}.forJsonDoNotUse({");
+      //public constructor
+      if (!hidePublicConstructor) {
+        sb.writeln("${classNameTrim}({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("});");
       }
 
+      //the json needs a public constructor, we add this if public constructor is hidden
+      if (hidePublicConstructor && generateJson) {
+        sb.writeln("${classNameTrim}.forJsonDoNotUse({");
+        sb.writeln(getConstructorRows(allFields));
+        sb.writeln("});");
+      }
+
+      //we always want to write a private constructor (just a duplicate)
+      sb.writeln("${classNameTrim}._({");
+      sb.writeln(getConstructorRows(allFields));
+      sb.writeln("});");
+
       if (hasConstContructor) {
-        sb.writeln("const ${constructorName}.constant({");
+        sb.writeln("const ${classNameTrim}.constant({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("});");
       }
@@ -95,7 +107,6 @@ String createMorphy(
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
         isExplicitSubType: x.isExplicitSubType,
-        hasPrivateConstructor: hasPrivateConstructor,
       ),
     );
   });
@@ -126,7 +137,6 @@ String createMorphy(
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
         isExplicitSubType: x.isExplicitSubType,
-        hasPrivateConstructor: hasPrivateConstructor,
       ),
     );
   });

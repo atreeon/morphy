@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'readme_test.dart';
 
@@ -20,6 +21,10 @@ class Pet extends $Pet {
     required this.name,
     required this.age,
   });
+  Pet._({
+    required this.name,
+    required this.age,
+  });
   String toString() => "(Pet-name:${name.toString()}|age:${age.toString()})";
   int get hashCode => hashObjects([name.hashCode, age.hashCode]);
   bool operator ==(Object other) =>
@@ -32,7 +37,7 @@ class Pet extends $Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Pet(
+    return Pet._(
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
     );
@@ -80,7 +85,7 @@ extension $Pet_changeTo_E on $Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Cat(
+    return Cat._(
       whiskerLength: whiskerLength as double,
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
@@ -124,6 +129,12 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
     required this.name,
     required this.age,
   });
+  FrankensteinsDogCat._({
+    required this.whiskerLength,
+    required this.woofSound,
+    required this.name,
+    required this.age,
+  });
   String toString() =>
       "(FrankensteinsDogCat-whiskerLength:${whiskerLength.toString()}|woofSound:${woofSound.toString()}|name:${name.toString()}|age:${age.toString()})";
   int get hashCode => hashObjects([
@@ -145,7 +156,7 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return FrankensteinsDogCat(
+    return FrankensteinsDogCat._(
       woofSound: woofSound == null
           ? this.woofSound as String
           : woofSound.value as String,
@@ -159,7 +170,7 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return FrankensteinsDogCat(
+    return FrankensteinsDogCat._(
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
       whiskerLength: (this as FrankensteinsDogCat).whiskerLength,
@@ -172,7 +183,7 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return FrankensteinsDogCat(
+    return FrankensteinsDogCat._(
       whiskerLength: whiskerLength == null
           ? this.whiskerLength as double
           : whiskerLength.value as double,
@@ -188,7 +199,7 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return FrankensteinsDogCat(
+    return FrankensteinsDogCat._(
       whiskerLength: whiskerLength == null
           ? this.whiskerLength as double
           : whiskerLength.value as double,
@@ -260,6 +271,11 @@ class Cat extends $Cat implements Pet {
     required this.name,
     required this.age,
   });
+  Cat._({
+    required this.whiskerLength,
+    required this.name,
+    required this.age,
+  });
   String toString() =>
       "(Cat-whiskerLength:${whiskerLength.toString()}|name:${name.toString()}|age:${age.toString()})";
   int get hashCode =>
@@ -275,7 +291,7 @@ class Cat extends $Cat implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Cat(
+    return Cat._(
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
       whiskerLength: (this as Cat).whiskerLength,
@@ -287,7 +303,7 @@ class Cat extends $Cat implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Cat(
+    return Cat._(
       whiskerLength: whiskerLength == null
           ? this.whiskerLength as double
           : whiskerLength.value as double,
@@ -356,6 +372,11 @@ class Dog extends $Dog implements Pet {
     required this.name,
     required this.age,
   });
+  Dog._({
+    required this.woofSound,
+    required this.name,
+    required this.age,
+  });
   String toString() =>
       "(Dog-woofSound:${woofSound.toString()}|name:${name.toString()}|age:${age.toString()})";
   int get hashCode =>
@@ -371,7 +392,7 @@ class Dog extends $Dog implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Dog(
+    return Dog._(
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
       woofSound: (this as Dog).woofSound,
@@ -383,7 +404,7 @@ class Dog extends $Dog implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Dog(
+    return Dog._(
       woofSound: woofSound == null
           ? this.woofSound as String
           : woofSound.value as String,
@@ -452,6 +473,11 @@ class Fish extends $Fish implements Pet {
     required this.name,
     required this.age,
   });
+  Fish._({
+    required this.fishColour,
+    required this.name,
+    required this.age,
+  });
   String toString() =>
       "(Fish-fishColour:${fishColour.toString()}|name:${name.toString()}|age:${age.toString()})";
   int get hashCode =>
@@ -467,7 +493,7 @@ class Fish extends $Fish implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Fish(
+    return Fish._(
       name: name == null ? this.name as String : name.value as String,
       age: age == null ? this.age as int : age.value as int,
       fishColour: (this as Fish).fishColour,
@@ -479,7 +505,7 @@ class Fish extends $Fish implements Pet {
     Opt<String>? name,
     Opt<int>? age,
   }) {
-    return Fish(
+    return Fish._(
       fishColour: fishColour == null
           ? this.fishColour as eFishColour
           : fishColour.value as eFishColour,
@@ -534,6 +560,10 @@ class PetOwner<TPet extends $Pet> extends $PetOwner<TPet> {
     required this.ownerName,
     required this.pet,
   });
+  PetOwner._({
+    required this.ownerName,
+    required this.pet,
+  });
   String toString() =>
       "(PetOwner-ownerName:${ownerName.toString()}|pet:${pet.toString()})";
   int get hashCode => hashObjects([ownerName.hashCode, pet.hashCode]);
@@ -547,7 +577,7 @@ class PetOwner<TPet extends $Pet> extends $PetOwner<TPet> {
     Opt<String>? ownerName,
     Opt<TPet>? pet,
   }) {
-    return PetOwner(
+    return PetOwner._(
       ownerName: ownerName == null
           ? this.ownerName as String
           : ownerName.value as String,
@@ -561,29 +591,29 @@ extension $PetOwner_changeTo_E on $PetOwner {}
 enum PetOwner$ { ownerName, pet }
 
 ///
-class A_ extends $A_ {
+class A extends $A {
   final String val;
   final DateTime timestamp;
 
   ///
-  A_({
+  A._({
     required this.val,
     required this.timestamp,
   });
   String toString() =>
-      "(A_-val:${val.toString()}|timestamp:${timestamp.toString()})";
+      "(A-val:${val.toString()}|timestamp:${timestamp.toString()})";
   int get hashCode => hashObjects([val.hashCode, timestamp.hashCode]);
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is A_ &&
+      other is A &&
           runtimeType == other.runtimeType &&
           val == other.val &&
           timestamp == other.timestamp;
-  A_ copyWith_A_({
+  A copyWith_A({
     Opt<String>? val,
     Opt<DateTime>? timestamp,
   }) {
-    return A_(
+    return A._(
       val: val == null ? this.val as String : val.value as String,
       timestamp: timestamp == null
           ? this.timestamp as DateTime
@@ -592,9 +622,9 @@ class A_ extends $A_ {
   }
 }
 
-extension $A__changeTo_E on $A_ {}
+extension $A_changeTo_E on $A {}
 
-enum A_$ { val, timestamp }
+enum A$ { val, timestamp }
 
 ///
 class B extends $B {
@@ -603,6 +633,10 @@ class B extends $B {
 
   ///
   B({
+    required this.val,
+    this.optional,
+  });
+  B._({
     required this.val,
     this.optional,
   });
@@ -619,7 +653,7 @@ class B extends $B {
     Opt<String>? val,
     Opt<String?>? optional,
   }) {
-    return B(
+    return B._(
       val: val == null ? this.val as String : val.value as String,
       optional: optional == null
           ? this.optional as String?
@@ -644,6 +678,9 @@ class X extends $X {
   X({
     required this.val,
   });
+  X._({
+    required this.val,
+  });
   String toString() => "(X-val:${val.toString()})";
   int get hashCode => hashObjects([val.hashCode]);
   bool operator ==(Object other) =>
@@ -652,7 +689,7 @@ class X extends $X {
   X copyWith_X({
     Opt<String>? val,
   }) {
-    return X(
+    return X._(
       val: val == null ? this.val as String : val.value as String,
     );
   }
@@ -704,7 +741,7 @@ extension $X_changeTo_E on $X {
     required int valY,
     Opt<String>? val,
   }) {
-    return Z(
+    return Z._(
       valZ: valZ as double,
       valY: valY as int,
       val: val == null ? this.val as String : val.value as String,
@@ -715,7 +752,7 @@ extension $X_changeTo_E on $X {
     required int valY,
     Opt<String>? val,
   }) {
-    return Y(
+    return Y._(
       valY: valY as int,
       val: val == null ? this.val as String : val.value as String,
     );
@@ -746,6 +783,10 @@ class Y extends $Y implements X {
     required this.val,
     required this.valY,
   });
+  Y._({
+    required this.val,
+    required this.valY,
+  });
   String toString() => "(Y-val:${val.toString()}|valY:${valY.toString()})";
   int get hashCode => hashObjects([val.hashCode, valY.hashCode]);
   bool operator ==(Object other) =>
@@ -757,7 +798,7 @@ class Y extends $Y implements X {
   Y copyWith_X({
     Opt<String>? val,
   }) {
-    return Y(
+    return Y._(
       val: val == null ? this.val as String : val.value as String,
       valY: (this as Y).valY,
     );
@@ -767,7 +808,7 @@ class Y extends $Y implements X {
     Opt<String>? val,
     Opt<int>? valY,
   }) {
-    return Y(
+    return Y._(
       val: val == null ? this.val as String : val.value as String,
       valY: valY == null ? this.valY as int : valY.value as int,
     );
@@ -815,7 +856,7 @@ extension $Y_changeTo_E on $Y {
     Opt<String>? val,
     Opt<int>? valY,
   }) {
-    return Z(
+    return Z._(
       valZ: valZ as double,
       val: val == null ? this.val as String : val.value as String,
       valY: valY == null ? this.valY as int : valY.value as int,
@@ -849,6 +890,11 @@ class Z extends $Z implements Y {
     required this.valY,
     required this.valZ,
   });
+  Z._({
+    required this.val,
+    required this.valY,
+    required this.valZ,
+  });
   String toString() =>
       "(Z-val:${val.toString()}|valY:${valY.toString()}|valZ:${valZ.toString()})";
   int get hashCode => hashObjects([val.hashCode, valY.hashCode, valZ.hashCode]);
@@ -863,7 +909,7 @@ class Z extends $Z implements Y {
     Opt<String>? val,
     Opt<int>? valY,
   }) {
-    return Z(
+    return Z._(
       val: val == null ? this.val as String : val.value as String,
       valY: valY == null ? this.valY as int : valY.value as int,
       valZ: (this as Z).valZ,
@@ -873,7 +919,7 @@ class Z extends $Z implements Y {
   Z copyWith_X({
     Opt<String>? val,
   }) {
-    return Z(
+    return Z._(
       val: val == null ? this.val as String : val.value as String,
       valY: (this as Z).valY,
       valZ: (this as Z).valZ,
@@ -885,7 +931,7 @@ class Z extends $Z implements Y {
     Opt<int>? valY,
     Opt<double>? valZ,
   }) {
-    return Z(
+    return Z._(
       val: val == null ? this.val as String : val.value as String,
       valY: valY == null ? this.valY as int : valY.value as int,
       valZ: valZ == null ? this.valZ as double : valZ.value as double,

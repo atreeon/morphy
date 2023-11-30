@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex23_comments_test.dart';
 
@@ -19,6 +20,10 @@ class Cat extends $Cat {
     required this.type,
     required this.colour,
   });
+  Cat._({
+    required this.type,
+    required this.colour,
+  });
   String toString() =>
       "(Cat-type:${type.toString()}|colour:${colour.toString()})";
   int get hashCode => hashObjects([type.hashCode, colour.hashCode]);
@@ -32,7 +37,7 @@ class Cat extends $Cat {
     Opt<String>? type,
     Opt<String>? colour,
   }) {
-    return Cat(
+    return Cat._(
       type: type == null ? this.type as String : type.value as String,
       colour: colour == null ? this.colour as String : colour.value as String,
     );

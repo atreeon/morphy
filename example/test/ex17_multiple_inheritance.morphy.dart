@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex17_multiple_inheritance.dart';
 
@@ -74,24 +75,25 @@ class Batch_Staged_Lesson_Lectures extends $Batch_Staged_Lesson_Lectures
   ///something else
   ///
   Batch_Staged_Lesson_Lectures();
+  Batch_Staged_Lesson_Lectures._();
 
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Batch_Staged_Lesson_Lectures && runtimeType == other.runtimeType;
   Batch_Staged_Lesson_Lectures copyWith_Batch_Staged_Lesson() {
-    return Batch_Staged_Lesson_Lectures();
+    return Batch_Staged_Lesson_Lectures._();
   }
 
   Batch_Staged_Lesson_Lectures copyWith_Batch_Lesson() {
-    return Batch_Staged_Lesson_Lectures();
+    return Batch_Staged_Lesson_Lectures._();
   }
 
   Batch_Staged_Lesson_Lectures copyWith_Lesson_Lectures() {
-    return Batch_Staged_Lesson_Lectures();
+    return Batch_Staged_Lesson_Lectures._();
   }
 
   Batch_Staged_Lesson_Lectures copyWith_Batch_Staged_Lesson_Lectures() {
-    return Batch_Staged_Lesson_Lectures();
+    return Batch_Staged_Lesson_Lectures._();
   }
 }
 

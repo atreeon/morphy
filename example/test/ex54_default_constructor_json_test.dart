@@ -1,4 +1,5 @@
 import 'package:morphy/morphy.dart';
+import 'package:test/test.dart';
 
 part 'ex54_default_constructor_json_test.g.dart';
 
@@ -13,7 +14,7 @@ abstract class $$Todo2 {
   String get description;
 }
 
-@Morphy(generateJson: true, privateConstructor: true)
+@Morphy(generateJson: true, hidePublicConstructor: true)
 abstract class $Todo2_incomplete implements $$Todo2 {}
 
 @Morphy(generateJson: true)
@@ -37,4 +38,19 @@ Todo2_incomplete todo2_incomplete_Factory({
     title: title,
     description: description,
   );
+}
+
+void main() {
+  group("default constructor", () {
+    test("0 ", () {
+      var todo = todo2_incomplete_Factory(title: "title");
+
+      var expected = Todo2_incomplete._(
+        title: "title",
+        id: "xxx",
+        description: "",
+      );
+      expect(todo, expected);
+    });
+  });
 }

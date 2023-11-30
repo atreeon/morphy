@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex35_function_parameters_test.dart';
 
@@ -56,6 +57,13 @@ class B extends $B implements A {
     required this.t2TypeAsReturn,
     required this.stuff,
   });
+  B._({
+    required this.id,
+    required this.t2TypeAsParameter1,
+    required this.t2TypeAsParameter2,
+    required this.t2TypeAsReturn,
+    required this.stuff,
+  });
   String toString() =>
       "(B-id:${id.toString()}|t2TypeAsParameter1:${t2TypeAsParameter1.toString()}|t2TypeAsParameter2:${t2TypeAsParameter2.toString()}|t2TypeAsReturn:${t2TypeAsReturn.toString()}|stuff:${stuff.toString()})";
   int get hashCode => hashObjects([
@@ -81,7 +89,7 @@ class B extends $B implements A {
     Opt<$X Function()>? t2TypeAsReturn,
     Opt<X>? stuff,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as int : id.value as int,
       t2TypeAsParameter1: t2TypeAsParameter1 == null
           ? this.t2TypeAsParameter1 as bool Function($X)
@@ -103,7 +111,7 @@ class B extends $B implements A {
     Opt<$X Function()>? t2TypeAsReturn,
     Opt<X>? stuff,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as int : id.value as int,
       t2TypeAsParameter1: t2TypeAsParameter1 == null
           ? this.t2TypeAsParameter1 as bool Function($X)
@@ -131,6 +139,9 @@ class X extends $X {
   X({
     required this.id,
   });
+  X._({
+    required this.id,
+  });
   String toString() => "(X-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -139,7 +150,7 @@ class X extends $X {
   X copyWith_X({
     Opt<int>? id,
   }) {
-    return X(
+    return X._(
       id: id == null ? this.id as int : id.value as int,
     );
   }

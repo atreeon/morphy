@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex41_inheritance_generics.dart';
 
@@ -29,13 +30,16 @@ class B<T> extends $B<T> implements A<T> {
   B({
     required this.data,
   });
+  B._({
+    required this.data,
+  });
   String toString() => "(B-data:${data.toString()})";
   int get hashCode => hashObjects([data.hashCode]);
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is B && runtimeType == other.runtimeType && data == other.data;
   B copyWith_A<T>() {
-    return B(
+    return B._(
       data: (this as B).data,
     );
   }
@@ -43,7 +47,7 @@ class B<T> extends $B<T> implements A<T> {
   B copyWith_B<T>({
     Opt<T>? data,
   }) {
-    return B(
+    return B._(
       data: data == null ? this.data as T : data.value as T,
     );
   }
@@ -71,6 +75,10 @@ class C<T> extends $C<T> implements A<T> {
     required this.failureCode,
     required this.description,
   });
+  C._({
+    required this.failureCode,
+    required this.description,
+  });
   String toString() =>
       "(C-failureCode:${failureCode.toString()}|description:${description.toString()})";
   int get hashCode => hashObjects([failureCode.hashCode, description.hashCode]);
@@ -81,7 +89,7 @@ class C<T> extends $C<T> implements A<T> {
           failureCode == other.failureCode &&
           description == other.description;
   C copyWith_A<T>() {
-    return C(
+    return C._(
       failureCode: (this as C).failureCode,
       description: (this as C).description,
     );
@@ -91,7 +99,7 @@ class C<T> extends $C<T> implements A<T> {
     Opt<eEnumExample>? failureCode,
     Opt<String>? description,
   }) {
-    return C(
+    return C._(
       failureCode: failureCode == null
           ? this.failureCode as eEnumExample
           : failureCode.value as eEnumExample,

@@ -1,4 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:test/test.dart';
 import 'package:morphy/morphy.dart';
 

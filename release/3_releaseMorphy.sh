@@ -19,9 +19,10 @@ else
 fi
 
 versionMorphyAnnotation=$(grep 'morphy_annotation:' "../morphy/pubspec.yaml" | awk '{print $2}')
+dependencyOverrides=$(grep 'dependency_overrides:' "../morphy/pubspec.yaml")
 echo "Morphy references annotation version $versionMorphyAnnotation"
 echo "morphy_annotation in pub.dev is $versionAnnotationPub"
-echo "local Morphy version is $versionMorphyLocal"
+echo "dependency_overrides should be commented out, is it? $dependencyOverrides"
 
 read -p "Is this correct? (y/n): " choice
 
@@ -42,3 +43,12 @@ else
   exit 0
 fi
 
+read -p "Do you want to tag morphy as $versionMorphyLocal? (y/n): " choice
+if [ "$choice" = "y" ]; then
+  clear
+  git tag "$versionMorphyLocal" -a
+else
+  exit 0
+fi
+
+echo "now please commit and push"

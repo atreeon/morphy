@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex1_simple_test.dart';
 
@@ -14,6 +15,9 @@ class Pet extends $Pet {
   Pet({
     required this.type,
   });
+  Pet._({
+    required this.type,
+  });
   String toString() => "(Pet-type:${type.toString()})";
   int get hashCode => hashObjects([type.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class Pet extends $Pet {
   Pet copyWith_Pet({
     Opt<String>? type,
   }) {
-    return Pet(
+    return Pet._(
       type: type == null ? this.type as String : type.value as String,
     );
   }

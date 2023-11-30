@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex50_json_inheritance_generic_test.dart';
 
@@ -18,6 +19,9 @@ class A extends $A {
   A({
     required this.id,
   });
+  A._({
+    required this.id,
+  });
   String toString() => "(A-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -26,7 +30,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? id,
   }) {
-    return A(
+    return A._(
       id: id == null ? this.id as String : id.value as String,
     );
   }
@@ -98,6 +102,10 @@ class B<T> extends $B<T> implements A {
     required this.id,
     required this.blah,
   });
+  B._({
+    required this.id,
+    required this.blah,
+  });
   String toString() => "(B-id:${id.toString()}|blah:${blah.toString()})";
   int get hashCode => hashObjects([id.hashCode, blah.hashCode]);
   bool operator ==(Object other) =>
@@ -109,7 +117,7 @@ class B<T> extends $B<T> implements A {
   B copyWith_A({
     Opt<String>? id,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as String : id.value as String,
       blah: (this as B).blah,
     );
@@ -119,7 +127,7 @@ class B<T> extends $B<T> implements A {
     Opt<String>? id,
     Opt<T>? blah,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as String : id.value as String,
       blah: blah == null ? this.blah as T : blah.value as T,
     );
@@ -177,6 +185,9 @@ class X extends $X {
   X({
     required this.xyz,
   });
+  X._({
+    required this.xyz,
+  });
   String toString() => "(X-xyz:${xyz.toString()})";
   int get hashCode => hashObjects([xyz.hashCode]);
   bool operator ==(Object other) =>
@@ -185,7 +196,7 @@ class X extends $X {
   X copyWith_X({
     Opt<String>? xyz,
   }) {
-    return X(
+    return X._(
       xyz: xyz == null ? this.xyz as String : xyz.value as String,
     );
   }

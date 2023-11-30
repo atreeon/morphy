@@ -131,7 +131,7 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
       classGenerics,
       hasConstConstructor,
       annotation.read('generateJson').boolValue,
-      annotation.read('privateConstructor').boolValue,
+      annotation.read('hidePublicConstructor').boolValue,
       typesExplicit,
     ));
 

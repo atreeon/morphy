@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex20_inheritance_generics_test.dart';
 
@@ -14,6 +15,9 @@ class BI extends $BI {
   BI({
     required this.orderId,
   });
+  BI._({
+    required this.orderId,
+  });
   String toString() => "(BI-orderId:${orderId.toString()})";
   int get hashCode => hashObjects([orderId.hashCode]);
   bool operator ==(Object other) =>
@@ -24,7 +28,7 @@ class BI extends $BI {
   BI copyWith_BI({
     Opt<int>? orderId,
   }) {
-    return BI(
+    return BI._(
       orderId: orderId == null ? this.orderId as int : orderId.value as int,
     );
   }

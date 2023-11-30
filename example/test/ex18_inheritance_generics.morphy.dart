@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex18_inheritance_generics.dart';
 
@@ -14,6 +15,9 @@ class A<T> extends $A<T> {
   A({
     required this.batchItems,
   });
+  A._({
+    required this.batchItems,
+  });
   String toString() => "(A-batchItems:${batchItems.toString()})";
   int get hashCode => hashObjects([batchItems.hashCode]);
   bool operator ==(Object other) =>
@@ -24,7 +28,7 @@ class A<T> extends $A<T> {
   A copyWith_A<T>({
     Opt<List<T>>? batchItems,
   }) {
-    return A(
+    return A._(
       batchItems: batchItems == null
           ? this.batchItems as List<T>
           : batchItems.value as List<T>,
@@ -52,6 +56,9 @@ class B extends $B implements A<$X> {
   B({
     required this.batchItems,
   });
+  B._({
+    required this.batchItems,
+  });
   String toString() => "(B-batchItems:${batchItems.toString()})";
   int get hashCode => hashObjects([batchItems.hashCode]);
   bool operator ==(Object other) =>
@@ -62,7 +69,7 @@ class B extends $B implements A<$X> {
   B copyWith_A<T>({
     Opt<List<T>>? batchItems,
   }) {
-    return B(
+    return B._(
       batchItems: batchItems == null
           ? this.batchItems as List<X>
           : batchItems.value as List<X>,
@@ -72,7 +79,7 @@ class B extends $B implements A<$X> {
   B copyWith_B({
     Opt<List<X>>? batchItems,
   }) {
-    return B(
+    return B._(
       batchItems: batchItems == null
           ? this.batchItems as List<X>
           : batchItems.value as List<X>,
@@ -92,6 +99,9 @@ class X extends $X {
   X({
     required this.id,
   });
+  X._({
+    required this.id,
+  });
   String toString() => "(X-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -100,7 +110,7 @@ class X extends $X {
   X copyWith_X({
     Opt<int>? id,
   }) {
-    return X(
+    return X._(
       id: id == null ? this.id as int : id.value as int,
     );
   }

@@ -244,11 +244,9 @@ String getCopyWith({
   required String className,
   required bool isClassAbstract,
   required List<NameType> interfaceGenerics,
-  required bool hasPrivateConstructor,
   bool isExplicitSubType = false, //for where we specify the explicit subtypes for changeTo
 }) {
   var sb = StringBuffer();
-  // sb.writeln("//${classFields}|${interfaceFields}|$interfaceName|$className");
 
   var classNameTrimmed = className.replaceAll("\$", "");
   var interfaceNameTrimmed = interfaceName.replaceAll("\$", "");
@@ -307,13 +305,9 @@ String getCopyWith({
   sb.writeln(") {");
 
   if (isExplicitSubType) {
-    sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}(");
+    sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}._(");
   } else {
-    if (hasPrivateConstructor) {
-      sb.writeln("return $classNameTrimmed._(");
-    } else {
-      sb.writeln("return $classNameTrimmed(");
-    }
+    sb.writeln("return $classNameTrimmed._(");
   }
 
   sb.write(requiredFields //

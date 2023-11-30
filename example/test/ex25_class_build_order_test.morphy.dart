@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex25_class_build_order_test.dart';
 
@@ -18,6 +19,9 @@ class ScheduleVM<T extends ScheduleVM_Item> extends $ScheduleVM<T> {
   ScheduleVM({
     required this.schedules,
   });
+  ScheduleVM._({
+    required this.schedules,
+  });
   String toString() => "(ScheduleVM-schedules:${schedules.toString()})";
   int get hashCode => hashObjects([schedules.hashCode]);
   bool operator ==(Object other) =>
@@ -28,7 +32,7 @@ class ScheduleVM<T extends ScheduleVM_Item> extends $ScheduleVM<T> {
   ScheduleVM copyWith_ScheduleVM<T extends ScheduleVM_Item>({
     Opt<List<T>>? schedules,
   }) {
-    return ScheduleVM(
+    return ScheduleVM._(
       schedules: schedules == null
           ? this.schedules as List<T>
           : schedules.value as List<T>,

@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
 import 'package:morphy/morphy.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 // ignore_for_file: unnecessary_type_check
 
@@ -42,8 +41,8 @@ abstract class $PetOwner<TPet extends $Pet> {
   TPet get pet;
 }
 
-@morphy
-abstract class $A_ {
+@Morphy(hidePublicConstructor: true)
+abstract class $A {
   String get val;
 
   DateTime get timestamp;
@@ -152,8 +151,8 @@ main() {
     expect(frankie is Dog, true);
   });
 
-  A_ a_Constructor(String val) {
-    return A_._(val: val, timestamp: DateTime(2023, 11, 25));
+  A a_Constructor(String val) {
+    return A._(val: val, timestamp: DateTime(2023, 11, 25));
   }
 
   test("11 Custom Constructor", () {

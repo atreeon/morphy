@@ -501,7 +501,6 @@ a == other.a && b == other.b && c == other.c;""";
         className: "A",
         isClassAbstract: true,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """A copyWith_A({
 Opt<String>? a,
@@ -521,7 +520,6 @@ Opt<String>? a,
         className: "B",
         isClassAbstract: true,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_A({
 Opt<int>? a,
@@ -540,12 +538,11 @@ Opt<int>? a,
         className: "A",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """A copyWith_A({
 Opt<String>? a,
 }) {
-return A(
+return A._(
 a: a == null ? this.a as String : a.value as String,
 );
 }""");
@@ -564,12 +561,11 @@ a: a == null ? this.a as String : a.value as String,
         className: "B",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_A({
 Opt<String>? a,
 }) {
-return B(
+return B._(
 a: a == null ? this.a as String : a.value as String,
 b: (this as B).b,
 );
@@ -590,13 +586,12 @@ b: (this as B).b,
         className: "B",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_B({
 Opt<String>? a,
 Opt<T1>? b,
 }) {
-return B(
+return B._(
 a: a == null ? this.a as String : a.value as String,
 b: b == null ? this.b as T1 : b.value as T1,
 );
@@ -617,12 +612,11 @@ b: b == null ? this.b as T1 : b.value as T1,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_A({
 Opt<String>? a,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as String : a.value as String,
 b: (this as C).b,
 c: (this as C).c,
@@ -645,13 +639,12 @@ c: (this as C).c,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_B({
 Opt<String>? a,
 Opt<T1>? b,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as String : a.value as String,
 b: b == null ? this.b as T1 : b.value as T1,
 c: (this as C).c,
@@ -675,14 +668,13 @@ c: (this as C).c,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_C({
 Opt<String>? a,
 Opt<T1>? b,
 Opt<bool>? c,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as String : a.value as String,
 b: b == null ? this.b as T1 : b.value as T1,
 c: c == null ? this.c as bool : c.value as bool,
@@ -703,12 +695,11 @@ c: c == null ? this.c as bool : c.value as bool,
         className: "D",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """D copyWith_A({
 Opt<String>? a,
 }) {
-return D(
+return D._(
 a: a == null ? this.a as String : a.value as String,
 b: (this as D).b,
 );
@@ -729,13 +720,12 @@ b: (this as D).b,
         className: "D",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """D copyWith_B({
 Opt<String>? a,
 Opt<T1>? b,
 }) {
-return D(
+return D._(
 a: a == null ? this.a as String : a.value as String,
 b: b == null ? this.b as T1 : b.value as T1,
 );
@@ -756,13 +746,12 @@ b: b == null ? this.b as T1 : b.value as T1,
         className: "D",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """D copyWith_D({
 Opt<String>? a,
 Opt<T1>? b,
 }) {
-return D(
+return D._(
 a: a == null ? this.a as String : a.value as String,
 b: b == null ? this.b as T1 : b.value as T1,
 );
@@ -777,7 +766,6 @@ b: b == null ? this.b as T1 : b.value as T1,
         className: "X",
         isClassAbstract: true,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """X copyWith_X(
 );""");
@@ -793,11 +781,10 @@ b: b == null ? this.b as T1 : b.value as T1,
         className: "Y",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """Y copyWith_X(
 ) {
-return Y(
+return Y._(
 a: (this as Y).a,
 );
 }""");
@@ -805,21 +792,21 @@ a: (this as Y).a,
 
     test("14p yy (see ex29_manual) interface with no fields", () {
       var result = getCopyWith(
-          classFields: [
-            NameTypeClassComment("a", "String", null),
-          ],
-          interfaceFields: [
-            NameTypeClassComment("a", "String", null),
-          ],
-          interfaceName: "Y",
-          className: "Y",
-          isClassAbstract: false,
-          interfaceGenerics: [],
-          hasPrivateConstructor: false);
+        classFields: [
+          NameTypeClassComment("a", "String", null),
+        ],
+        interfaceFields: [
+          NameTypeClassComment("a", "String", null),
+        ],
+        interfaceName: "Y",
+        className: "Y",
+        isClassAbstract: false,
+        interfaceGenerics: [],
+      );
       expectS(result, """Y copyWith_Y({
 Opt<String>? a,
 }) {
-return Y(
+return Y._(
 a: a == null ? this.a as String : a.value as String,
 );
 }""");
@@ -837,12 +824,11 @@ a: a == null ? this.a as String : a.value as String,
         className: "A",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """A copyWith_A({
 Opt<Person>? a,
 }) {
-return A(
+return A._(
 a: a == null ? this.a as Person : a.value as Person,
 );
 }""");
@@ -850,21 +836,21 @@ a: a == null ? this.a as Person : a.value as Person,
 
     test("16p ba (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-          classFields: [
-            NameTypeClassComment("a", "Employee", null),
-          ],
-          interfaceFields: [
-            NameTypeClassComment("a", "Person", null),
-          ],
-          interfaceName: "A",
-          className: "B",
-          isClassAbstract: false,
-          interfaceGenerics: [],
-          hasPrivateConstructor: false);
+        classFields: [
+          NameTypeClassComment("a", "Employee", null),
+        ],
+        interfaceFields: [
+          NameTypeClassComment("a", "Person", null),
+        ],
+        interfaceName: "A",
+        className: "B",
+        isClassAbstract: false,
+        interfaceGenerics: [],
+      );
       expectS(result, """B copyWith_A({
 Opt<Person>? a,
 }) {
-return B(
+return B._(
 a: a == null ? this.a as Employee : a.value as Employee,
 );
 }""");
@@ -882,12 +868,11 @@ a: a == null ? this.a as Employee : a.value as Employee,
         className: "B",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_B({
 Opt<Employee>? a,
 }) {
-return B(
+return B._(
 a: a == null ? this.a as Employee : a.value as Employee,
 );
 }""");
@@ -905,12 +890,11 @@ a: a == null ? this.a as Employee : a.value as Employee,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_A({
 Opt<Person>? a,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as Manager : a.value as Manager,
 );
 }""");
@@ -928,12 +912,11 @@ a: a == null ? this.a as Manager : a.value as Manager,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_B({
 Opt<Employee>? a,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as Manager : a.value as Manager,
 );
 }""");
@@ -951,12 +934,11 @@ a: a == null ? this.a as Manager : a.value as Manager,
         className: "C",
         isClassAbstract: false,
         interfaceGenerics: [],
-        hasPrivateConstructor: false,
       );
       expectS(result, """C copyWith_C({
 Opt<Manager>? a,
 }) {
-return C(
+return C._(
 a: a == null ? this.a as Manager : a.value as Manager,
 );
 }""");
@@ -977,13 +959,12 @@ a: a == null ? this.a as Manager : a.value as Manager,
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_A<T1, T2>({
 Opt<T1>? x,
 Opt<T2>? y,
 }) {
-return B(
+return B._(
 x: x == null ? this.x as int : x.value as int,
 y: y == null ? this.y as String : y.value as String,
 z: (this as B).z,
@@ -1007,14 +988,13 @@ z: (this as B).z,
         interfaceName: "B",
         className: "B",
         isClassAbstract: false,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_B({
 Opt<int>? x,
 Opt<String>? y,
 Opt<String>? z,
 }) {
-return B(
+return B._(
 x: x == null ? this.x as int : x.value as int,
 y: y == null ? this.y as String : y.value as String,
 z: z == null ? this.z as String : z.value as String,
@@ -1034,7 +1014,6 @@ z: z == null ? this.z as String : z.value as String,
         interfaceName: "A",
         className: "A",
         isClassAbstract: true,
-        hasPrivateConstructor: false,
       );
       expectS(result, """A copyWith_A<T>({
 Opt<T>? x,
@@ -1055,12 +1034,11 @@ Opt<T>? x,
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_A<T>({
 Opt<T>? x,
 }) {
-return B(
+return B._(
 x: x == null ? this.x as int : x.value as int,
 y: (this as B).y,
 );
@@ -1079,7 +1057,6 @@ y: (this as B).y,
         interfaceName: "A",
         className: "A",
         isClassAbstract: false,
-        hasPrivateConstructor: true,
       );
       expectS(result, """A copyWith_A({
 Opt<String>? a,
@@ -1102,12 +1079,11 @@ a: a == null ? this.a as String : a.value as String,
         interfaceName: "X",
         className: "X",
         isClassAbstract: false,
-        hasPrivateConstructor: false,
       );
       expectS(result, """X copyWith_X({
 Opt<bool Function(\$X)>? fn,
 }) {
-return X(
+return X._(
 fn: fn == null ? this.fn as bool Function(\$X) : fn.value as bool Function(\$X),
 );
 }""");
@@ -1127,13 +1103,12 @@ fn: fn == null ? this.fn as bool Function(\$X) : fn.value as bool Function(\$X),
         className: "A",
         isClassAbstract: false,
         isExplicitSubType: true,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B changeTo_B({
 required String y,
 Opt<String>? x,
 }) {
-return B(
+return B._(
 y: y as String,
 x: x == null ? this.x as String : x.value as String,
 );
@@ -1155,14 +1130,13 @@ x: x == null ? this.x as String : x.value as String,
         className: "A",
         isClassAbstract: false,
         isExplicitSubType: true,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B changeTo_B({
 required String y,
 required Z z,
 Opt<String>? x,
 }) {
-return B(
+return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x.value as String,
@@ -1185,14 +1159,13 @@ x: x == null ? this.x as String : x.value as String,
         className: "A",
         isClassAbstract: false,
         isExplicitSubType: true,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B changeTo_B({
 required String y,
 required Z z,
 Opt<String>? x,
 }) {
-return B(
+return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x.value as String,
@@ -1216,14 +1189,13 @@ x: x == null ? this.x as String : x.value as String,
         interfaceName: "\$B",
         className: "\$B",
         isClassAbstract: false,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B copyWith_B({
 Opt<String>? x,
 Opt<List<C>>? cs,
 Opt<Z>? z,
 }) {
-return B(
+return B._(
 x: x == null ? this.x as String : x.value as String,
 cs: cs == null ? this.cs as List<C> : cs.value as List<C>,
 z: z == null ? this.z as Z : z.value as Z,
@@ -1245,14 +1217,42 @@ z: z == null ? this.z as Z : z.value as Z,
         className: "\$\$Super",
         isClassAbstract: true,
         isExplicitSubType: true,
-        hasPrivateConstructor: false,
       );
       expectS(result, """B changeTo_B({
 required String y,
 Opt<String>? x,
 }) {
-return B(
+return B._(
 y: y as String,
+x: x == null ? this.x as String : x.value as String,
+);
+}""");
+    });
+
+    test("32p private constructor", () {
+      var result = getCopyWith(
+        classFields: [
+          NameTypeClassComment("x", "String", null),
+        ],
+        interfaceFields: [
+          NameTypeClassComment("x", "String", null),
+          NameTypeClassComment("y", "String", null),
+          NameTypeClassComment("z", "\$Z", null),
+        ],
+        interfaceGenerics: [],
+        interfaceName: "\$B",
+        className: "A",
+        isClassAbstract: false,
+        isExplicitSubType: true,
+      );
+      expectS(result, """B changeTo_B({
+required String y,
+required Z z,
+Opt<String>? x,
+}) {
+return B._(
+y: y as String,
+z: z as Z,
 x: x == null ? this.x as String : x.value as String,
 );
 }""");

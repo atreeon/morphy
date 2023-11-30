@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex3_inheritance_test.dart';
 
@@ -14,6 +15,9 @@ class A extends $A {
   A({
     required this.aValue,
   });
+  A._({
+    required this.aValue,
+  });
   String toString() => "(A-aValue:${aValue.toString()})";
   int get hashCode => hashObjects([aValue.hashCode]);
   bool operator ==(Object other) =>
@@ -22,7 +26,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? aValue,
   }) {
-    return A(
+    return A._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
     );
   }
@@ -50,6 +54,10 @@ class B extends $B implements A {
     required this.aValue,
     required this.bValue,
   });
+  B._({
+    required this.aValue,
+    required this.bValue,
+  });
   String toString() =>
       "(B-aValue:${aValue.toString()}|bValue:${bValue.toString()})";
   int get hashCode => hashObjects([aValue.hashCode, bValue.hashCode]);
@@ -62,7 +70,7 @@ class B extends $B implements A {
   B copyWith_A({
     Opt<String>? aValue,
   }) {
-    return B(
+    return B._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: (this as B).bValue,
     );
@@ -72,7 +80,7 @@ class B extends $B implements A {
     Opt<String>? aValue,
     Opt<String>? bValue,
   }) {
-    return B(
+    return B._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
     );
@@ -103,6 +111,11 @@ class C extends $C implements B {
     required this.bValue,
     required this.cValue,
   });
+  C._({
+    required this.aValue,
+    required this.bValue,
+    required this.cValue,
+  });
   String toString() =>
       "(C-aValue:${aValue.toString()}|bValue:${bValue.toString()}|cValue:${cValue.toString()})";
   int get hashCode =>
@@ -118,7 +131,7 @@ class C extends $C implements B {
     Opt<String>? aValue,
     Opt<String>? bValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
       cValue: (this as C).cValue,
@@ -128,7 +141,7 @@ class C extends $C implements B {
   C copyWith_A({
     Opt<String>? aValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: (this as C).bValue,
       cValue: (this as C).cValue,
@@ -140,7 +153,7 @@ class C extends $C implements B {
     Opt<String>? bValue,
     Opt<String>? cValue,
   }) {
-    return C(
+    return C._(
       aValue: aValue == null ? this.aValue as String : aValue.value as String,
       bValue: bValue == null ? this.bValue as String : bValue.value as String,
       cValue: cValue == null ? this.cValue as String : cValue.value as String,

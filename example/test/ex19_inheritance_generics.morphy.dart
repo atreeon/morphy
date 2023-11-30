@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex19_inheritance_generics.dart';
 
@@ -73,6 +74,9 @@ class E extends $E implements C<$$B>, D {
   E({
     required this.items,
   });
+  E._({
+    required this.items,
+  });
   String toString() => "(E-items:${items.toString()})";
   int get hashCode => hashObjects([items.hashCode]);
   bool operator ==(Object other) =>
@@ -83,7 +87,7 @@ class E extends $E implements C<$$B>, D {
   E copyWith_C<TBatchItem extends $$A>({
     Opt<List<TBatchItem>>? items,
   }) {
-    return E(
+    return E._(
       items: items == null ? this.items as List<B> : items.value as List<B>,
     );
   }
@@ -91,7 +95,7 @@ class E extends $E implements C<$$B>, D {
   E copyWith_D({
     Opt<List<B>>? items,
   }) {
-    return E(
+    return E._(
       items: items == null ? this.items as List<B> : items.value as List<B>,
     );
   }
@@ -99,7 +103,7 @@ class E extends $E implements C<$$B>, D {
   E copyWith_E({
     Opt<List<B>>? items,
   }) {
-    return E(
+    return E._(
       items: items == null ? this.items as List<B> : items.value as List<B>,
     );
   }

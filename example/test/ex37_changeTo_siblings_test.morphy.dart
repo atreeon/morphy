@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex37_changeTo_siblings_test.dart';
 
@@ -43,6 +44,9 @@ class SubA extends $SubA implements Super {
   SubA({
     required this.x,
   });
+  SubA._({
+    required this.x,
+  });
   String toString() => "(SubA-x:${x.toString()})";
   int get hashCode => hashObjects([x.hashCode]);
   bool operator ==(Object other) =>
@@ -51,7 +55,7 @@ class SubA extends $SubA implements Super {
   SubA copyWith_Super({
     Opt<String>? x,
   }) {
-    return SubA(
+    return SubA._(
       x: x == null ? this.x as String : x.value as String,
     );
   }
@@ -59,7 +63,7 @@ class SubA extends $SubA implements Super {
   SubA copyWith_SubA({
     Opt<String>? x,
   }) {
-    return SubA(
+    return SubA._(
       x: x == null ? this.x as String : x.value as String,
     );
   }
@@ -70,7 +74,7 @@ extension $SubA_changeTo_E on $SubA {
     required String z,
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       z: z as String,
       x: x == null ? this.x as String : x.value as String,
     );
@@ -103,6 +107,10 @@ class SubB extends $SubB implements Super {
     required this.z,
     required this.x,
   });
+  SubB._({
+    required this.z,
+    required this.x,
+  });
   String toString() => "(SubB-z:${z.toString()}|x:${x.toString()})";
   int get hashCode => hashObjects([z.hashCode, x.hashCode]);
   bool operator ==(Object other) =>
@@ -114,7 +122,7 @@ class SubB extends $SubB implements Super {
   SubB copyWith_Super({
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       x: x == null ? this.x as String : x.value as String,
       z: (this as SubB).z,
     );
@@ -124,7 +132,7 @@ class SubB extends $SubB implements Super {
     Opt<String>? z,
     Opt<String>? x,
   }) {
-    return SubB(
+    return SubB._(
       z: z == null ? this.z as String : z.value as String,
       x: x == null ? this.x as String : x.value as String,
     );

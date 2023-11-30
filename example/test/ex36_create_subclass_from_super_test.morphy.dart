@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex36_create_subclass_from_super_test.dart';
 
@@ -18,6 +19,9 @@ class A extends $A {
   A({
     required this.x,
   });
+  A._({
+    required this.x,
+  });
   String toString() => "(A-x:${x.toString()})";
   int get hashCode => hashObjects([x.hashCode]);
   bool operator ==(Object other) =>
@@ -26,7 +30,7 @@ class A extends $A {
   A copyWith_A({
     Opt<String>? x,
   }) {
-    return A(
+    return A._(
       x: x == null ? this.x as String : x.value as String,
     );
   }
@@ -37,7 +41,7 @@ extension $A_changeTo_E on $A {
     required String y,
     Opt<String>? x,
   }) {
-    return B(
+    return B._(
       y: y as String,
       x: x == null ? this.x as String : x.value as String,
     );
@@ -68,6 +72,10 @@ class B extends $B implements A {
     required this.x,
     required this.y,
   });
+  B._({
+    required this.x,
+    required this.y,
+  });
   String toString() => "(B-x:${x.toString()}|y:${y.toString()})";
   int get hashCode => hashObjects([x.hashCode, y.hashCode]);
   bool operator ==(Object other) =>
@@ -79,7 +87,7 @@ class B extends $B implements A {
   B copyWith_A({
     Opt<String>? x,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as String : x.value as String,
       y: (this as B).y,
     );
@@ -89,7 +97,7 @@ class B extends $B implements A {
     Opt<String>? x,
     Opt<String>? y,
   }) {
-    return B(
+    return B._(
       x: x == null ? this.x as String : x.value as String,
       y: y == null ? this.y as String : y.value as String,
     );

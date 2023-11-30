@@ -1,6 +1,5 @@
 // ignore_for_file: unnecessary_cast
 
-import 'package:json_annotation/json_annotation.dart';
 import 'package:test/test.dart';
 import 'package:morphy/morphy.dart';
 

@@ -1,4 +1,5 @@
 // ignore_for_file: UNNECESSARY_CAST
+// ignore_for_file: unused_element
 
 part of 'ex52_json_inheritance_generic_test.dart';
 
@@ -27,6 +28,9 @@ class A<T1> extends $A<T1> {
   A({
     required this.id,
   });
+  A._({
+    required this.id,
+  });
   String toString() => "(A-id:${id.toString()})";
   int get hashCode => hashObjects([id.hashCode]);
   bool operator ==(Object other) =>
@@ -35,7 +39,7 @@ class A<T1> extends $A<T1> {
   A copyWith_A<T1>({
     Opt<T1>? id,
   }) {
-    return A(
+    return A._(
       id: id == null ? this.id as T1 : id.value as T1,
     );
   }
@@ -98,7 +102,7 @@ extension $A_changeTo_E on $A {
     required T2 valT2,
     Opt<T1>? id,
   }) {
-    return C(
+    return C._(
       xyz: xyz as String,
       valT1: valT1 as T1,
       valT2: valT2 as T2,
@@ -111,7 +115,7 @@ extension $A_changeTo_E on $A {
     required T2 valT2,
     Opt<T1>? id,
   }) {
-    return B(
+    return B._(
       valT1: valT1 as T1,
       valT2: valT2 as T2,
       id: id == null ? this.id as T1 : id.value as T1,
@@ -154,6 +158,11 @@ class B<T1, T2> extends $B<T1, T2> implements A<T1> {
     required this.valT1,
     required this.valT2,
   });
+  B._({
+    required this.id,
+    required this.valT1,
+    required this.valT2,
+  });
   String toString() =>
       "(B-id:${id.toString()}|valT1:${valT1.toString()}|valT2:${valT2.toString()})";
   int get hashCode =>
@@ -168,7 +177,7 @@ class B<T1, T2> extends $B<T1, T2> implements A<T1> {
   B copyWith_A<T1>({
     Opt<T1>? id,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: (this as B).valT1,
       valT2: (this as B).valT2,
@@ -180,7 +189,7 @@ class B<T1, T2> extends $B<T1, T2> implements A<T1> {
     Opt<T1>? valT1,
     Opt<T2>? valT2,
   }) {
-    return B(
+    return B._(
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: valT1 == null ? this.valT1 as T1 : valT1.value as T1,
       valT2: valT2 == null ? this.valT2 as T2 : valT2.value as T2,
@@ -239,7 +248,7 @@ extension $B_changeTo_E on $B {
     Opt<T1>? valT1,
     Opt<T2>? valT2,
   }) {
-    return C(
+    return C._(
       xyz: xyz as String,
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: valT1 == null ? this.valT1 as T1 : valT1.value as T1,
@@ -285,6 +294,12 @@ class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
     required this.valT2,
     required this.xyz,
   });
+  C._({
+    required this.id,
+    required this.valT1,
+    required this.valT2,
+    required this.xyz,
+  });
   String toString() =>
       "(C-id:${id.toString()}|valT1:${valT1.toString()}|valT2:${valT2.toString()}|xyz:${xyz.toString()})";
   int get hashCode =>
@@ -302,7 +317,7 @@ class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
     Opt<T1>? valT1,
     Opt<T2>? valT2,
   }) {
-    return C(
+    return C._(
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: valT1 == null ? this.valT1 as T1 : valT1.value as T1,
       valT2: valT2 == null ? this.valT2 as T2 : valT2.value as T2,
@@ -313,7 +328,7 @@ class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
   C copyWith_A<T1>({
     Opt<T1>? id,
   }) {
-    return C(
+    return C._(
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: (this as C).valT1,
       valT2: (this as C).valT2,
@@ -327,7 +342,7 @@ class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
     Opt<T2>? valT2,
     Opt<String>? xyz,
   }) {
-    return C(
+    return C._(
       id: id == null ? this.id as T1 : id.value as T1,
       valT1: valT1 == null ? this.valT1 as T1 : valT1.value as T1,
       valT2: valT2 == null ? this.valT2 as T2 : valT2.value as T2,
