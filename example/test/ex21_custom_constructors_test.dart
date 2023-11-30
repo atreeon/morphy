@@ -15,23 +15,23 @@ part 'ex21_custom_constructors_test.morphy.dart';
 //In this example class A has an underscore thereby hiding its default constructor.
 //Instead we create a function called A_DifferentConstructor.
 
-@morphy
-abstract class $A_ {
+@Morphy(privateConstructor: true)
+abstract class $A {
   String get a;
 }
 
 void main() {
   test("0 default value", () {
-    var a = A_._(a: "my default value");
+    var a = A._(a: "my default value");
     expect(a.a, "my default value");
   });
 
   test("1 default value", () {
-    var a = A_DifferentConstructor();
+    var a = A_Factory();
     expect(a.a, "my default value");
   });
 }
 
-A_ A_DifferentConstructor() {
-  return A_._(a: "my default value");
+A A_Factory() {
+  return A._(a: "my default value");
 }

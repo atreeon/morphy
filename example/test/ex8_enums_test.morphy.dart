@@ -8,7 +8,9 @@ part of 'ex8_enums_test.dart';
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Pet extends $Pet {
   final String type;
   final eBlim blim;
@@ -52,8 +54,8 @@ class Pet extends $Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

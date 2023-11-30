@@ -8,7 +8,9 @@ part of 'ex47_json_inheritance_test.dart';
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class A extends $A {
   final String id;
 
@@ -54,8 +56,8 @@ class A extends $A {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -98,7 +100,9 @@ enum A$ { id }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class B extends $B implements A {
   final String id;
 
@@ -147,8 +151,8 @@ class B extends $B implements A {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -173,7 +177,9 @@ enum B$ { id }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class C extends $C implements A {
   final String id;
   final List<int> items;
@@ -230,8 +236,8 @@ class C extends $C implements A {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

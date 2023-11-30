@@ -8,7 +8,9 @@ part of 'ex46_json_test.dart';
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Pet extends $Pet {
   final String kind;
 
@@ -45,8 +47,8 @@ class Pet extends $Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

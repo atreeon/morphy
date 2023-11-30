@@ -13,7 +13,21 @@ read -p "Is this correct? (y/n): " choice
 
 if [ "$choice" = "y" ]; then
   clear
-  echo "Continuing..."
+  echo "Checking referenced morphy_annotation"
+else
+  exit 0
+fi
+
+versionMorphyAnnotation=$(grep 'morphy_annotation:' "../morphy/pubspec.yaml" | awk '{print $2}')
+echo "Morphy references annotation version $versionMorphyAnnotation"
+echo "morphy_annotation in pub.dev is $versionAnnotationPub"
+echo "local Morphy version is $versionMorphyLocal"
+
+read -p "Is this correct? (y/n): " choice
+
+if [ "$choice" = "y" ]; then
+  clear
+  echo "publish dry run:"
 else
   exit 0
 fi

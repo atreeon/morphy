@@ -16,7 +16,10 @@ class A_Generics_Sing {
   A_Generics_Sing._internal() {}
 }
 
-@JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
+@JsonSerializable(
+  explicitToJson: true,
+  genericArgumentFactories: true,
+)
 class A<T1> extends $A<T1> {
   final T1 id;
 
@@ -71,8 +74,8 @@ class A<T1> extends $A<T1> {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -132,7 +135,10 @@ class B_Generics_Sing {
   B_Generics_Sing._internal() {}
 }
 
-@JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
+@JsonSerializable(
+  explicitToJson: true,
+  genericArgumentFactories: true,
+)
 class B<T1, T2> extends $B<T1, T2> implements A<T1> {
   final T1 id;
   final T1 valT1;
@@ -207,8 +213,8 @@ class B<T1, T2> extends $B<T1, T2> implements A<T1> {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -258,7 +264,10 @@ class C_Generics_Sing {
   C_Generics_Sing._internal() {}
 }
 
-@JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
+@JsonSerializable(
+  explicitToJson: true,
+  genericArgumentFactories: true,
+)
 class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
   final T1 id;
   final T1 valT1;
@@ -345,8 +354,8 @@ class C<T1, T2> extends $C<T1, T2> implements B<T1, T2> {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

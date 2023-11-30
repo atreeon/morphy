@@ -12,6 +12,7 @@ String createMorphy(
   List<NameTypeClassComment> classGenerics,
   bool hasConstContructor,
   bool generateJson,
+  bool hasPrivateConstructor,
   List<Interface> explicitForJson,
 ) {
   //recursively go through otherClasses and get my fieldnames &
@@ -21,13 +22,10 @@ String createMorphy(
 
   sb.write(getClassComment(interfacesFromImplements, classComment));
 
+  //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    // sb.writeln("Map<String, dynamic Function(Object? json)> jsonToGenericFunctions_$classNameTrim = {};");
-    if (classGenerics.length > 0) //
-      sb.writeln("@JsonSerializable(explicitToJson: true, genericArgumentFactories: true)");
-    else
-      sb.writeln("@JsonSerializable(explicitToJson: true)");
+    sb.writeln(createJsonHeader(className, classGenerics, hasPrivateConstructor));
   }
 
   sb.write(getClassDefinition(isAbstract, className));
@@ -45,19 +43,26 @@ String createMorphy(
     sb.write(getImplements(interfacesFromImplements, className));
   }
   sb.writeln(" {");
-  var constructorName = getConstructorName(classNameTrim);
   if (isAbstract) {
     sb.writeln(getPropertiesAbstract(allFields));
   } else {
     sb.writeln(getProperties(allFields));
     sb.write(getClassComment(interfacesFromImplements, classComment));
 
+    //constructor
+    var constructorName = getConstructorName(classNameTrim, hasPrivateConstructor);
     if (allFields.isEmpty) {
       sb.writeln("${constructorName}();");
     } else {
       sb.writeln("${constructorName}({");
       sb.writeln(getConstructorRows(allFields));
       sb.writeln("});");
+
+      if (hasPrivateConstructor && generateJson) {
+        sb.writeln("${constructorName}.forJsonDoNotUse({");
+        sb.writeln(getConstructorRows(allFields));
+        sb.writeln("});");
+      }
 
       if (hasConstContructor) {
         sb.writeln("const ${constructorName}.constant({");
@@ -90,6 +95,7 @@ String createMorphy(
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
         isExplicitSubType: x.isExplicitSubType,
+        hasPrivateConstructor: hasPrivateConstructor,
       ),
     );
   });
@@ -120,6 +126,7 @@ String createMorphy(
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
         isExplicitSubType: x.isExplicitSubType,
+        hasPrivateConstructor: hasPrivateConstructor,
       ),
     );
   });

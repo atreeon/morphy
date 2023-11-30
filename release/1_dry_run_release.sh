@@ -33,7 +33,10 @@ else
 fi
 
 cd ../example
+rm test/*.morphy.dart
+rm test/*.g.dart
 dart pub get
+dart pub run build_runner clean
 dart run build_runner build --delete-conflicting-outputs
 dart pub run test
 cd ../release

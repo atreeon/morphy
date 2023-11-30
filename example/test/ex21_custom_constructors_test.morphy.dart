@@ -7,27 +7,27 @@ part of 'ex21_custom_constructors_test.dart';
 // **************************************************************************
 
 ///
-class A_ extends $A_ {
+class A extends $A {
   final String a;
 
   ///
-  A_._({
+  A._({
     required this.a,
   });
-  String toString() => "(A_-a:${a.toString()})";
+  String toString() => "(A-a:${a.toString()})";
   int get hashCode => hashObjects([a.hashCode]);
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is A_ && runtimeType == other.runtimeType && a == other.a;
-  A_ copyWith_A_({
+      other is A && runtimeType == other.runtimeType && a == other.a;
+  A copyWith_A({
     Opt<String>? a,
   }) {
-    return A_._(
+    return A._(
       a: a == null ? this.a as String : a.value as String,
     );
   }
 }
 
-extension $A__changeTo_E on $A_ {}
+extension $A_changeTo_E on $A {}
 
-enum A_$ { a }
+enum A$ { a }

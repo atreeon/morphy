@@ -8,7 +8,9 @@ part of 'ex51_json_inheritance_generic_from_test.dart';
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class A extends $A {
   final String id;
 
@@ -52,8 +54,8 @@ class A extends $A {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -96,7 +98,10 @@ class B_Generics_Sing {
   B_Generics_Sing._internal() {}
 }
 
-@JsonSerializable(explicitToJson: true, genericArgumentFactories: true)
+@JsonSerializable(
+  explicitToJson: true,
+  genericArgumentFactories: true,
+)
 class B<T> extends $B<T> implements A {
   final String id;
   final T blah;
@@ -156,8 +161,8 @@ class B<T> extends $B<T> implements A {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -179,7 +184,9 @@ enum B$ { id, blah }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class X extends $X {
   final String xyz;
 
@@ -216,8 +223,8 @@ class X extends $X {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

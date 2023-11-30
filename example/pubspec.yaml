@@ -8,10 +8,12 @@ dependency_overrides:
     path: ../morphy_annotation
 
 dependencies:
+  json_serializable: ^6.7.1
   meta: any
-
   morphy:
     path: ../morphy
+
+#  morphy: ^1.0.1
 
 dev_dependencies:
   build_runner: ^2.4.6

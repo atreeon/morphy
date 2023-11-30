@@ -218,6 +218,21 @@ String getEquals(List<NameType> fields, String className) {
   return sb.toString();
 }
 
+String createJsonHeader(String className, List<NameType> classGenerics, bool privateConstructor) {
+  var sb = StringBuffer();
+
+  if (!className.startsWith("\$\$")) {
+    var jsonConstructorName = privateConstructor ? "constructor: 'forJsonDoNotUse'" : "";
+
+    if (classGenerics.length > 0) //
+      sb.writeln("@JsonSerializable(explicitToJson: true, genericArgumentFactories: true, $jsonConstructorName)");
+    else
+      sb.writeln("@JsonSerializable(explicitToJson: true, $jsonConstructorName)");
+  }
+
+  return sb.toString();
+}
+
 ///[classFields] & [interfaceFields] should be renamed
 /// for changeTo [classFields] and [className] is what we are copying from
 /// and [interfaceFields] and [interfaceName] is what we are copying to
@@ -229,6 +244,7 @@ String getCopyWith({
   required String className,
   required bool isClassAbstract,
   required List<NameType> interfaceGenerics,
+  required bool hasPrivateConstructor,
   bool isExplicitSubType = false, //for where we specify the explicit subtypes for changeTo
 }) {
   var sb = StringBuffer();
@@ -293,7 +309,7 @@ String getCopyWith({
   if (isExplicitSubType) {
     sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}(");
   } else {
-    if (className.endsWith("_")) {
+    if (hasPrivateConstructor) {
       sb.writeln("return $classNameTrimmed._(");
     } else {
       sb.writeln("return $classNameTrimmed(");
@@ -348,8 +364,10 @@ String getCopyWith({
 //  toString() => "${this.type}|${this.paramNameType}";
 //}
 
-String getConstructorName(String trimmedClassName) {
-  return trimmedClassName[trimmedClassName.length - 1] == "_" ? "$trimmedClassName._" : trimmedClassName;
+String getConstructorName(String trimmedClassName, bool hasCustomConstructor) {
+  return hasCustomConstructor //
+      ? "$trimmedClassName._"
+      : trimmedClassName;
 }
 
 String generateFromJsonHeader(String className) {
@@ -359,11 +377,12 @@ String generateFromJsonHeader(String className) {
 }
 
 String generateFromJsonBody(String className, List<NameType> generics, List<Interface> interfaces) {
-  var _className = "${className.replaceFirst("\$", "")}";
-  var _class = Interface(_className, generics.map((e) => e.type ?? "").toList(), generics.map((e) => e.name).toList(), []);
+  var _class = Interface(className, generics.map((e) => e.type ?? "").toList(), generics.map((e) => e.name).toList(), []);
   var _classes = [...interfaces, _class];
 
-  var body = _classes.mapIndexed((i, c) {
+  var body = _classes //
+      .where((c) => !c.interfaceName.startsWith("\$\$"))
+      .mapIndexed((i, c) {
     var _interfaceName = "${c.interfaceName.replaceFirst("\$", "")}";
     var start = i == 0 ? "if" : "} else if";
     var genericTypes = c.typeParams.map((e) => "'_${e.name}_'").join(",");
@@ -385,6 +404,8 @@ String generateFromJsonBody(String className, List<NameType> generics, List<Inte
     }
   }).join("\n");
 
+  var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
+
   var end = """    } else {
       throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
     }
@@ -395,6 +416,10 @@ String generateFromJsonBody(String className, List<NameType> generics, List<Inte
 }
 
 String generateToJson(String className, List<NameType> generics) {
+  if (className.startsWith("\$\$")) {
+    return "Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]);";
+  }
+
   var _className = "${className.replaceFirst("\$", "")}";
 
   var getGenericFn = generics //
@@ -413,8 +438,8 @@ String generateToJson(String className, List<NameType> generics) {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns){
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]){
+    this._fns = fns ?? {};
     return toJson();
   }
 

@@ -8,7 +8,9 @@ part of 'readme_test.dart';
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Pet extends $Pet {
   final String name;
   final int age;
@@ -56,8 +58,8 @@ class Pet extends $Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -98,7 +100,9 @@ enum Pet$ { name, age }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
   final double whiskerLength;
   final String woofSound;
@@ -212,8 +216,8 @@ class FrankensteinsDogCat extends $FrankensteinsDogCat implements Dog, Cat {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -238,7 +242,9 @@ enum FrankensteinsDogCat$ { whiskerLength, woofSound, name, age }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Cat extends $Cat implements Pet {
   final double whiskerLength;
   final String name;
@@ -306,8 +312,8 @@ class Cat extends $Cat implements Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -332,7 +338,9 @@ enum Cat$ { whiskerLength, name, age }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Dog extends $Dog implements Pet {
   final String woofSound;
   final String name;
@@ -400,8 +408,8 @@ class Dog extends $Dog implements Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -426,7 +434,9 @@ enum Dog$ { woofSound, name, age }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Fish extends $Fish implements Pet {
   final eFishColour fishColour;
   final String name;
@@ -494,8 +504,8 @@ class Fish extends $Fish implements Pet {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -556,7 +566,7 @@ class A_ extends $A_ {
   final DateTime timestamp;
 
   ///
-  A_._({
+  A_({
     required this.val,
     required this.timestamp,
   });
@@ -573,7 +583,7 @@ class A_ extends $A_ {
     Opt<String>? val,
     Opt<DateTime>? timestamp,
   }) {
-    return A_._(
+    return A_(
       val: val == null ? this.val as String : val.value as String,
       timestamp: timestamp == null
           ? this.timestamp as DateTime
@@ -624,7 +634,9 @@ enum B$ { val, optional }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class X extends $X {
   final String val;
 
@@ -670,8 +682,8 @@ class X extends $X {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -718,7 +730,9 @@ enum X$ { val }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Y extends $Y implements X {
   final String val;
   final int valY;
@@ -779,8 +793,8 @@ class Y extends $Y implements X {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 
@@ -817,7 +831,9 @@ enum Y$ { val, valY }
 
 ///
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(
+  explicitToJson: true,
+)
 class Z extends $Z implements Y {
   final String val;
   final int valY;
@@ -892,8 +908,8 @@ class Z extends $Z implements Y {
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
-  Map<String, dynamic> toJson_2(Map<Type, Object? Function(Never)> fns) {
-    this._fns = fns;
+  Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]) {
+    this._fns = fns ?? {};
     return toJson();
   }
 

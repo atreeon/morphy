@@ -14,6 +14,8 @@ class Morphy implements MorphyX {
 
   final bool generateJson;
 
+  final bool privateConstructor;
+
   /// {@template MorphyX}
   /// ### normal class; prepend class with a single dollar & make abstract
   /// ```
@@ -91,16 +93,19 @@ class Morphy implements MorphyX {
   const Morphy({
     this.explicitSubTypes = null,
     this.generateJson = false,
+    this.privateConstructor = false,
   });
 }
 
 class Morphy2 implements MorphyX {
   final List<Type>? explicitSubTypes;
   final bool generateJson;
+  final bool privateConstructor;
 
   const Morphy2({
     this.explicitSubTypes = null,
     this.generateJson = false,
+    this.privateConstructor = false,
   });
 }
 

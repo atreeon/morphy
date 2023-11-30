@@ -164,6 +164,15 @@ In order to convert the object to Json specify the `generateJson`.
     @Morphy(generateJson: true)
     abstract class $Pet {
 
+Add the import statement, part file & the pubspec dependencies
+
+    import 'package:json_annotation/json_annotation.dart';
+    
+    part 'Pets.g.dart';
+
+    json_serializable:
+    json_annotation:
+
 Then use the toJson_2 method to generate the JSON
 
     var json = flossy.toJson_2({});
@@ -241,15 +250,16 @@ We also allow multiple inheritance.
 
 ### Custom Constructors
 
-To allow custom constructors you can simply create a function that creates a new class. 
-If you'd like to hide the automatic constructor end your function with an underscore.
+To allow custom constructors you can simply create a factory function that creates a new class. 
+If you'd like to hide the automatic constructor set the `privateConstructor` on the Morphy annotation to true.
 If you hide the constructor the custom one should belong in the same file that you defined your class.
 
-    A_ a_Constructor(String val){
-      return A_._(val: val, timestamp: DateTime(2023,11,25));
+    @Morphy(privateConstructor: true)
+    A a_Factory(String val){
+      return A._(val: val, timestamp: DateTime(2023,11,25));
     }
 
-    var a = a_Constructor("my value");
+    var a = a_Factory("my value");
 
     expect(a.timestamp, DateTime(2023,11,25));
 
