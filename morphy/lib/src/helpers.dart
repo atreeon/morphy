@@ -73,9 +73,10 @@ List<NameTypeClassComment> getDistinctFields(
   return adjustedFields;
 }
 
-String getClassDefinition(bool isAbstract, String className) {
+String getClassDefinition({required bool isAbstract, required bool nonSealed, required String className}) {
   var _className = className.replaceAll("\$", "");
-  var abstract = isAbstract ? "abstract " : "";
+
+  var abstract = isAbstract ? (nonSealed ? "abstract " : "sealed ") : "";
 
   return "${abstract}class $_className";
 }

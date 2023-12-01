@@ -20,6 +20,9 @@
 # so this line is commented out by default.
 #.vscode/
 
+*.morphy.dart
+*.morphy2.dart
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id

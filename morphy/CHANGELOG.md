@@ -1,3 +1,6 @@
+## 1.0.6
+- Abstract classes are now sealed, additional option in annotation to specify non sealed abastract classes
+
 ## 1.0.5
 - Fixed bug introduced with change to custom constructors
 

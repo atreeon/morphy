@@ -28,10 +28,28 @@ read -p "Is this correct? (y/n): " choice
 
 if [ "$choice" = "y" ]; then
   clear
-  echo "publish dry run:"
+  echo "run tests:"
 else
   exit 0
 fi
+
+cd ../example
+rm test/*.morphy.dart
+rm test/*.g.dart
+dart pub get
+dart pub run build_runner clean
+dart run build_runner build --delete-conflicting-outputs
+dart pub run test
+cd ../release
+
+read -p "Did the tests pass? (y/n): " choice
+if [ "$choice" = "y" ]; then
+  clear
+  echo "run dry run..."
+else
+  exit 0
+fi
+
 
 dart pub publish --dry-run --directory=../morphy
 

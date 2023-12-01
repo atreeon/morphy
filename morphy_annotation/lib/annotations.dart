@@ -16,6 +16,9 @@ class Morphy implements MorphyX {
 
   final bool hidePublicConstructor;
 
+  ///if we specify the class as an abstract class we make it abstract and not sealed
+  final bool nonSealed;
+
   /// {@template MorphyX}
   /// ### normal class; prepend class with a single dollar & make abstract
   /// ```
@@ -94,6 +97,7 @@ class Morphy implements MorphyX {
     this.explicitSubTypes = null,
     this.generateJson = false,
     this.hidePublicConstructor = false,
+    this.nonSealed = false,
   });
 }
 
@@ -101,11 +105,13 @@ class Morphy2 implements MorphyX {
   final List<Type>? explicitSubTypes;
   final bool generateJson;
   final bool hidePublicConstructor;
+  final bool nonSealed;
 
   const Morphy2({
     this.explicitSubTypes = null,
     this.generateJson = false,
     this.hidePublicConstructor = false,
+    this.nonSealed = false,
   });
 }
 

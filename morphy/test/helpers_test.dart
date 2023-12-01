@@ -171,13 +171,19 @@ void main() {
 
   group("getClassDefinition", () {
     test("1b", () {
-      var result = getClassDefinition(false, "\$Pet");
+      var result = getClassDefinition(isAbstract: false, nonSealed: false, className: "\$Pet");
 
       expectS(result, "class Pet");
     });
 
     test("2b", () {
-      var result = getClassDefinition(true, "\$\$Pet");
+      var result = getClassDefinition(isAbstract: true, nonSealed: false, className: "\$\$Pet");
+
+      expectS(result, "sealed class Pet");
+    });
+
+    test("3b", () {
+      var result = getClassDefinition(isAbstract: true, nonSealed: true, className: "\$\$Pet");
 
       expectS(result, "abstract class Pet");
     });
