@@ -1,7 +1,7 @@
 
 
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex24_generics_fields_test.morphy.dart';
 

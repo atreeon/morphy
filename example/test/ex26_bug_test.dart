@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex26_bug_test.morphy.dart';
 

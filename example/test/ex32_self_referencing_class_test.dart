@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 //SELF REFERENCING CLASS
 part 'ex32_self_referencing_class_test.morphy.dart';

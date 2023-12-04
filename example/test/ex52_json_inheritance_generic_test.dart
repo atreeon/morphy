@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex52_json_inheritance_generic_test.g.dart';
 

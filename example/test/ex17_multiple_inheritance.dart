@@ -1,4 +1,4 @@
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex17_multiple_inheritance.morphy.dart';
 

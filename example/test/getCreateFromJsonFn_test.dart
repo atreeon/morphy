@@ -1,5 +1,5 @@
+import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
-import 'package:morphy_annotation/annotations.dart';
 
 void main() {
   group("getCreateFromJsonFn", () {

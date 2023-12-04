@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex25_class_build_order_test.morphy.dart';
 part 'ex25_class_build_order_test.morphy2.dart';

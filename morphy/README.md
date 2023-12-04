@@ -17,10 +17,15 @@ Build Value is also good but I find Morphy more concise than Built Value.
 
 ## Simple Example
 To create a new class.
-1. add the packages morphy_annotation, morphy and build_runner to your pubspec.yaml
+1. add the package morphy_annotation to the dependencies and the package morphy and build_runner to the dev dependencies
+```
+    dart pub add morphy_annotation
+    dart pub add --dev morphy
+    dart pub add --dev build_runner
+```
 2. copy and paste the following code into a new dart file:
    ```
-    import 'package:morphy/morphy.dart';
+    import 'package:morphy_annotation/morphy_annotation.dart';
     part 'Pet.morphy.dart';
     
     @morphy
@@ -164,16 +169,16 @@ In order to convert the object to Json specify the `generateJson`.
     @Morphy(generateJson: true)
     abstract class $Pet {
 
-Add the import statement, part file & the pubspec dependencies
-
-    import 'package:json_annotation/json_annotation.dart';
+Add the dev dependency to the json_serializable package
     
+    dart pub add json_serializable --dev
+
+Add the part file, .g is required by the json_serializable package used internally by `morphy`
+
     part 'Pets.g.dart';
+    part 'Pets.morphy.dart';
 
-    json_serializable:
-    json_annotation:
-
-Then use the toJson_2 method to generate the JSON
+Build the generated files then use the toJson_2 method to generate the JSON
 
     var json = flossy.toJson_2({});
     expect(json, {'name': 'Flossy', 'age': 5, '_className_': 'Pet'});

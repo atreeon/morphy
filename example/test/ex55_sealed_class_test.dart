@@ -1,4 +1,4 @@
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex55_sealed_class_test.morphy.dart';

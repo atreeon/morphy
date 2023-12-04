@@ -1,4 +1,4 @@
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex54_default_constructor_json_test.g.dart';

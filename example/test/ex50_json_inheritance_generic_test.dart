@@ -2,7 +2,7 @@
 // ignore_for_file: unused_element
 
 import 'package:test/test.dart';
-import 'package:morphy/morphy.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex50_json_inheritance_generic_test.g.dart';
 part 'ex50_json_inheritance_generic_test.morphy.dart';

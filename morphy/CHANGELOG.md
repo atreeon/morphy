@@ -1,3 +1,6 @@
+## 1.0.7
+- morphy_annotation must now be in the dependencies and morphy must be in the dev dependencies, cleaned this up
+
 ## 1.0.6
 - Abstract classes are now sealed, additional option in annotation to specify non sealed abastract classes
 
