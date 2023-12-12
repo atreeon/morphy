@@ -36,7 +36,7 @@ main() {
 
       //copyWith_Super called on both Super & Sub objects
       var result = supers.map((e) => //
-          e.copyWith_Super(id: Opt(e.id + "_"))).toList();
+          e.copyWith_Super(id: () => e.id + "_")).toList();
 
       //they both retain their original type
       expect(result[0] is Sub, false);

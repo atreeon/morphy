@@ -509,7 +509,7 @@ a == other.a && b == other.b && c == other.c;""";
         interfaceGenerics: [],
       );
       expectS(result, """A copyWith_A({
-Opt<String>? a,
+String Function()? a,
 });""");
     });
 
@@ -528,7 +528,7 @@ Opt<String>? a,
         interfaceGenerics: [],
       );
       expectS(result, """B copyWith_A({
-Opt<int>? a,
+int Function()? a,
 });""");
     });
 
@@ -546,10 +546,10 @@ Opt<int>? a,
         interfaceGenerics: [],
       );
       expectS(result, """A copyWith_A({
-Opt<String>? a,
+String Function()? a,
 }) {
 return A._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 );
 }""");
     });
@@ -569,10 +569,10 @@ a: a == null ? this.a as String : a.value as String,
         interfaceGenerics: [],
       );
       expectS(result, """B copyWith_A({
-Opt<String>? a,
+String Function()? a,
 }) {
 return B._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 b: (this as B).b,
 );
 }""");
@@ -594,12 +594,12 @@ b: (this as B).b,
         interfaceGenerics: [],
       );
       expectS(result, """B copyWith_B({
-Opt<String>? a,
-Opt<T1>? b,
+String Function()? a,
+T1 Function()? b,
 }) {
 return B._(
-a: a == null ? this.a as String : a.value as String,
-b: b == null ? this.b as T1 : b.value as T1,
+a: a == null ? this.a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
 );
 }""");
     });
@@ -620,10 +620,10 @@ b: b == null ? this.b as T1 : b.value as T1,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_A({
-Opt<String>? a,
+String Function()? a,
 }) {
 return C._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 b: (this as C).b,
 c: (this as C).c,
 );
@@ -647,12 +647,12 @@ c: (this as C).c,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_B({
-Opt<String>? a,
-Opt<T1>? b,
+String Function()? a,
+T1 Function()? b,
 }) {
 return C._(
-a: a == null ? this.a as String : a.value as String,
-b: b == null ? this.b as T1 : b.value as T1,
+a: a == null ? this.a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
 c: (this as C).c,
 );
 }""");
@@ -676,14 +676,14 @@ c: (this as C).c,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_C({
-Opt<String>? a,
-Opt<T1>? b,
-Opt<bool>? c,
+String Function()? a,
+T1 Function()? b,
+bool Function()? c,
 }) {
 return C._(
-a: a == null ? this.a as String : a.value as String,
-b: b == null ? this.b as T1 : b.value as T1,
-c: c == null ? this.c as bool : c.value as bool,
+a: a == null ? this.a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
+c: c == null ? this.c as bool : c() as bool,
 );
 }""");
     });
@@ -703,10 +703,10 @@ c: c == null ? this.c as bool : c.value as bool,
         interfaceGenerics: [],
       );
       expectS(result, """D copyWith_A({
-Opt<String>? a,
+String Function()? a,
 }) {
 return D._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 b: (this as D).b,
 );
 }""");
@@ -728,12 +728,12 @@ b: (this as D).b,
         interfaceGenerics: [],
       );
       expectS(result, """D copyWith_B({
-Opt<String>? a,
-Opt<T1>? b,
+String Function()? a,
+T1 Function()? b,
 }) {
 return D._(
-a: a == null ? this.a as String : a.value as String,
-b: b == null ? this.b as T1 : b.value as T1,
+a: a == null ? this.a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
 );
 }""");
     });
@@ -754,12 +754,12 @@ b: b == null ? this.b as T1 : b.value as T1,
         interfaceGenerics: [],
       );
       expectS(result, """D copyWith_D({
-Opt<String>? a,
-Opt<T1>? b,
+String Function()? a,
+T1 Function()? b,
 }) {
 return D._(
-a: a == null ? this.a as String : a.value as String,
-b: b == null ? this.b as T1 : b.value as T1,
+a: a == null ? this.a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
 );
 }""");
     });
@@ -810,10 +810,10 @@ a: (this as Y).a,
         interfaceGenerics: [],
       );
       expectS(result, """Y copyWith_Y({
-Opt<String>? a,
+String Function()? a,
 }) {
 return Y._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 );
 }""");
     });
@@ -832,10 +832,10 @@ a: a == null ? this.a as String : a.value as String,
         interfaceGenerics: [],
       );
       expectS(result, """A copyWith_A({
-Opt<Person>? a,
+Person Function()? a,
 }) {
 return A._(
-a: a == null ? this.a as Person : a.value as Person,
+a: a == null ? this.a as Person : a() as Person,
 );
 }""");
     });
@@ -854,10 +854,10 @@ a: a == null ? this.a as Person : a.value as Person,
         interfaceGenerics: [],
       );
       expectS(result, """B copyWith_A({
-Opt<Person>? a,
+Person Function()? a,
 }) {
 return B._(
-a: a == null ? this.a as Employee : a.value as Employee,
+a: a == null ? this.a as Employee : a() as Employee,
 );
 }""");
     });
@@ -876,10 +876,10 @@ a: a == null ? this.a as Employee : a.value as Employee,
         interfaceGenerics: [],
       );
       expectS(result, """B copyWith_B({
-Opt<Employee>? a,
+Employee Function()? a,
 }) {
 return B._(
-a: a == null ? this.a as Employee : a.value as Employee,
+a: a == null ? this.a as Employee : a() as Employee,
 );
 }""");
     });
@@ -898,10 +898,10 @@ a: a == null ? this.a as Employee : a.value as Employee,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_A({
-Opt<Person>? a,
+Person Function()? a,
 }) {
 return C._(
-a: a == null ? this.a as Manager : a.value as Manager,
+a: a == null ? this.a as Manager : a() as Manager,
 );
 }""");
     });
@@ -920,10 +920,10 @@ a: a == null ? this.a as Manager : a.value as Manager,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_B({
-Opt<Employee>? a,
+Employee Function()? a,
 }) {
 return C._(
-a: a == null ? this.a as Manager : a.value as Manager,
+a: a == null ? this.a as Manager : a() as Manager,
 );
 }""");
     });
@@ -942,10 +942,10 @@ a: a == null ? this.a as Manager : a.value as Manager,
         interfaceGenerics: [],
       );
       expectS(result, """C copyWith_C({
-Opt<Manager>? a,
+Manager Function()? a,
 }) {
 return C._(
-a: a == null ? this.a as Manager : a.value as Manager,
+a: a == null ? this.a as Manager : a() as Manager,
 );
 }""");
     });
@@ -967,12 +967,12 @@ a: a == null ? this.a as Manager : a.value as Manager,
         isClassAbstract: false,
       );
       expectS(result, """B copyWith_A<T1, T2>({
-Opt<T1>? x,
-Opt<T2>? y,
+T1 Function()? x,
+T2 Function()? y,
 }) {
 return B._(
-x: x == null ? this.x as int : x.value as int,
-y: y == null ? this.y as String : y.value as String,
+x: x == null ? this.x as int : x() as int,
+y: y == null ? this.y as String : y() as String,
 z: (this as B).z,
 );
 }""");
@@ -996,14 +996,14 @@ z: (this as B).z,
         isClassAbstract: false,
       );
       expectS(result, """B copyWith_B({
-Opt<int>? x,
-Opt<String>? y,
-Opt<String>? z,
+int Function()? x,
+String Function()? y,
+String Function()? z,
 }) {
 return B._(
-x: x == null ? this.x as int : x.value as int,
-y: y == null ? this.y as String : y.value as String,
-z: z == null ? this.z as String : z.value as String,
+x: x == null ? this.x as int : x() as int,
+y: y == null ? this.y as String : y() as String,
+z: z == null ? this.z as String : z() as String,
 );
 }""");
     });
@@ -1022,7 +1022,7 @@ z: z == null ? this.z as String : z.value as String,
         isClassAbstract: true,
       );
       expectS(result, """A copyWith_A<T>({
-Opt<T>? x,
+T Function()? x,
 });""");
     });
 
@@ -1042,10 +1042,10 @@ Opt<T>? x,
         isClassAbstract: false,
       );
       expectS(result, """B copyWith_A<T>({
-Opt<T>? x,
+T Function()? x,
 }) {
 return B._(
-x: x == null ? this.x as int : x.value as int,
+x: x == null ? this.x as int : x() as int,
 y: (this as B).y,
 );
 }""");
@@ -1065,10 +1065,10 @@ y: (this as B).y,
         isClassAbstract: false,
       );
       expectS(result, """A copyWith_A({
-Opt<String>? a,
+String Function()? a,
 }) {
 return A._(
-a: a == null ? this.a as String : a.value as String,
+a: a == null ? this.a as String : a() as String,
 );
 }""");
     });
@@ -1087,10 +1087,10 @@ a: a == null ? this.a as String : a.value as String,
         isClassAbstract: false,
       );
       expectS(result, """X copyWith_X({
-Opt<bool Function(\$X)>? fn,
+bool Function(\$X) Function()? fn,
 }) {
 return X._(
-fn: fn == null ? this.fn as bool Function(\$X) : fn.value as bool Function(\$X),
+fn: fn == null ? this.fn as bool Function(\$X) : fn() as bool Function(\$X),
 );
 }""");
     });
@@ -1112,11 +1112,11 @@ fn: fn == null ? this.fn as bool Function(\$X) : fn.value as bool Function(\$X),
       );
       expectS(result, """B changeTo_B({
 required String y,
-Opt<String>? x,
+String Function()? x,
 }) {
 return B._(
 y: y as String,
-x: x == null ? this.x as String : x.value as String,
+x: x == null ? this.x as String : x() as String,
 );
 }""");
     });
@@ -1140,12 +1140,12 @@ x: x == null ? this.x as String : x.value as String,
       expectS(result, """B changeTo_B({
 required String y,
 required Z z,
-Opt<String>? x,
+String Function()? x,
 }) {
 return B._(
 y: y as String,
 z: z as Z,
-x: x == null ? this.x as String : x.value as String,
+x: x == null ? this.x as String : x() as String,
 );
 }""");
     });
@@ -1169,12 +1169,12 @@ x: x == null ? this.x as String : x.value as String,
       expectS(result, """B changeTo_B({
 required String y,
 required Z z,
-Opt<String>? x,
+String Function()? x,
 }) {
 return B._(
 y: y as String,
 z: z as Z,
-x: x == null ? this.x as String : x.value as String,
+x: x == null ? this.x as String : x() as String,
 );
 }""");
     });
@@ -1197,14 +1197,14 @@ x: x == null ? this.x as String : x.value as String,
         isClassAbstract: false,
       );
       expectS(result, """B copyWith_B({
-Opt<String>? x,
-Opt<List<C>>? cs,
-Opt<Z>? z,
+String Function()? x,
+List<C> Function()? cs,
+Z Function()? z,
 }) {
 return B._(
-x: x == null ? this.x as String : x.value as String,
-cs: cs == null ? this.cs as List<C> : cs.value as List<C>,
-z: z == null ? this.z as Z : z.value as Z,
+x: x == null ? this.x as String : x() as String,
+cs: cs == null ? this.cs as List<C> : cs() as List<C>,
+z: z == null ? this.z as Z : z() as Z,
 );
 }""");
     });
@@ -1226,11 +1226,11 @@ z: z == null ? this.z as Z : z.value as Z,
       );
       expectS(result, """B changeTo_B({
 required String y,
-Opt<String>? x,
+String Function()? x,
 }) {
 return B._(
 y: y as String,
-x: x == null ? this.x as String : x.value as String,
+x: x == null ? this.x as String : x() as String,
 );
 }""");
     });
@@ -1254,12 +1254,12 @@ x: x == null ? this.x as String : x.value as String,
       expectS(result, """B changeTo_B({
 required String y,
 required Z z,
-Opt<String>? x,
+String Function()? x,
 }) {
 return B._(
 y: y as String,
 z: z as Z,
-x: x == null ? this.x as String : x.value as String,
+x: x == null ? this.x as String : x() as String,
 );
 }""");
     });

@@ -61,7 +61,7 @@ else
   exit 0
 fi
 
-read -p "Do you want to tag morphy as $versionMorphyLocal? (y/n): " choice
+read -p "Do you want to tag morphy as $versionMorphyLocal? (use 'i' to insert, ':' to finish editing, 'wq' to save (y/n): " choice
 if [ "$choice" = "y" ]; then
   clear
   git tag "$versionMorphyLocal" -a

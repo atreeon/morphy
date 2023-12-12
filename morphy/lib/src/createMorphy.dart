@@ -128,6 +128,20 @@ String createMorphy(
   sb.writeln();
   sb.writeln("extension ${className}_changeTo_E on ${className} {");
 
+  if(!isAbstract){
+    sb.writeln(
+      getCopyWith(
+        classFields: allFields,
+        interfaceFields: allFields,
+        interfaceName: className,
+        className: className,
+        isClassAbstract: isAbstract,
+        interfaceGenerics: classGenerics,
+        isExplicitSubType: true,
+      ),
+    );
+  }
+
   interfacesX.where((element) => element.isExplicitSubType).forEach((x) {
     sb.writeln(
       getCopyWith(

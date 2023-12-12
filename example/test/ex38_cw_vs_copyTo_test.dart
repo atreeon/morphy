@@ -35,7 +35,7 @@ main() {
     expect(b_copy1.toString(), "(SubB-z:z|cs:[(C-m:m)]|x:x)");
 
     //copywith from SubB to SubB (traditional copy with)
-    var b_copy2 = b.copyWith_SubB(cs: Opt([C(m: "m2")]));
+    var b_copy2 = b.copyWith_SubB(cs: () => [C(m: "m2")]);
     expect(b_copy2.toString(), "(SubB-z:z|cs:[(C-m:m2)]|x:x)");
 
     //copy TO from one sibling to another

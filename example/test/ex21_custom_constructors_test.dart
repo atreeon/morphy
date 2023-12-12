@@ -18,11 +18,16 @@ part 'ex21_custom_constructors_test.morphy.dart';
 @Morphy(hidePublicConstructor: true)
 abstract class $A {
   String get a;
+
+  $A blah(String a) {
+    return A._(a: a);
+  }
 }
 
 void main() {
   test("0 default value", () {
     var a = A._(a: "my default value");
+
     expect(a.a, "my default value");
   });
 

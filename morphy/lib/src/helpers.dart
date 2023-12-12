@@ -292,7 +292,8 @@ String getCopyWith({
 
   sb.write(fieldsForSignature.map((e) {
     var interfaceType = interfaceFields.firstWhere((element) => element.name == e.name).type;
-    return "Opt<${getDataTypeWithoutDollars(interfaceType!)}>? ${e.name},\n";
+    return "${getDataTypeWithoutDollars(interfaceType!)} Function()? ${e.name},\n";
+    // return "Opt<${getDataTypeWithoutDollars(interfaceType!)}>? ${e.name},\n";
   }).join());
 
   if (fieldsForSignature.isNotEmpty) //
@@ -320,7 +321,7 @@ String getCopyWith({
   sb.write(fieldsForSignature //
       .map((e) {
     var classType = getDataTypeWithoutDollars(classFields.firstWhere((element) => element.name == e.name).type!);
-    return "${e.name}: ${e.name} == null ? this.${e.name} as $classType : ${e.name}.value as $classType,\n";
+    return "${e.name}: ${e.name} == null ? this.${e.name} as $classType : ${e.name}() as $classType,\n";
   }).join());
 
   var fieldsNotInSignature = classFields //

@@ -1,3 +1,9 @@
+## 1.1.0
+- Breaking change! copywith / change to, the Opt class has been removed and now we favour the () => syntax for optional parameters 
+
+## 1.0.8
+- change_to added for a subclass to change the type back to a superclass
+
 ## 1.0.7
 - morphy_annotation must now be in the dependencies and morphy must be in the dev dependencies, cleaned this up
 

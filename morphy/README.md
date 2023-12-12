@@ -9,9 +9,7 @@ We need a way to simplify our Dart classes, keep things cleaner and provide more
 ### Why Not Freezed or Built Value?
 Well the main reason; I actually wrote this before Freezed was released.
 Freezed is really good, established and well used.  
-However if you prefer more of an inheritance based approach to code gen this might suit your needs. 
-Build Value is also good but I find Morphy more concise than Built Value.
-
+However if you want to use both inheritance and composition in your data classes use Morphy. 
 
 ### Solution: use morphy
 
@@ -34,13 +32,28 @@ To create a new class.
     }
     ```
 
-3. `$Pet` is the class definition name. The generated class, the one you use to create objects, will drop the dollar, ie `Pet` 
-4. your fields are defined using public getters, ie `String get type` 
-5. and that's it; you then get loads of functionality and create your objects!
+3. run the build_runner
+```
+    dart run build_runner build
+```
+
+and that's it!  You can then create your objects!
 
 ```
    var cat = Pet(type: "cat");
 ```
+
+`$Pet` is the class definition name. The generated class, the one you use to create objects, will drop the dollar, ie `Pet`.
+
+### Rules
+
+As in the simplest example above, `morphy` class definitions must
+1. start with a dollar (the generated class removes the dollar)
+2. be made abstract (the generated class is not made abstract, details below on how to make classes abstract)
+3. have the @morphy annotation added directly to the class name
+4. have the part file added to the top of the file, ie `part 'Pet.morphy.dart';`
+5. import the morphy_annotation package, ie `import 'package:morphy_annotation/morphy_annotation.dart';`
+6. and all properties must be defined as getters, ie `String get type;`
 
 ## Basic features (comes with every class)
 
@@ -66,14 +79,14 @@ var cat1 = Pet(type: "cat");
 ### CopyWith
 
 A simple copy with implementation comes with every class.  
-Just specify the fields you want to copy and the others will be copied over.
-New values must be wrapped in an optional `Opt` class.
+We pass a function to the copyWith_Pet method that returns a new value to set the property.
+You can pass any value you like, including null if the property is nullable.
 
 ```
-var flossy = Pet(name: "Flossy", age: 5);
-var plossy = flossy.copyWith_Pet(name: Opt("Plossy"));
+    var flossy = Pet(name: "Flossy", age: 5);
+    var plossy = flossy.copyWith_Pet(name: () => "Plossy");
 
-expect(flossy.age, plossy.age);
+    expect(flossy.age, plossy.age);
 ```
 
 ### ToString
@@ -112,7 +125,7 @@ then the copyWith still works whilst preserving the underlying type.
     ];
     
     var petsOlder = pets //
-        .map((e) => e.copyWith_Pet(age: Opt(e.age + 1)))
+        .map((e) => e.copyWith_Pet(age: () => e.age + 1))
         .toList();
     
     expect(petsOlder[0].age, 5);
@@ -255,18 +268,25 @@ We also allow multiple inheritance.
 
 ### Custom Constructors
 
-To allow custom constructors you can simply create a factory function that creates a new class. 
-If you'd like to hide the automatic constructor set the `privateConstructor` on the Morphy annotation to true.
-If you hide the constructor the custom one should belong in the same file that you defined your class.
+To allow custom constructors you can simply create a publicly accessible factory function that calls the constructor (ie just a method that calls the default constructor). 
+If you'd like to hide the automatic constructor set the `hidePublicConstructor` on the Morphy annotation to true.
+If you do hide the default constructor, 
+then in order for the custom factory function (A_FactoryFunction in the example below) to be able to call the hidden (or private) default constructor, 
+your factory function should live in the same file you defined your class.
 
-    @Morphy(privateConstructor: true)
-    A a_Factory(String val){
-      return A._(val: val, timestamp: DateTime(2023,11,25));
+    @Morphy(hidePublicConstructor: true)
+    abstract class $A {
+      String get val;
+      DateTime get timestamp;
     }
 
-    var a = a_Factory("my value");
+    A A_FactoryFunction(String val) {
+      return A._(val: val, timestamp: DateTime(2023, 11, 25));
+    }
 
-    expect(a.timestamp, DateTime(2023,11,25));
+    var a = A_FactoryFunction("my value");
+
+    expect(a.timestamp, DateTime(2023, 11, 25));
 
 ### Optional Parameters
 

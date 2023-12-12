@@ -23,5 +23,10 @@ main() {
     var a = A.constant(a: 1);
 
     expect(a.a, 1);
+
+    //you can't change a constant object but you can copy and then change one
+    var copya = a.copyWith_A();
+
+    expect(copya.a, 1);
   });
 }

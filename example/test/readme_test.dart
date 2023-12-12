@@ -86,7 +86,7 @@ main() {
 
   test("3 CopyWith simple", () {
     var flossy = Pet(name: "Flossy", age: 5);
-    var plossy = flossy.copyWith_Pet(name: Opt("Plossy"));
+    var plossy = flossy.copyWith_Pet(name: () => "Plossy");
 
     expect(flossy.age, plossy.age);
   });
@@ -110,7 +110,7 @@ main() {
     ];
 
     var petsOlder = pets //
-        .map((e) => e.copyWith_Pet(age: Opt(e.age + 1)))
+        .map((e) => e.copyWith_Pet(age: () => e.age + 1))
         .toList();
 
     expect(petsOlder[0].age, 5);
@@ -151,12 +151,12 @@ main() {
     expect(frankie is Dog, true);
   });
 
-  A a_Constructor(String val) {
+  A A_FactoryFunction(String val) {
     return A._(val: val, timestamp: DateTime(2023, 11, 25));
   }
 
   test("11 Custom Constructor", () {
-    var a = a_Constructor("my value");
+    var a = A_FactoryFunction("my value");
 
     expect(a.timestamp, DateTime(2023, 11, 25));
   });
