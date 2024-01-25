@@ -23,6 +23,7 @@
 *.g.dart
 *.morphy.dart
 *.morphy2.dart
+**/pubspec.lock
 
 # Flutter/Dart/Pub related
 **/doc/api/
