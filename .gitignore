@@ -20,8 +20,10 @@
 # so this line is commented out by default.
 #.vscode/
 
+*.g.dart
 *.morphy.dart
 *.morphy2.dart
+**/pubspec.lock
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -53,3 +55,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Melos
+*/**/pubspec.lock
+pubspec_overrides.yaml

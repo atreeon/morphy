@@ -1,3 +1,1 @@
-morphy_annotation
-
-See morphy package
+/Users/burhankhanzada/Projects/morphy/README.md
