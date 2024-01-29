@@ -1,0 +1,5 @@
+name: morphy
+
+packages:
+  - morphy
+  - morphy_annotation
