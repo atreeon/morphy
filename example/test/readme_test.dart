@@ -1,10 +1,9 @@
-import 'package:test/test.dart';
 import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:test/test.dart';
 
 // ignore_for_file: unnecessary_type_check
 
 part 'readme_test.g.dart';
-
 part 'readme_test.morphy.dart';
 
 @Morphy(generateJson: true, explicitSubTypes: [$Cat])
@@ -50,6 +49,8 @@ abstract class $A {
 
 @morphy
 abstract class $B {
+  const $B();
+
   String get val;
 
   String? get optional;
@@ -168,9 +169,9 @@ main() {
   });
 
   test("13 Constant Constructor", () {
-    var b = B(val: "5");
+    const b = B.constant(val: "5");
 
-    expect(b.optional, null);
+    expect(identical(B.constant(val: "5"), b), false);
   });
 
   test("14 Generate JSOn", () {
@@ -208,9 +209,6 @@ main() {
 
     var resultXObjects = expectedJson.map((e) => X.fromJson(e)).toList();
 
-
     expect(resultXObjects, xObjects);
   });
-  
-
 }

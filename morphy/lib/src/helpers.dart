@@ -132,7 +132,8 @@ String getEnumPropertyList(List<NameTypeClassComment> fields, String className) 
     return '';
 
   var first = "enum ${className.replaceAll("\$", "")}\$ {";
-  var last = fields.map((e) => e.name).join(",") + "}";
+  var last = fields.map((e) => //
+      e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
   return first + last;
 }
 
@@ -148,13 +149,13 @@ String getDataTypeWithoutDollars(String type) {
   return type.replaceAll("\$", "");
 }
 
-String getProperties(List<NameTypeClassComment> fields) => //
-    fields
-        .map((e) => //
-            e.comment == null
-                ? "final ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};" //
-                : "${e.comment}\nfinal ${e.type} ${e.name};")
-        .join("\n");
+String getProperties(List<NameTypeClassComment> fields) {
+  return fields.map((e) {
+    var line = "final ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};";
+    var result = e.comment == null ? line : "${e.comment}\n$line";
+    return result;
+  }).join("\n");
+}
 
 String getPropertiesAbstract(List<NameTypeClassComment> fields) => //
     fields
@@ -167,14 +168,26 @@ String getPropertiesAbstract(List<NameTypeClassComment> fields) => //
 String getConstructorRows(List<NameType> fields) => //
     fields
         .map((e) {
-          if (e.type!.substring(e.type!.length - 1) == "?") {
-            return "this.${e.name},";
-          }
-
-          return "required this.${e.name},";
+          var required = e.type!.substring(e.type!.length - 1) == "?" ? "" : "required ";
+          var thisOrType = e.name.startsWith("_") ? "${e.type} " : "this.";
+          var propertyName = e.name[0] == '_' ? e.name.substring(1) : e.name;
+          return "$required$thisOrType$propertyName,";
         })
         .join("\n")
         .trim();
+
+String getInitialiser(List<NameType> fields) {
+  var result = fields
+      .where((e) => e.name.startsWith('_'))
+      .map((e) {
+        return "${e.name} = ${e.name.substring(1)}";
+      })
+      .join(",")
+      .trim();
+
+  var result2 = result.length > 0 ? " : $result" : "";
+  return result2;
+}
 
 String getToString(List<NameType> fields, String className) {
   if (fields.isEmpty) {
@@ -291,9 +304,15 @@ String getCopyWith({
   }).join());
 
   sb.write(fieldsForSignature.map((e) {
-    var interfaceType = interfaceFields.firstWhere((element) => element.name == e.name).type;
-    return "${getDataTypeWithoutDollars(interfaceType!)} Function()? ${e.name},\n";
-    // return "Opt<${getDataTypeWithoutDollars(interfaceType!)}>? ${e.name},\n";
+    var interfaceType = interfaceFields
+        .firstWhere(
+          (element) => element.name == e.name,
+        )
+        .type;
+
+    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+
+    return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
   }).join());
 
   if (fieldsForSignature.isNotEmpty) //
@@ -314,21 +333,24 @@ String getCopyWith({
 
   sb.write(requiredFields //
       .map((e) {
+    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
     var classType = getDataTypeWithoutDollars(e.type!);
-    return "${e.name}: ${e.name} as $classType,\n";
+    return "$name: $name as $classType,\n";
   }).join());
 
   sb.write(fieldsForSignature //
       .map((e) {
+    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+
     var classType = getDataTypeWithoutDollars(classFields.firstWhere((element) => element.name == e.name).type!);
-    return "${e.name}: ${e.name} == null ? this.${e.name} as $classType : ${e.name}() as $classType,\n";
+    return "$name: $name == null ? this.${e.name} as $classType : $name() as $classType,\n";
   }).join());
 
   var fieldsNotInSignature = classFields //
       .where((element) => !interfaceFields.map((e) => e.name).contains(element.name));
 
   sb.write(fieldsNotInSignature //
-      .map((e) => "${e.name}: (this as $classNameTrimmed).${e.name},\n")
+      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name }: (this as $classNameTrimmed).${e.name},\n")
       .join());
 
   sb.writeln(");");

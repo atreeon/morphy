@@ -309,6 +309,15 @@ void main() {
 
       expectS(result.toString(), "final List<ScheduleVM_Item> schedules;");
     });
+
+    test("7f private properties (get turned into public getters & private setters)", () {
+      var result = getProperties([
+        NameTypeClassComment("_age", "int", null),
+        NameTypeClassComment("name", "String", null, comment: "///blah"),
+      ]);
+
+      expectS(result.toString(), "final int _age;\n///blah\nfinal String name;");
+    });
   });
 
   group("getToString", () {
@@ -431,6 +440,52 @@ a == other.a && b == other.b && c == other.c;""";
       );
 
       expectS(result.toString(), "required this.age,\nrequired this.listOfStrings,");
+    });
+
+    test("5k private properties not null", () {
+      var result = getConstructorRows(
+        [
+          NameTypeClassComment("_age", "int", null),
+          NameTypeClassComment("name", "String", null),
+        ],
+      );
+
+      expectS(result.toString(), "required int age,\nrequired this.name,");
+    });
+
+    test("6k private nullable", () {
+      var result = getConstructorRows(
+        [
+          NameTypeClassComment("_age", "int?", null),
+          NameTypeClassComment("name", "String?", null),
+        ],
+      );
+
+      expectS(result.toString(), "int? age,\nthis.name,");
+    });
+  });
+
+  group("get intializer list", () {
+    test("1l with a private", () {
+      var result = getInitialiser(
+        [
+          NameTypeClassComment("_age", "int?", null),
+          NameTypeClassComment("name", "String?", null),
+        ],
+      );
+
+      expectS(result.toString(), " : _age = age");
+    });
+
+    test("2l without a private", () {
+      var result = getInitialiser(
+        [
+          NameTypeClassComment("age", "int?", null),
+          NameTypeClassComment("name", "String?", null),
+        ],
+      );
+
+      expectS(result.toString(), "");
     });
   });
 
@@ -1260,6 +1315,52 @@ return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
+);
+}""");
+    });
+
+    test("33p private property abstract class", () {
+      var result = getCopyWith(
+        classFields: [
+          NameTypeClassComment("_a", "String", null),
+        ],
+        interfaceFields: [
+          NameTypeClassComment("_a", "String", null),
+        ],
+        interfaceName: "A",
+        className: "A",
+        isClassAbstract: true,
+        interfaceGenerics: [],
+      );
+      expectS(result, """A copyWith_A({
+String Function()? a,
+});""");
+    });
+
+    test("34p private property", () {
+      var result = getCopyWith(
+        classFields: [
+          NameTypeClassComment("_a", "String", null),
+          NameTypeClassComment("b", "T1", null),
+          NameTypeClassComment("c", "bool", null),
+        ],
+        interfaceFields: [
+          NameTypeClassComment("_a", "String", null),
+          NameTypeClassComment("b", "T1", null),
+        ],
+        interfaceName: "B",
+        className: "C",
+        isClassAbstract: false,
+        interfaceGenerics: [],
+      );
+      expectS(result, """C copyWith_B({
+String Function()? a,
+T1 Function()? b,
+}) {
+return C._(
+a: a == null ? this._a as String : a() as String,
+b: b == null ? this.b as T1 : b() as T1,
+c: (this as C).c,
 );
 }""");
     });

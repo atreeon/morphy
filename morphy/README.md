@@ -1,15 +1,14 @@
 # morphy
 morphy is a code generation tool that can create copyWith, equals, toString, contructors and json to & from.
 It's a bit like freezed or built_value but inheritance is allowed and polymorphism supported with copyWith and json.
-There may be some edge cases so try it out and let me know how you get on.
 
 ### Reasoning:
-We need a way to simplify our Dart classes, keep things cleaner and provide more functionality.
+We need a way to simplify our Dart classes, support polymorphism and allow copying and changing our classes.
 
 ### Why Not Freezed or Built Value?
 Well the main reason; I actually wrote this before Freezed was released.
 Freezed is really good, established and well used.  
-However if you want to use both inheritance and composition in your data classes use Morphy. 
+However if you want to use both inheritance and polymorphism use Morphy. 
 
 ### Solution: use morphy
 
@@ -313,6 +312,40 @@ Just define a blank const constructor in your class definition file
 
     const $A();
 
+Then call the const constructor using the named constructor ```constant``
+        
+    var a = A.constant();
+
+### Private Getters
+
+Sometimes a private getter and public setter is useful for calculated properties.
+If we start our property with an underscore then we make the getter private but continue to allow the property to be set.
+
+      @morphy
+      abstract class $$Pet {
+         int get _ageInYears;
+         
+         String get name;
+      }
+      
+      @morphy
+      abstract class $Cat implements $$Pet {}
+      
+      @morphy
+      abstract class $Dog implements $$Pet {}      
+
+      extension Pet_E on Pet {
+         int age() => switch (this) {
+            Cat() => _ageInYears * 7,
+            Dog() => _ageInYears * 5,
+         };
+      }
+
+       var cat = Cat(name: "Tom", ageInYears: 3);
+       var dog = Dog(name: "Rex", ageInYears: 3);
+   
+       expect(cat.age(), 21);
+       expect(dog.age(), 15);
 
 ### Other
 

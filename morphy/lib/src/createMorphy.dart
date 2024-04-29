@@ -62,25 +62,25 @@ String createMorphy(
       if (!hidePublicConstructor) {
         sb.writeln("${classNameTrim}({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("});");
+        sb.writeln("}) ${getInitialiser(allFields)};");
       }
 
       //the json needs a public constructor, we add this if public constructor is hidden
       if (hidePublicConstructor && generateJson) {
         sb.writeln("${classNameTrim}.forJsonDoNotUse({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("});");
+        sb.writeln("}) ${getInitialiser(allFields)};");
       }
 
       //we always want to write a private constructor (just a duplicate)
       sb.writeln("${classNameTrim}._({");
       sb.writeln(getConstructorRows(allFields));
-      sb.writeln("});");
+      sb.writeln("}) ${getInitialiser(allFields)};");
 
       if (hasConstContructor) {
         sb.writeln("const ${classNameTrim}.constant({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("});");
+        sb.writeln("}) ${getInitialiser(allFields)};");
       }
       sb.writeln(getToString(allFields, classNameTrim));
     }

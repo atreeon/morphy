@@ -6,6 +6,8 @@ class Interface {
   final String interfaceName;
   final List<NameType> typeParams;
   final List<NameType> fields;
+
+  /// If true the subtype has been explicitly declared in the Morphy annotation
   final bool isExplicitSubType;
 
   Interface(

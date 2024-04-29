@@ -1,3 +1,6 @@
+## 1.2.0
+- New functionality - private getters are now allowed!
+
 ## 1.1.0
 - Breaking change! copywith / change to, the Opt class has been removed and now we favour the () => syntax for optional parameters 
 
