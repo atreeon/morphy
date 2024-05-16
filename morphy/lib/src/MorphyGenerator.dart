@@ -134,6 +134,7 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
       annotation.read('hidePublicConstructor').boolValue,
       typesExplicit,
       annotation.read('nonSealed').boolValue,
+      annotation.read('explicitToJson').boolValue,
     ));
 
 //    sb.writeln(createCopyWith(classDef, otherClasses2).replaceAll("\$", ""));

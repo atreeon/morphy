@@ -13,6 +13,7 @@ class Morphy implements MorphyX {
   final List<Type>? explicitSubTypes;
 
   final bool generateJson;
+  final bool explicitToJson;
 
   final bool hidePublicConstructor;
 
@@ -96,6 +97,7 @@ class Morphy implements MorphyX {
   const Morphy({
     this.explicitSubTypes = null,
     this.generateJson = false,
+    this.explicitToJson = true,
     this.hidePublicConstructor = false,
     this.nonSealed = false,
   });
@@ -104,12 +106,14 @@ class Morphy implements MorphyX {
 class Morphy2 implements MorphyX {
   final List<Type>? explicitSubTypes;
   final bool generateJson;
+  final bool explicitToJson;
   final bool hidePublicConstructor;
   final bool nonSealed;
 
   const Morphy2({
     this.explicitSubTypes = null,
     this.generateJson = false,
+    this.explicitToJson = true,
     this.hidePublicConstructor = false,
     this.nonSealed = false,
   });
@@ -119,6 +123,7 @@ abstract class MorphyX {
   List<Type>? get explicitSubTypes;
 
   bool get generateJson;
+  bool get explicitToJson;
 }
 
 Object? Function(Never) getGenericToJsonFn(
