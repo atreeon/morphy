@@ -232,16 +232,16 @@ String getEquals(List<NameType> fields, String className) {
   return sb.toString();
 }
 
-String createJsonHeader(String className, List<NameType> classGenerics, bool privateConstructor) {
+String createJsonHeader(String className, List<NameType> classGenerics, bool privateConstructor, bool explicitToJson) {
   var sb = StringBuffer();
 
   if (!className.startsWith("\$\$")) {
     var jsonConstructorName = privateConstructor ? "constructor: 'forJsonDoNotUse'" : "";
 
     if (classGenerics.length > 0) //
-      sb.writeln("@JsonSerializable(explicitToJson: true, genericArgumentFactories: true, $jsonConstructorName)");
+      sb.writeln("@JsonSerializable(explicitToJson: $explicitToJson, genericArgumentFactories: true, $jsonConstructorName)");
     else
-      sb.writeln("@JsonSerializable(explicitToJson: true, $jsonConstructorName)");
+      sb.writeln("@JsonSerializable(explicitToJson: $explicitToJson, $jsonConstructorName)");
   }
 
   return sb.toString();
