@@ -3,7 +3,6 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:analyzer/dart/element/element.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -43,8 +42,7 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
-    final values = this is MorphyGenerator<Morphy>
-        ? {
+    const typedefs =
       """   
 typedef __String = String;
 typedef __Object = Object;
@@ -57,8 +55,8 @@ typedef __bool = bool;
 const __hashObjects = hashObjects;
 const __identical = identical;
 """
-      }
-      : <String>{};
+    ;
+    final values = Set<String>();
 
     var classElements = library.allElements //
         .whereType<ClassElement>()
@@ -77,7 +75,10 @@ const __identical = identical;
       }
     }
 
-    return values.join('\n\n');
+    return [
+      if (this is MorphyGenerator<Morphy> && values.isNotEmpty) typedefs,
+      ...values
+    ].join('\n\n');
   }
 
   /// Implement to return source code to generate for [element].
