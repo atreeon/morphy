@@ -46,6 +46,7 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
       """   
 typedef __String = String;
 typedef __Object = Object;
+// ignore: unused_element
 typedef __List<E> = List<E>;
 typedef __Map<K, V> = Map<K, V>;
 typedef __Never = Never;
