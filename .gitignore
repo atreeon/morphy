@@ -22,6 +22,7 @@
 
 *.morphy.dart
 *.morphy2.dart
+*.g.dart
 
 # Flutter/Dart/Pub related
 **/doc/api/

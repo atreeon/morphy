@@ -60,9 +60,9 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
         .map((e) => //
             InterfaceWithComment(
               e.element.name,
-              e.typeArguments.map((e) => e.toString()).toList(),
+              e.typeArguments.map(typeToString).toList(),
               e.element.typeParameters.map((x) => x.name).toList(),
-              e.element.fields.map((e) => NameType(e.name, e.type.toString())).toList(),
+              e.element.fields.map((e) => NameType(e.name, typeToString(e.type))).toList(),
               comment: e.element.documentationComment,
             )) //
         .toList();
@@ -72,7 +72,10 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
 //    });
 
     var classGenerics = ce.typeParameters
-        .map((e) => NameTypeClassComment(e.name, e.bound == null ? null : e.bound.toString(), null)) //
+        .map((e) {
+          final bound = e.bound;
+          return NameTypeClassComment(e.name, bound == null ? null : typeToString(bound), null);
+        }) //
         .toList();
 
     var allFieldsDistinct = getDistinctFields(allFields, interfaces);
@@ -93,8 +96,10 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
         return Interface.fromGenerics(
           el.name,
           el.typeParameters //
-              .map((TypeParameterElement x) => //
-                  NameType(x.name, x.bound == null ? null : x.bound.toString()))
+              .map((TypeParameterElement x) {
+                final bound = x.bound;
+                return NameType(x.name, bound == null ? null : typeToString(bound));
+              })
               .toList(),
           getAllFields(el.allSupertypes, el).where((x) => x.name != "hashCode").toList(),
           true,
@@ -110,8 +115,10 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
             return Interface.fromGenerics(
               e.element.name,
               e.element.typeParameters //
-                  .map((TypeParameterElement x) => //
-                      NameType(x.name, x.bound == null ? null : x.bound.toString()))
+                  .map((TypeParameterElement x) {
+                    final bound = x.bound;
+                    return NameType(x.name, bound == null ? null : typeToString(bound));
+                  })
                   .toList(),
               getAllFields(e.element.allSupertypes, e.element as ClassElement).where((x) => x.name != "hashCode").toList(),
             );

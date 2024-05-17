@@ -7,6 +7,8 @@ import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:build/build.dart';
+import 'package:morphy/src/MorphyGenerator.dart';
+import 'package:morphy_annotation/morphy_annotation.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:source_gen/source_gen.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -40,6 +42,21 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
+    const typedefs =
+      """   
+typedef __String = String;
+typedef __Object = Object;
+// ignore: unused_element
+typedef __List<E> = List<E>;
+typedef __Map<K, V> = Map<K, V>;
+typedef __Never = Never;
+typedef __Type = Type;
+typedef __int = int;
+typedef __bool = bool;
+const __hashObjects = hashObjects;
+const __identical = identical;
+"""
+    ;
     final values = Set<String>();
 
     var classElements = library.allElements //
@@ -59,7 +76,10 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
       }
     }
 
-    return values.join('\n\n');
+    return [
+      if (this is MorphyGenerator<Morphy> && values.isNotEmpty) typedefs,
+      ...values
+    ].join('\n\n');
   }
 
   /// Implement to return source code to generate for [element].
