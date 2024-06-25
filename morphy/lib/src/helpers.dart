@@ -315,7 +315,7 @@ String getCopyWith({
     return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
   }).join());
 
-  if (fieldsForSignature.isNotEmpty) //
+  if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty)
     sb.write("}");
 
   if (isClassAbstract && !isExplicitSubType) {
