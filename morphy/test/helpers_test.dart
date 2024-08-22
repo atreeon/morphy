@@ -582,7 +582,7 @@ String Function()? a,
         isClassAbstract: true,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_A({
+      expectS(result, """A copyWith_A({
 int Function()? a,
 });""");
     });
@@ -605,8 +605,7 @@ String Function()? a,
 }) {
 return A._(
 a: a == null ? this.a as String : a() as String,
-);
-}""");
+) as A;}""");
     });
 
     test("4p ba (see ex29_manual)", () {
@@ -623,14 +622,13 @@ a: a == null ? this.a as String : a() as String,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_A({
+      expectS(result, """A copyWith_A({
 String Function()? a,
 }) {
 return B._(
 a: a == null ? this.a as String : a() as String,
 b: (this as B).b,
-);
-}""");
+) as A;}""");
     });
 
     test("5p bb (see ex29_manual)", () {
@@ -655,8 +653,7 @@ T1 Function()? b,
 return B._(
 a: a == null ? this.a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
-);
-}""");
+) as B;}""");
     });
 
     test("6p ca (see ex29_manual)", () {
@@ -674,15 +671,14 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_A({
+      expectS(result, """A copyWith_A({
 String Function()? a,
 }) {
 return C._(
 a: a == null ? this.a as String : a() as String,
 b: (this as C).b,
 c: (this as C).c,
-);
-}""");
+) as A;}""");
     });
 
     test("7p cb (see ex29_manual)", () {
@@ -701,7 +697,7 @@ c: (this as C).c,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_B({
+      expectS(result, """B copyWith_B({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -709,8 +705,7 @@ return C._(
 a: a == null ? this.a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
 c: (this as C).c,
-);
-}""");
+) as B;}""");
     });
 
     test("8p cc (see ex29_manual)", () {
@@ -739,8 +734,7 @@ return C._(
 a: a == null ? this.a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
 c: c == null ? this.c as bool : c() as bool,
-);
-}""");
+) as C;}""");
     });
 
     test("9p da (see ex29_manual) class with no fields", () {
@@ -757,14 +751,13 @@ c: c == null ? this.c as bool : c() as bool,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """D copyWith_A({
+      expectS(result, """A copyWith_A({
 String Function()? a,
 }) {
 return D._(
 a: a == null ? this.a as String : a() as String,
 b: (this as D).b,
-);
-}""");
+) as A;}""");
     });
 
     test("10p db (see ex29_manual) class with no fields", () {
@@ -782,15 +775,14 @@ b: (this as D).b,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """D copyWith_B({
+      expectS(result, """B copyWith_B({
 String Function()? a,
 T1 Function()? b,
 }) {
 return D._(
 a: a == null ? this.a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
-);
-}""");
+) as B;}""");
     });
 
     test("11p dd (see ex29_manual) class with no fields", () {
@@ -815,8 +807,7 @@ T1 Function()? b,
 return D._(
 a: a == null ? this.a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
-);
-}""");
+) as D;}""");
     });
 
     test("12p x (see ex29_manual) interface with no fields", () {
@@ -843,12 +834,11 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """Y copyWith_X(
+      expectS(result, """X copyWith_X(
 ) {
 return Y._(
 a: (this as Y).a,
-);
-}""");
+) as X;}""");
     });
 
     test("14p yy (see ex29_manual) interface with no fields", () {
@@ -869,8 +859,7 @@ String Function()? a,
 }) {
 return Y._(
 a: a == null ? this.a as String : a() as String,
-);
-}""");
+) as Y;}""");
     });
 
     test("15p aa (see ex7_manual) where subtypes are used", () {
@@ -891,8 +880,7 @@ Person Function()? a,
 }) {
 return A._(
 a: a == null ? this.a as Person : a() as Person,
-);
-}""");
+) as A;}""");
     });
 
     test("16p ba (see ex7_manual) where subtypes are used", () {
@@ -908,13 +896,12 @@ a: a == null ? this.a as Person : a() as Person,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_A({
+      expectS(result, """A copyWith_A({
 Person Function()? a,
 }) {
 return B._(
 a: a == null ? this.a as Employee : a() as Employee,
-);
-}""");
+) as A;}""");
     });
 
     test("17p bb (see ex7_manual) where subtypes are used", () {
@@ -935,8 +922,7 @@ Employee Function()? a,
 }) {
 return B._(
 a: a == null ? this.a as Employee : a() as Employee,
-);
-}""");
+) as B;}""");
     });
 
     test("18p ca (see ex7_manual) where subtypes are used", () {
@@ -952,13 +938,12 @@ a: a == null ? this.a as Employee : a() as Employee,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_A({
+      expectS(result, """A copyWith_A({
 Person Function()? a,
 }) {
 return C._(
 a: a == null ? this.a as Manager : a() as Manager,
-);
-}""");
+) as A;}""");
     });
 
     test("19p cb (see ex7_manual) where subtypes are used", () {
@@ -974,13 +959,12 @@ a: a == null ? this.a as Manager : a() as Manager,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_B({
+      expectS(result, """B copyWith_B({
 Employee Function()? a,
 }) {
 return C._(
 a: a == null ? this.a as Manager : a() as Manager,
-);
-}""");
+) as B;}""");
     });
 
     test("20p cc (see ex7_manual) where subtypes are used", () {
@@ -1001,8 +985,7 @@ Manager Function()? a,
 }) {
 return C._(
 a: a == null ? this.a as Manager : a() as Manager,
-);
-}""");
+) as C;}""");
     });
 
     test("21p ba (see ex11_manual) where subtypes are used", () {
@@ -1021,7 +1004,7 @@ a: a == null ? this.a as Manager : a() as Manager,
         className: "B",
         isClassAbstract: false,
       );
-      expectS(result, """B copyWith_A<T1, T2>({
+      expectS(result, """A<T1, T2> copyWith_A<T1, T2>({
 T1 Function()? x,
 T2 Function()? y,
 }) {
@@ -1029,8 +1012,7 @@ return B._(
 x: x == null ? this.x as int : x() as int,
 y: y == null ? this.y as String : y() as String,
 z: (this as B).z,
-);
-}""");
+) as A<T1, T2>;}""");
     });
 
     test("22p bb (see ex11_manual) where subtypes are used", () {
@@ -1059,8 +1041,7 @@ return B._(
 x: x == null ? this.x as int : x() as int,
 y: y == null ? this.y as String : y() as String,
 z: z == null ? this.z as String : z() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("23p a (see ex2_manual) where generics are used", () {
@@ -1076,7 +1057,7 @@ z: z == null ? this.z as String : z() as String,
         className: "A",
         isClassAbstract: true,
       );
-      expectS(result, """A copyWith_A<T>({
+      expectS(result, """A<T> copyWith_A<T>({
 T Function()? x,
 });""");
     });
@@ -1096,14 +1077,13 @@ T Function()? x,
         className: "B",
         isClassAbstract: false,
       );
-      expectS(result, """B copyWith_A<T>({
+      expectS(result, """A<T> copyWith_A<T>({
 T Function()? x,
 }) {
 return B._(
 x: x == null ? this.x as int : x() as int,
 y: (this as B).y,
-);
-}""");
+) as A<T>;}""");
     });
 
     test("25p a (see ex21) no default constructor", () {
@@ -1124,8 +1104,7 @@ String Function()? a,
 }) {
 return A._(
 a: a == null ? this.a as String : a() as String,
-);
-}""");
+) as A;}""");
     });
 
     test("26p function to leave in dollar", () {
@@ -1146,8 +1125,7 @@ bool Function(\$X) Function()? fn,
 }) {
 return X._(
 fn: fn == null ? this.fn as bool Function(\$X) : fn() as bool Function(\$X),
-);
-}""");
+) as X;}""");
     });
 
     test("27p subtype from a supertype", () {
@@ -1172,8 +1150,7 @@ String Function()? x,
 return B._(
 y: y as String,
 x: x == null ? this.x as String : x() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("28p subtype from a supertype", () {
@@ -1201,8 +1178,7 @@ return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("29p sub to sub sibling with abstract parent", () {
@@ -1230,8 +1206,7 @@ return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("30p function to leave in dollar", () {
@@ -1260,8 +1235,7 @@ return B._(
 x: x == null ? this.x as String : x() as String,
 cs: cs == null ? this.cs as List<C> : cs() as List<C>,
 z: z == null ? this.z as Z : z() as Z,
-);
-}""");
+) as B;}""");
     });
 
     test("31p FROM ABSTRACT SUPERCLASS TO SUB CLASS", () {
@@ -1286,8 +1260,7 @@ String Function()? x,
 return B._(
 y: y as String,
 x: x == null ? this.x as String : x() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("32p private constructor", () {
@@ -1315,8 +1288,7 @@ return B._(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
-);
-}""");
+) as B;}""");
     });
 
     test("33p private property abstract class", () {
@@ -1353,7 +1325,7 @@ String Function()? a,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_B({
+      expectS(result, """B copyWith_B({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -1361,8 +1333,7 @@ return C._(
 a: a == null ? this._a as String : a() as String,
 b: b == null ? this.b as T1 : b() as T1,
 c: (this as C).c,
-);
-}""");
+) as B;}""");
     });
   });
 

@@ -1,3 +1,10 @@
+## 1.3.0
+- bug fixes, subclass with no members now works, generic copy with bug now fixed where type is incorrect
+- in order to fix the above problem the type returned from the copywith is now the type of the named copywith function, eg b.copyWith_A now returns an A type
+- this is a BREAKING change.
+- if you specify D newD = d.copyWith_A(); then newD will be of type D not A and you'll receive an error
+- the thing is that if you know it is a d type you'd more likely do a d.copyWith_D() so this should not be a problem
+
 ## 1.2.0
 - New functionality - private getters are now allowed!
 

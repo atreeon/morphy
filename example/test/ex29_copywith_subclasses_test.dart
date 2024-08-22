@@ -85,7 +85,7 @@ main() {
 
   test("db", () {
     D db = D(b: 5, a: "A");
-    var db_copy = db.copyWith_B(a: () => "a", b: () => 6);
+    var db_copy = db.copyWith_B(a: () => "a", b: () => 6) as D;
     expect(db_copy.toString(), "(D-a:a|b:6)");
   });
 

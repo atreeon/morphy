@@ -265,18 +265,42 @@ String getCopyWith({
   var classNameTrimmed = className.replaceAll("\$", "");
   var interfaceNameTrimmed = interfaceName.replaceAll("\$", "");
 
-  isExplicitSubType //
-      ? sb.write("$interfaceNameTrimmed changeTo_${interfaceNameTrimmed}")
-      : sb.write("$classNameTrimmed copyWith_$interfaceNameTrimmed");
+  // var interfaceGenericString = interfaceGenerics //
+  //     .map((e) => e.type == null //
+  //         ? e.name
+  //         : "${e.name} extends ${e.type}")
+  //     .joinToString(separator: ", ");
 
-  if (interfaceGenerics.isNotEmpty) {
-    var generic = interfaceGenerics //
-        .map((e) => e.type == null //
-            ? e.name
-            : "${e.name} extends ${e.type}")
-        .joinToString(separator: ", ");
-    sb.write("<$generic>");
+  var interfaceGenericStringWithExtends = interfaceGenerics //
+      .map((e) => e.type == null //
+          ? e.name
+          : "${e.name} extends ${e.type}")
+      .joinToString(separator: ", ");
+
+  if (interfaceGenericStringWithExtends.length > 0) {
+    interfaceGenericStringWithExtends = "<$interfaceGenericStringWithExtends>";
   }
+
+  var interfaceGenericStringNoExtends = interfaceGenerics //
+      .map((e) => e.name)
+      .joinToString(separator: ", ");
+
+  if (interfaceGenericStringNoExtends.length > 0) {
+    interfaceGenericStringNoExtends = "<$interfaceGenericStringNoExtends>";
+  }
+
+  isExplicitSubType //
+      ? sb.write("$interfaceNameTrimmed$interfaceGenericStringNoExtends changeTo_$interfaceNameTrimmed$interfaceGenericStringWithExtends")
+      : sb.write("$interfaceNameTrimmed$interfaceGenericStringNoExtends copyWith_$interfaceNameTrimmed$interfaceGenericStringWithExtends");
+
+  // if (interfaceGenerics.isNotEmpty) {
+  //   var generic = interfaceGenerics //
+  //       .map((e) => e.type == null //
+  //           ? e.name
+  //           : "${e.name} extends ${e.type}")
+  //       .joinToString(separator: ", ");
+  //   sb.write("<$generic>");
+  // }
 
   sb.write("(");
 
@@ -315,7 +339,7 @@ String getCopyWith({
     return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
   }).join());
 
-  if (fieldsForSignature.isNotEmpty) //
+  if (fieldsForSignature.isNotEmpty|| requiredFields.isNotEmpty) //
     sb.write("}");
 
   if (isClassAbstract && !isExplicitSubType) {
@@ -350,10 +374,16 @@ String getCopyWith({
       .where((element) => !interfaceFields.map((e) => e.name).contains(element.name));
 
   sb.write(fieldsNotInSignature //
-      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name }: (this as $classNameTrimmed).${e.name},\n")
+      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed).${e.name},\n")
       .join());
 
-  sb.writeln(");");
+  sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");
+
+  // if (isExplicitSubType) {
+  //   sb.write(") as $interfaceNameTrimmed;");
+  // } else {
+  //   sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");
+  // }
   sb.write("}");
 
   return sb.toString();
