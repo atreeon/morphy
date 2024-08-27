@@ -8,4 +8,5 @@ Builder morphy2Builder(BuilderOptions options) => //
         header: '''
 // ignore_for_file: UNNECESSARY_CAST
 // ignore_for_file: unused_element
+// ignore_for_file: library_private_types_in_public_api
     ''');
