@@ -1612,22 +1612,22 @@ class C_Generics_Sing {
 
   group("createJsonHeader", () {
     test("1w non abstract, no generics, private constructor", () {
-      var result = createJsonHeader("\$Pet", [], true);
+      var result = createJsonHeader("\$Pet", [], true, true);
       var expected = "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
 
       expectS(result, expected);
     });
 
     test("2w abstract", () {
-      var result = createJsonHeader("\$\$Pet", [], true);
+      var result = createJsonHeader("\$\$Pet", [], true, true);
       var expected = "";
 
       expectS(result, expected);
     });
 
     test("3w non abstract, generics, no private constructor", () {
-      var result = createJsonHeader("\$Pet", [NameTypeClass("name", "type", "className")], false);
-      var expected = "@JsonSerializable(explicitToJson: true, genericArgumentFactories: true, )";
+      var result = createJsonHeader("\$Pet", [NameTypeClass("name", "type", "className")], false, false);
+      var expected = "@JsonSerializable(explicitToJson: false, genericArgumentFactories: true, )";
 
       expectS(result, expected);
     });
