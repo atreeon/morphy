@@ -8,7 +8,10 @@ environment:
 
 dependency_overrides:
   morphy_annotation:
-    path: ../morphy_annotation
+    git:
+      url: https://github.com/arrrrny/morphy.git
+      path: morphy_annotation
+      ref: git-ref
 
 dependencies:
   morphy_annotation: ^1.3.0
