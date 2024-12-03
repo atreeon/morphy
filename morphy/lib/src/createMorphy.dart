@@ -26,10 +26,12 @@ String createMorphy(
   //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor));
+    sb.writeln(
+        createJsonHeader(className, classGenerics, hidePublicConstructor));
   }
 
-  sb.write(getClassDefinition(isAbstract: isAbstract, nonSealed: nonSealed, className: className));
+  sb.write(getClassDefinition(
+      isAbstract: isAbstract, nonSealed: nonSealed, className: className));
 
   if (classGenerics.isNotEmpty) {
     sb.write(getClassGenerics(classGenerics));
@@ -62,25 +64,25 @@ String createMorphy(
       if (!hidePublicConstructor) {
         sb.writeln("${classNameTrim}({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("}) ${getInitialiser(allFields)};");
+        sb.writeln("}) ${getInitializer(allFields)};");
       }
 
       //the json needs a public constructor, we add this if public constructor is hidden
       if (hidePublicConstructor && generateJson) {
         sb.writeln("${classNameTrim}.forJsonDoNotUse({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("}) ${getInitialiser(allFields)};");
+        sb.writeln("}) ${getInitializer(allFields)};");
       }
 
       //we always want to write a private constructor (just a duplicate)
       sb.writeln("${classNameTrim}._({");
       sb.writeln(getConstructorRows(allFields));
-      sb.writeln("}) ${getInitialiser(allFields)};");
+      sb.writeln("}) ${getInitializer(allFields)};");
 
       if (hasConstContructor) {
         sb.writeln("const ${classNameTrim}.constant({");
         sb.writeln(getConstructorRows(allFields));
-        sb.writeln("}) ${getInitialiser(allFields)};");
+        sb.writeln("}) ${getInitializer(allFields)};");
       }
       sb.writeln(getToString(allFields, classNameTrim));
     }
@@ -126,9 +128,9 @@ String createMorphy(
   sb.writeln("}");
 
   sb.writeln();
-  sb.writeln("extension ${className}_changeTo_E on ${className} {");
+  sb.writeln("extension ${className}changeToE on ${className} {");
 
-  if(!isAbstract){
+  if (!isAbstract) {
     sb.writeln(
       getCopyWith(
         classFields: allFields,

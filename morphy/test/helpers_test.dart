@@ -5,7 +5,8 @@ import 'package:morphy/src/common/formatCodeStringForComparison.dart';
 import 'package:morphy/src/helpers.dart';
 import 'package:test/test.dart';
 
-var expectS = (String a, String b) => expect(formatCodeStringForComparison(a), formatCodeStringForComparison(b));
+var expectS = (String a, String b) =>
+    expect(formatCodeStringForComparison(a), formatCodeStringForComparison(b));
 
 void main() {
   group("getClassComment", () {
@@ -42,9 +43,11 @@ void main() {
 
     test("3x with all comments", () {
       var interfaces = [
-        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [], comment: "///blah1"),
+        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [],
+            comment: "///blah1"),
         InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], []),
-        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [], comment: "///blah2"),
+        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [],
+            comment: "///blah2"),
       ];
 
       var result = getClassComment(interfaces, "///blah");
@@ -171,19 +174,22 @@ void main() {
 
   group("getClassDefinition", () {
     test("1b", () {
-      var result = getClassDefinition(isAbstract: false, nonSealed: false, className: "\$Pet");
+      var result = getClassDefinition(
+          isAbstract: false, nonSealed: false, className: "\$Pet");
 
       expectS(result, "class Pet");
     });
 
     test("2b", () {
-      var result = getClassDefinition(isAbstract: true, nonSealed: false, className: "\$\$Pet");
+      var result = getClassDefinition(
+          isAbstract: true, nonSealed: false, className: "\$\$Pet");
 
       expectS(result, "sealed class Pet");
     });
 
     test("3b", () {
-      var result = getClassDefinition(isAbstract: true, nonSealed: true, className: "\$\$Pet");
+      var result = getClassDefinition(
+          isAbstract: true, nonSealed: true, className: "\$\$Pet");
 
       expectS(result, "abstract class Pet");
     });
@@ -209,7 +215,8 @@ void main() {
 
   group("getExtendsGenerics", () {
     test("1d", () {
-      var result = getExtendsGenerics([NameTypeClassComment("T", "\$\$C", null)]);
+      var result =
+          getExtendsGenerics([NameTypeClassComment("T", "\$\$C", null)]);
 
       expectS(result, "<T>");
     });
@@ -310,13 +317,16 @@ void main() {
       expectS(result.toString(), "final List<ScheduleVM_Item> schedules;");
     });
 
-    test("7f private properties (get turned into public getters & private setters)", () {
+    test(
+        "7f private properties (get turned into public getters & private setters)",
+        () {
       var result = getProperties([
         NameTypeClassComment("_age", "int", null),
         NameTypeClassComment("name", "String", null, comment: "///blah"),
       ]);
 
-      expectS(result.toString(), "final int _age;\n///blah\nfinal String name;");
+      expectS(
+          result.toString(), "final int _age;\n///blah\nfinal String name;");
     });
   });
 
@@ -334,7 +344,8 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ], "MyClass");
 
-      expectS(result.toString(), """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
+      expectS(result.toString(),
+          """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
     });
   });
 
@@ -362,7 +373,8 @@ void main() {
     test("1i", () {
       var result = getEquals([], "A");
 
-      var expected = """bool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType
+      var expected =
+          """bool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType
 ;""";
 
       expectS(result, expected);
@@ -375,7 +387,8 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ], "C");
 
-      var expected = """bool operator ==(Object other) => identical(this, other) || other is C && runtimeType == other.runtimeType &&
+      var expected =
+          """bool operator ==(Object other) => identical(this, other) || other is C && runtimeType == other.runtimeType &&
 a == other.a && b == other.b && c == other.c;""";
 
       expectS(result, expected);
@@ -404,7 +417,8 @@ a == other.a && b == other.b && c == other.c;""";
         NameTypeClassComment("name", "String", null),
       ]);
 
-      expectS(result.toString(), "///blah blah\nint get age;\nString get name;");
+      expectS(
+          result.toString(), "///blah blah\nint get age;\nString get name;");
     });
   });
 
@@ -439,7 +453,8 @@ a == other.a && b == other.b && c == other.c;""";
         ],
       );
 
-      expectS(result.toString(), "required this.age,\nrequired this.listOfStrings,");
+      expectS(result.toString(),
+          "required this.age,\nrequired this.listOfStrings,");
     });
 
     test("5k private properties not null", () {
@@ -467,7 +482,7 @@ a == other.a && b == other.b && c == other.c;""";
 
   group("get intializer list", () {
     test("1l with a private", () {
-      var result = getInitialiser(
+      var result = getInitializer(
         [
           NameTypeClassComment("_age", "int?", null),
           NameTypeClassComment("name", "String?", null),
@@ -478,7 +493,7 @@ a == other.a && b == other.b && c == other.c;""";
     });
 
     test("2l without a private", () {
-      var result = getInitialiser(
+      var result = getInitializer(
         [
           NameTypeClassComment("age", "int?", null),
           NameTypeClassComment("name", "String?", null),
@@ -509,8 +524,11 @@ a == other.a && b == other.b && c == other.c;""";
       expectS(result, "Word");
     });
 
-    test("4m if a Function data type and we have a morphy class then don't remove", () {
-      var result = removeDollarsFromPropertyType("bool Function(int blah, \$X blim)");
+    test(
+        "4m if a Function data type and we have a morphy class then don't remove",
+        () {
+      var result =
+          removeDollarsFromPropertyType("bool Function(int blah, \$X blim)");
       expectS(result, "bool Function(int blah, \$X blim)");
     });
   });
@@ -563,7 +581,7 @@ a == other.a && b == other.b && c == other.c;""";
         isClassAbstract: true,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 });""");
     });
@@ -582,7 +600,7 @@ String Function()? a,
         isClassAbstract: true,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 int Function()? a,
 });""");
     });
@@ -600,7 +618,7 @@ int Function()? a,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 }) {
 return A._(
@@ -622,7 +640,7 @@ a: a == null ? this.a as String : a() as String,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 }) {
 return B._(
@@ -646,7 +664,7 @@ b: (this as B).b,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -671,7 +689,7 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 }) {
 return C._(
@@ -697,7 +715,7 @@ c: (this as C).c,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -725,7 +743,7 @@ c: (this as C).c,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_C({
+      expectS(result, """C copyWithC({
 String Function()? a,
 T1 Function()? b,
 bool Function()? c,
@@ -751,7 +769,7 @@ c: c == null ? this.c as bool : c() as bool,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 }) {
 return D._(
@@ -775,7 +793,7 @@ b: (this as D).b,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -800,7 +818,7 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """D copyWith_D({
+      expectS(result, """D copyWithD({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -819,7 +837,7 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: true,
         interfaceGenerics: [],
       );
-      expectS(result, """X copyWith_X(
+      expectS(result, """X copyWithX(
 );""");
     });
 
@@ -834,7 +852,7 @@ b: b == null ? this.b as T1 : b() as T1,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """X copyWith_X(
+      expectS(result, """X copyWithX(
 ) {
 return Y._(
 a: (this as Y).a,
@@ -854,7 +872,7 @@ a: (this as Y).a,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """Y copyWith_Y({
+      expectS(result, """Y copyWithY({
 String Function()? a,
 }) {
 return Y._(
@@ -875,7 +893,7 @@ a: a == null ? this.a as String : a() as String,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 Person Function()? a,
 }) {
 return A._(
@@ -896,7 +914,7 @@ a: a == null ? this.a as Person : a() as Person,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 Person Function()? a,
 }) {
 return B._(
@@ -917,7 +935,7 @@ a: a == null ? this.a as Employee : a() as Employee,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 Employee Function()? a,
 }) {
 return B._(
@@ -938,7 +956,7 @@ a: a == null ? this.a as Employee : a() as Employee,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 Person Function()? a,
 }) {
 return C._(
@@ -959,7 +977,7 @@ a: a == null ? this.a as Manager : a() as Manager,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 Employee Function()? a,
 }) {
 return C._(
@@ -980,7 +998,7 @@ a: a == null ? this.a as Manager : a() as Manager,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """C copyWith_C({
+      expectS(result, """C copyWithC({
 Manager Function()? a,
 }) {
 return C._(
@@ -1004,7 +1022,7 @@ a: a == null ? this.a as Manager : a() as Manager,
         className: "B",
         isClassAbstract: false,
       );
-      expectS(result, """A<T1, T2> copyWith_A<T1, T2>({
+      expectS(result, """A<T1, T2> copyWithA<T1, T2>({
 T1 Function()? x,
 T2 Function()? y,
 }) {
@@ -1032,7 +1050,7 @@ z: (this as B).z,
         className: "B",
         isClassAbstract: false,
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 int Function()? x,
 String Function()? y,
 String Function()? z,
@@ -1057,7 +1075,7 @@ z: z == null ? this.z as String : z() as String,
         className: "A",
         isClassAbstract: true,
       );
-      expectS(result, """A<T> copyWith_A<T>({
+      expectS(result, """A<T> copyWithA<T>({
 T Function()? x,
 });""");
     });
@@ -1077,7 +1095,7 @@ T Function()? x,
         className: "B",
         isClassAbstract: false,
       );
-      expectS(result, """A<T> copyWith_A<T>({
+      expectS(result, """A<T> copyWithA<T>({
 T Function()? x,
 }) {
 return B._(
@@ -1099,7 +1117,7 @@ y: (this as B).y,
         className: "A",
         isClassAbstract: false,
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 }) {
 return A._(
@@ -1120,7 +1138,7 @@ a: a == null ? this.a as String : a() as String,
         className: "X",
         isClassAbstract: false,
       );
-      expectS(result, """X copyWith_X({
+      expectS(result, """X copyWithX({
 bool Function(\$X) Function()? fn,
 }) {
 return X._(
@@ -1226,7 +1244,7 @@ x: x == null ? this.x as String : x() as String,
         className: "\$B",
         isClassAbstract: false,
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 String Function()? x,
 List<C> Function()? cs,
 Z Function()? z,
@@ -1304,7 +1322,7 @@ x: x == null ? this.x as String : x() as String,
         isClassAbstract: true,
         interfaceGenerics: [],
       );
-      expectS(result, """A copyWith_A({
+      expectS(result, """A copyWithA({
 String Function()? a,
 });""");
     });
@@ -1325,7 +1343,7 @@ String Function()? a,
         isClassAbstract: false,
         interfaceGenerics: [],
       );
-      expectS(result, """B copyWith_B({
+      expectS(result, """B copyWithB({
 String Function()? a,
 T1 Function()? b,
 }) {
@@ -1343,8 +1361,11 @@ c: (this as C).c,
       expectS(result, "Word");
     });
 
-    test("2q if a Function data type and we have a morphy class then don't remove", () {
-      var result = getDataTypeWithoutDollars("bool Function(int blah, \$X blim)");
+    test(
+        "2q if a Function data type and we have a morphy class then don't remove",
+        () {
+      var result =
+          getDataTypeWithoutDollars("bool Function(int blah, \$X blim)");
       expectS(result, "bool Function(int blah, \$X blim)");
     });
   });
@@ -1383,7 +1404,7 @@ c: (this as C).c,
 
       var expected = """
     if (json['_className_'] == "Manager") {
-      return _\$ManagerFromJson(json, );            
+      return _\$ManagerFromJson(json, );
     } else if (json['_className_'] == "Person") {
       return _\$PersonFromJson(json, );
     } else {
@@ -1439,7 +1460,7 @@ c: (this as C).c,
     );
     return fn_fromJson(json);
   } else if (json[\'_className_\'] == "A") {
-    return _\$AFromJson(json, ); 
+    return _\$AFromJson(json, );
   } else {
     throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the A.fromJson constructor.");
   }
@@ -1512,7 +1533,7 @@ c: (this as C).c,
         ],
       );
 
-      var expected = """// ignore: unused_field\n  
+      var expected = """// ignore: unused_field\n
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]){
@@ -1613,7 +1634,8 @@ class C_Generics_Sing {
   group("createJsonHeader", () {
     test("1w non abstract, no generics, private constructor", () {
       var result = createJsonHeader("\$Pet", [], true);
-      var expected = "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
+      var expected =
+          "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
 
       expectS(result, expected);
     });
@@ -1626,8 +1648,10 @@ class C_Generics_Sing {
     });
 
     test("3w non abstract, generics, no private constructor", () {
-      var result = createJsonHeader("\$Pet", [NameTypeClass("name", "type", "className")], false);
-      var expected = "@JsonSerializable(explicitToJson: true, genericArgumentFactories: true, )";
+      var result = createJsonHeader(
+          "\$Pet", [NameTypeClass("name", "type", "className")], false);
+      var expected =
+          "@JsonSerializable(explicitToJson: true, genericArgumentFactories: true, )";
 
       expectS(result, expected);
     });
@@ -1642,7 +1666,7 @@ class C_Generics_Sing {
 //        ],
 //        "A",
 //      );
-//      expectS(result, """A copyWith_A({
+//      expectS(result, """A copyWithA({
 //required int a,
 //required String? b,
 //}) {""");
