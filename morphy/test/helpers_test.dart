@@ -279,8 +279,7 @@ void main() {
         NameTypeClassComment("name", "String", null),
       ]);
 
-      expectS(result.toString(),
-          "@override\nfinal int age;\n@override\nfinal String name;");
+      expectS(result.toString(), "final int age;\nfinal String name;");
     });
 
     test("3f", () {
@@ -289,7 +288,7 @@ void main() {
       ]);
 
 //      expectS(result.toString(), "final \$BS a;");
-      expectS(result.toString(), "@override\nfinal BS a;");
+      expectS(result.toString(), "final BS a;");
     });
 
     test("4f", () {
@@ -298,7 +297,7 @@ void main() {
       ]);
 
 //      expectS(result.toString(), "final List<\$BS> a;");
-      expectS(result.toString(), "@override\nfinal List<BS> a;");
+      expectS(result.toString(), "final List<BS> a;");
     });
 
     test("5f", () {
@@ -307,8 +306,7 @@ void main() {
         NameTypeClassComment("name", "String", null, comment: "///blah"),
       ]);
 
-      expectS(result.toString(),
-          "@override\nfinal int age;\n///blah\n@override\nfinal String name;");
+      expectS(result.toString(), "final int age;\n///blah\nfinal String name;");
     });
 
     test("6f remove dollars from morphy types", () {
@@ -316,8 +314,7 @@ void main() {
         NameTypeClassComment("schedules", "List<\$ScheduleVM_Item>", null),
       ]);
 
-      expectS(result.toString(),
-          "@override\nfinal List<ScheduleVM_Item> schedules;");
+      expectS(result.toString(), "final List<ScheduleVM_Item> schedules;");
     });
 
     test(
@@ -328,8 +325,8 @@ void main() {
         NameTypeClassComment("name", "String", null, comment: "///blah"),
       ]);
 
-      expectS(result.toString(),
-          "@override\nfinal int _age;\n///blah\n@override\nfinal String name;");
+      expectS(
+          result.toString(), "final int _age;\n///blah\nfinal String name;");
     });
   });
 
@@ -1382,7 +1379,6 @@ c: (this as C).c,
 
       var expected = """
     if (json['_className_'] == "Pet") {
-
       return _\$PetFromJson(json, );
     } else {
       throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the Pet.fromJson constructor.");

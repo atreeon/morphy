@@ -164,8 +164,7 @@ String getDataTypeWithoutDollars(String type) {
 
 String getProperties(List<NameTypeClassComment> fields) {
   return fields.map((e) {
-    var line =
-        "@override\nfinal ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};";
+    var line = "final ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};";
     var result = e.comment == null ? line : "${e.comment}\n$line";
     return result;
   }).join("\n");
@@ -489,7 +488,7 @@ String generateFromJsonBody(
   var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
 
   var end = """    } else {
-      return _\$${_className}FromJson(json, );
+      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
     }
   }
 """;
@@ -521,7 +520,7 @@ String generateToJson(String className, List<NameType> generics) {
   __Map<__Type, __Object? Function(__Never)> _fns = {};
 
   __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
-    this._fns = fns ?? {};
+    _fns = fns ?? {};
     return toJson();
   }
 
