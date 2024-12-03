@@ -1,3 +1,8 @@
+## 1.4.0
+- BREAKING CHANGE! copyWith_A is now copyWithA and changeTo_A is now changeToA
+- This is to make the naming more consistent with dart conventions
+- The overriden properties and methods did not have the 'override' annotation, this has been added
+
 ## 1.3.0
 - bug fixes, subclass with no members now works, generic copy with bug now fixed where type is incorrect
 - in order to fix the above problem the type returned from the copywith is now the type of the named copywith function, eg b.copyWith_A now returns an A type
@@ -9,7 +14,7 @@
 - New functionality - private getters are now allowed!
 
 ## 1.1.0
-- Breaking change! copywith / change to, the Opt class has been removed and now we favour the () => syntax for optional parameters 
+- Breaking change! copywith / change to, the Opt class has been removed and now we favour the () => syntax for optional parameters
 
 ## 1.0.8
 - change_to added for a subclass to change the type back to a superclass

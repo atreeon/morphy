@@ -229,7 +229,7 @@ String getEquals(List<NameType> fields, String className) {
   var sb = StringBuffer();
 
   sb.write(
-      "bool operator ==(Object other) => identical(this, other) || other is $className && runtimeType == other.runtimeType");
+      "@override\nbool operator ==(Object other) => identical(this, other) || other is $className && runtimeType == other.runtimeType");
 
   sb.writeln(fields.isEmpty ? "" : " &&");
 
@@ -521,7 +521,7 @@ String generateToJson(String className, List<NameType> generics) {
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]){
-    this._fns = fns ?? {};
+    _fns = fns ?? {};
     return toJson();
   }
 

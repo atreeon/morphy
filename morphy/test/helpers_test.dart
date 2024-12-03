@@ -279,7 +279,8 @@ void main() {
         NameTypeClassComment("name", "String", null),
       ]);
 
-      expectS(result.toString(), "final int age;\nfinal String name;");
+      expectS(result.toString(),
+          "@override\nfinal int age;\n@override\nfinal String name;");
     });
 
     test("3f", () {
@@ -288,7 +289,7 @@ void main() {
       ]);
 
 //      expectS(result.toString(), "final \$BS a;");
-      expectS(result.toString(), "final BS a;");
+      expectS(result.toString(), "@override\nfinal BS a;");
     });
 
     test("4f", () {
@@ -297,7 +298,7 @@ void main() {
       ]);
 
 //      expectS(result.toString(), "final List<\$BS> a;");
-      expectS(result.toString(), "final List<BS> a;");
+      expectS(result.toString(), "@override\nfinal List<BS> a;");
     });
 
     test("5f", () {
@@ -306,7 +307,8 @@ void main() {
         NameTypeClassComment("name", "String", null, comment: "///blah"),
       ]);
 
-      expectS(result.toString(), "final int age;\n///blah\nfinal String name;");
+      expectS(result.toString(),
+          "@override\nfinal int age;\n///blah\n@override\nfinal String name;");
     });
 
     test("6f remove dollars from morphy types", () {
@@ -314,7 +316,8 @@ void main() {
         NameTypeClassComment("schedules", "List<\$ScheduleVM_Item>", null),
       ]);
 
-      expectS(result.toString(), "final List<ScheduleVM_Item> schedules;");
+      expectS(result.toString(),
+          "@override\nfinal List<ScheduleVM_Item> schedules;");
     });
 
     test(
@@ -325,8 +328,8 @@ void main() {
         NameTypeClassComment("name", "String", null, comment: "///blah"),
       ]);
 
-      expectS(
-          result.toString(), "final int _age;\n///blah\nfinal String name;");
+      expectS(result.toString(),
+          "@override\nfinal int _age;\n///blah\n@override\nfinal String name;");
     });
   });
 
@@ -334,7 +337,8 @@ void main() {
     test("1g", () {
       var result = getToString([], "MyClass");
 
-      expectS(result.toString(), """String toString() => "(MyClass-)""");
+      expectS(
+          result.toString(), """@override\nString toString() => "(MyClass-)""");
     });
 
     test("2g", () {
@@ -345,7 +349,7 @@ void main() {
       ], "MyClass");
 
       expectS(result.toString(),
-          """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
+          """@override\nString toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
     });
   });
 
@@ -365,7 +369,7 @@ void main() {
 
       expectS(
           result.toString(), //
-          """int get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
+          """@override\nint get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
     });
   });
 
@@ -374,7 +378,7 @@ void main() {
       var result = getEquals([], "A");
 
       var expected =
-          """bool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType
+          """@override\nbool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType
 ;""";
 
       expectS(result, expected);
@@ -388,7 +392,7 @@ void main() {
       ], "C");
 
       var expected =
-          """bool operator ==(Object other) => identical(this, other) || other is C && runtimeType == other.runtimeType &&
+          """@override\nbool operator ==(Object other) => identical(this, other) || other is C && runtimeType == other.runtimeType &&
 a == other.a && b == other.b && c == other.c;""";
 
       expectS(result, expected);
@@ -1161,7 +1165,7 @@ fn: fn == null ? this.fn as bool Function(\$X) : fn() as bool Function(\$X),
         isClassAbstract: false,
         isExplicitSubType: true,
       );
-      expectS(result, """B changeTo_B({
+      expectS(result, """B changeToB({
 required String y,
 String Function()? x,
 }) {
@@ -1187,7 +1191,7 @@ x: x == null ? this.x as String : x() as String,
         isClassAbstract: false,
         isExplicitSubType: true,
       );
-      expectS(result, """B changeTo_B({
+      expectS(result, """B changeToB({
 required String y,
 required Z z,
 String Function()? x,
@@ -1215,7 +1219,7 @@ x: x == null ? this.x as String : x() as String,
         isClassAbstract: false,
         isExplicitSubType: true,
       );
-      expectS(result, """B changeTo_B({
+      expectS(result, """B changeToB({
 required String y,
 required Z z,
 String Function()? x,
@@ -1271,7 +1275,7 @@ z: z == null ? this.z as Z : z() as Z,
         isClassAbstract: true,
         isExplicitSubType: true,
       );
-      expectS(result, """B changeTo_B({
+      expectS(result, """B changeToB({
 required String y,
 String Function()? x,
 }) {
@@ -1297,7 +1301,7 @@ x: x == null ? this.x as String : x() as String,
         isClassAbstract: false,
         isExplicitSubType: true,
       );
-      expectS(result, """B changeTo_B({
+      expectS(result, """B changeToB({
 required String y,
 required Z z,
 String Function()? x,
@@ -1505,7 +1509,7 @@ c: (this as C).c,
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]){
-    this._fns = fns ?? {};
+    _fns = fns ?? {};
     return toJson();
   }
 
@@ -1537,7 +1541,7 @@ c: (this as C).c,
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]){
-    this._fns = fns ?? {};
+    _fns = fns ?? {};
     return toJson();
   }
 
