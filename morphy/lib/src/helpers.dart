@@ -488,7 +488,7 @@ String generateFromJsonBody(
   var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
 
   var end = """    } else {
-      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
+      return _\$${_className}FromJson(json, );
     }
   }
 """;
