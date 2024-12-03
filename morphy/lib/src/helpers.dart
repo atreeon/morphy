@@ -533,6 +533,16 @@ $toJsonParams);
 $recordType
 
     return data;
+  }
+
+  __Map<__String, dynamic> toJsonClean() {
+$getGenericFn
+    final __Map<__String, dynamic> data = _\$${_className}ToJson(this,
+$toJsonParams);
+
+$recordType
+
+    return data;
   }""";
 
   return result;
