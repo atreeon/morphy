@@ -190,9 +190,9 @@ Add the part file, .g is required by the json_serializable package used internal
     part 'Pets.g.dart';
     part 'Pets.morphy.dart';
 
-Build the generated files then use the toJson_2 method to generate the JSON
+Build the generated files then use the toJsonCustom method to generate the JSON
 
-    var json = flossy.toJson_2({});
+    var json = flossy.toJsonCustom({});
     expect(json, {'name': 'Flossy', 'age': 5, '_className_': 'Pet'});
 
 ### Convert Json to Object
@@ -235,7 +235,7 @@ The subtypes must be specified in the explicitSubTypes and in the correct order 
 
 We can then just convert our list of X objects to JSON preserving their original type.
 
-    var resultInJsonFormat = xObjects.map((e) => e.toJson_2({})).toList();
+    var resultInJsonFormat = xObjects.map((e) => e.toJsonCustom({})).toList();
 
     var expectedJson = [
       {'val': 'x', '_className_': 'X'},

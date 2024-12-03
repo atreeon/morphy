@@ -209,7 +209,9 @@ String getToString(List<NameType> fields, String className) {
     return """__String toString() => "($className-)""";
   }
 
-  var items = fields.map((e) => "${e.name}:\${${e.name}.toString()}").joinToString(separator: "|");
+  var items = fields
+      .map((e) => "${e.name}:\${${e.name}.toString()}")
+      .joinToString(separator: "|");
   return """__String toString() => "($className-$items)";""";
 }
 
@@ -218,15 +220,16 @@ String getHashCode(List<NameType> fields) {
     return "";
   }
 
-  var items = fields.map((e) => "${e.name}.hashCode").joinToString(separator: ", ");
+  var items =
+      fields.map((e) => "${e.name}.hashCode").joinToString(separator: ", ");
   return """__int get hashCode => __hashObjects([$items]);""";
 }
 
 String getEquals(List<NameType> fields, String className) {
   var sb = StringBuffer();
 
-  sb.write("__bool operator ==(__Object other) => __identical(this, other) || other is $className && runtimeType == other.runtimeType");
-
+  sb.write(
+      "__bool operator ==(__Object other) => __identical(this, other) || other is $className && runtimeType == other.runtimeType");
 
   sb.writeln(fields.isEmpty ? "" : " &&");
 
@@ -249,7 +252,8 @@ String getEquals(List<NameType> fields, String className) {
   return sb.toString();
 }
 
-String createJsonHeader(String className, List<NameType> classGenerics, bool privateConstructor, bool explicitToJson) {
+String createJsonHeader(String className, List<NameType> classGenerics,
+    bool privateConstructor, bool explicitToJson) {
   var sb = StringBuffer();
 
   if (!className.startsWith("\$\$")) {
@@ -257,9 +261,11 @@ String createJsonHeader(String className, List<NameType> classGenerics, bool pri
         privateConstructor ? "constructor: 'forJsonDoNotUse'" : "";
 
     if (classGenerics.length > 0) //
-      sb.writeln("@JsonSerializable(explicitToJson: $explicitToJson, genericArgumentFactories: true, $jsonConstructorName)");
+      sb.writeln(
+          "@JsonSerializable(explicitToJson: $explicitToJson, genericArgumentFactories: true, $jsonConstructorName)");
     else
-      sb.writeln("@JsonSerializable(explicitToJson: $explicitToJson, $jsonConstructorName)");
+      sb.writeln(
+          "@JsonSerializable(explicitToJson: $explicitToJson, $jsonConstructorName)");
   }
 
   return sb.toString();
@@ -493,7 +499,7 @@ String generateFromJsonBody(
 
 String generateToJson(String className, List<NameType> generics) {
   if (className.startsWith("\$\$")) {
-    return "__Map<__String, dynamic> toJson_2([__Map<__Type, __Object? Function(__Never)>? fns]);";
+    return "__Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]);";
   }
 
   var _className = "${className.replaceFirst("\$", "")}";
@@ -514,7 +520,7 @@ String generateToJson(String className, List<NameType> generics) {
   // ignore: unused_field
   __Map<__Type, __Object? Function(__Never)> _fns = {};
 
-  __Map<__String, dynamic> toJson_2([__Map<__Type, __Object? Function(__Never)>? fns]){
+  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
     this._fns = fns ?? {};
     return toJson();
   }

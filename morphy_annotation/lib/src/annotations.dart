@@ -1,12 +1,14 @@
 import 'package:collection/collection.dart';
 
 /// {@macro MorphyX}
-const morphy = Morphy(generateJson: false, explicitSubTypes: null);
+const morphy =
+    Morphy(generateJson: false, explicitSubTypes: null, explicitToJson: true);
 
 /// ### Morphy2 will be created before Morphy, sometimes the generator needs a related class to be built before another.
 /// ---
 /// {@macro MorphyX}
-const morphy2 = Morphy2(generateJson: false, explicitSubTypes: null);
+const morphy2 =
+    Morphy2(generateJson: false, explicitSubTypes: null, explicitToJson: true);
 
 class Morphy implements MorphyX {
   /// if we want a copyWith (cwX) method for a subtype in this same class
@@ -145,7 +147,9 @@ dynamic getFromJsonToGenericFn(
 ) {
   var types = genericType.map((e) => json[e]).toList();
 
-  var fromJsonToGeneric_fn = fns.entries.firstWhereOrNull((entry) => ListEquality().equals(entry.key, types))?.value;
+  var fromJsonToGeneric_fn = fns.entries
+      .firstWhereOrNull((entry) => ListEquality().equals(entry.key, types))
+      ?.value;
   if (fromJsonToGeneric_fn == null) //
     throw Exception("From JSON function not found");
   return fromJsonToGeneric_fn;

@@ -1,7 +1,10 @@
 ## 1.4.0
 - BREAKING CHANGE! copyWith_A is now copyWithA and changeTo_A is now changeToA
 - This is to make the naming more consistent with dart conventions
-- The overriden properties and methods did not have the 'override' annotation, this has been added
+- merged the PRs that allow to set explicitToJson false
+- Call the class fromJson if _className_ isn't specified
+- Support property name shadowing global types such as Type, String, In…
+- thanks to @miklcct for the PRs.
 
 ## 1.3.0
 - bug fixes, subclass with no members now works, generic copy with bug now fixed where type is incorrect

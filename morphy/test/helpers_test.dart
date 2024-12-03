@@ -346,7 +346,8 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ], "MyClass");
 
-      expectS(result.toString(), """__String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
+      expectS(result.toString(),
+          """__String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
     });
   });
 
@@ -364,8 +365,7 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ]);
 
-      expectS(
-          result.toString(), 
+      expectS(result.toString(),
           """__int get hashCode => __hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
     });
   });
@@ -373,7 +373,8 @@ void main() {
   group("getEquals", () {
     test("1i", () {
       var result = getEquals([], "A");
-      var expected = """__bool operator ==(__Object other) => __identical(this, other) || other is A && runtimeType == other.runtimeType
+      var expected =
+          """__bool operator ==(__Object other) => __identical(this, other) || other is A && runtimeType == other.runtimeType
 ;""";
 
       expectS(result, expected);
@@ -385,7 +386,8 @@ void main() {
         NameTypeClassComment("b", "String", null),
         NameTypeClassComment("c", "String", null),
       ], "C");
-      var expected = """__bool operator ==(__Object other) => __identical(this, other) || other is C && runtimeType == other.runtimeType &&
+      var expected =
+          """__bool operator ==(__Object other) => __identical(this, other) || other is C && runtimeType == other.runtimeType &&
 a == other.a && b == other.b && c == other.c;""";
 
       expectS(result, expected);
@@ -1501,8 +1503,8 @@ c: (this as C).c,
       var expected = """// ignore: unused_field\n
   __Map<__Type, __Object? Function(__Never)> _fns = {};
 
-  __Map<__String, dynamic> toJson_2([__Map<__Type, __Object? Function(__Never)>? fns]){
-    _fns = fns ?? {}; 
+  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
+    _fns = fns ?? {};
     return toJson();
   }
 
@@ -1530,10 +1532,10 @@ c: (this as C).c,
         ],
       );
 
-   var expected = """// ignore: unused_field\n  
+      var expected = """// ignore: unused_field\n
     __Map<__Type, __Object? Function(__Never)> _fns = {};
 
-    __Map<__String, dynamic> toJson_2([__Map<__Type, __Object? Function(__Never)>? fns]){
+    __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
     _fns = fns ?? {};
     return toJson();
   }
@@ -1562,7 +1564,7 @@ c: (this as C).c,
       var result = generateToJson("\$\$Pet", []);
 
       var expected = """
-  __Map<__String, dynamic> toJson_2([__Map<__Type, __Object? Function(__Never)>? fns]);
+  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]);
 """;
 
       expectS(result, expected);
@@ -1631,7 +1633,8 @@ class C_Generics_Sing {
   group("createJsonHeader", () {
     test("1w non abstract, no generics, private constructor", () {
       var result = createJsonHeader("\$Pet", [], true, true);
-      var expected = "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
+      var expected =
+          "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
 
       expectS(result, expected);
     });
@@ -1644,8 +1647,10 @@ class C_Generics_Sing {
     });
 
     test("3w non abstract, generics, no private constructor", () {
-      var result = createJsonHeader("\$Pet", [NameTypeClass("name", "type", "className")], false, false);
-      var expected = "@JsonSerializable(explicitToJson: false, genericArgumentFactories: true, )";
+      var result = createJsonHeader(
+          "\$Pet", [NameTypeClass("name", "type", "className")], false, false);
+      var expected =
+          "@JsonSerializable(explicitToJson: false, genericArgumentFactories: true, )";
       expectS(result, expected);
     });
   });
