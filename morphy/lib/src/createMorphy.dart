@@ -15,6 +15,7 @@ String createMorphy(
   bool hidePublicConstructor,
   List<Interface> explicitForJson,
   bool nonSealed,
+  bool explicitToJson,
 ) {
   //recursively go through otherClasses and get my fieldnames &
 
@@ -26,8 +27,8 @@ String createMorphy(
   //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    sb.writeln(
-        createJsonHeader(className, classGenerics, hidePublicConstructor));
+    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor, explicitToJson));
+
   }
 
   sb.write(getClassDefinition(
