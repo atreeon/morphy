@@ -1,5 +1,5 @@
-## 1.4.0
-- BREAKING CHANGE! copyWith_A is now copyWithA and changeTo_A is now changeToA
+## 2.0.0
+- BREAKING CHANGES! copyWith_A is now copyWithA and changeTo_A is now changeToA
 - This is to make the naming more consistent with dart conventions
 - merged the PRs that allow to set explicitToJson false
 - Call the class fromJson if _className_ isn't specified
