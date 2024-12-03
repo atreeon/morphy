@@ -7,8 +7,8 @@ We need a way to simplify our Dart classes, support polymorphism and allow copyi
 
 ### Why Not Freezed or Built Value?
 Well the main reason; I actually wrote this before Freezed was released.
-Freezed is really good, established and well used.  
-However if you want to use both inheritance and polymorphism use Morphy. 
+Freezed is really good, established and well used.
+However if you want to use both inheritance and polymorphism use Morphy.
 
 ### Solution: use morphy
 
@@ -24,7 +24,7 @@ To create a new class.
    ```
     import 'package:morphy_annotation/morphy_annotation.dart';
     part 'Pet.morphy.dart';
-    
+
     @morphy
     abstract class $Pet {
       String get type;
@@ -77,13 +77,13 @@ var cat1 = Pet(type: "cat");
 
 ### CopyWith
 
-A simple copy with implementation comes with every class.  
-We pass a function to the copyWith_Pet method that returns a new value to set the property.
+A simple copy with implementation comes with every class.
+We pass a function to the copyWithPet method that returns a new value to set the property.
 You can pass any value you like, including null if the property is nullable.
 
 ```
     var flossy = Pet(name: "Flossy", age: 5);
-    var plossy = flossy.copyWith_Pet(name: () => "Plossy");
+    var plossy = flossy.copyWithPet(name: () => "Plossy");
 
     expect(flossy.age, plossy.age);
 ```
@@ -107,9 +107,9 @@ All properties will be inherited by default.
     abstract class $Cat implements $Pet {
       int get whiskerLength;
     }
-    
+
     var bagpussCat = Cat(whiskerLength: 13.75, name: "Bagpuss", age: 4);
-    
+
     expect(bagpussCat.whiskerLength, 13.75);
 
 ### CopyWith Polymorphic
@@ -122,14 +122,14 @@ then the copyWith still works whilst preserving the underlying type.
       Cat(whiskerLength: 13.75, name: "Bagpuss", age: 4),
       Dog(woofSound: "rowf", name: "Colin", age: 4),
     ];
-    
+
     var petsOlder = pets //
-        .map((e) => e.copyWith_Pet(age: () => e.age + 1))
+        .map((e) => e.copyWithPet(age: () => e.age + 1))
         .toList();
-    
+
     expect(petsOlder[0].age, 5);
     expect(petsOlder[1].age, 5);
- 
+
 Importantly the type remains the same, it is not converted to a Pet class.
 
     expect(petsOlder[0].runtimeType, Cat);
@@ -147,7 +147,7 @@ Importantly the type remains the same, it is not converted to a Pet class.
 
 ### Generics are allowed
 
-Specify the class definition if you want to constrain your generic type (use the dollar) 
+Specify the class definition if you want to constrain your generic type (use the dollar)
 
     @morphy
     abstract class $PetOwner<TPet extends $Pet> {
@@ -157,7 +157,7 @@ Specify the class definition if you want to constrain your generic type (use the
 
     var cathy = PetOwner<Cat>(ownerName: "Cathy", pet: bagpussCat);
     var dougie = PetOwner<Dog>(ownerName: "Dougie", pet: colin);
-    
+
     expect(cathy.pet.whiskerLength, 13.75);
     expect(dougie.pet.woofSound, "rowf");
 
@@ -167,7 +167,7 @@ Sometimes you might want to turn a super class into a subclass (Pet into a Cat)
 
     var flossy = Pet(name: "Flossy", age: 5);
 
-    var bagpussCat = flossy.changeTo_Cat(whiskerLength: 13.75);
+    var bagpussCat = flossy.changeToCat(whiskerLength: 13.75);
 
     expect(bagpussCat.whiskerLength, 13.75);
     expect(bagpussCat.runtimeType, Cat);
@@ -176,13 +176,13 @@ Sometimes you might want to turn a super class into a subclass (Pet into a Cat)
 
 ### Convert object to Json
 
-In order to convert the object to Json specify the `generateJson`. 
+In order to convert the object to Json specify the `generateJson`.
 
     @Morphy(generateJson: true)
     abstract class $Pet {
 
 Add the dev dependency to the json_serializable package
-    
+
     dart pub add json_serializable --dev
 
 Add the part file, .g is required by the json_serializable package used internally by `morphy`
@@ -209,19 +209,19 @@ Use the factory method `Pet.fromJson()` to create the new object.
 ### Json to Object Polymorphism
 
 Unlike other json conversions you can convert subtypes using the super types toJson and fromJson functions.
-   
+
 The subtypes must be specified in the explicitSubTypes and in the correct order for this to work.
 
     @Morphy(generateJson: true, explicitSubTypes: [$Z, $Y])
     abstract class $X {
       String get val;
     }
-    
+
     @Morphy(generateJson: true, explicitSubTypes: [$Z])
     abstract class $Y implements $X {
       int get valY;
     }
-    
+
     @Morphy(generateJson: true)
     abstract class $Z implements $Y {
       double get valZ;
@@ -267,10 +267,10 @@ We also allow multiple inheritance.
 
 ### Custom Constructors
 
-To allow custom constructors you can simply create a publicly accessible factory function that calls the constructor (ie just a method that calls the default constructor). 
+To allow custom constructors you can simply create a publicly accessible factory function that calls the constructor (ie just a method that calls the default constructor).
 If you'd like to hide the automatic constructor set the `hidePublicConstructor` on the Morphy annotation to true.
-If you do hide the default constructor, 
-then in order for the custom factory function (A_FactoryFunction in the example below) to be able to call the hidden (or private) default constructor, 
+If you do hide the default constructor,
+then in order for the custom factory function (A_FactoryFunction in the example below) to be able to call the hidden (or private) default constructor,
 your factory function should live in the same file you defined your class.
 
     @Morphy(hidePublicConstructor: true)
@@ -304,7 +304,7 @@ Optional parameters can be specified using the ? keyword on the getter property.
 ### Comments
 
 Comments are copied from the class definition to the generated class
-and for ease of use copied to the constructor too. 
+and for ease of use copied to the constructor too.
 
 ### Constant Constructor
 
@@ -313,7 +313,7 @@ Just define a blank const constructor in your class definition file
     const $A();
 
 Then call the const constructor using the named constructor ```constant``
-        
+
     var a = A.constant();
 
 ### Private Getters
@@ -324,17 +324,17 @@ If we start our property with an underscore then we make the getter private but 
       @morphy
       abstract class $$Pet {
          int get _ageInYears;
-         
+
          String get name;
       }
-      
+
       @morphy
       abstract class $Cat implements $$Pet {}
-      
-      @morphy
-      abstract class $Dog implements $$Pet {}      
 
-      extension Pet_E on Pet {
+      @morphy
+      abstract class $Dog implements $$Pet {}
+
+      extension PetE on Pet {
          int age() => switch (this) {
             Cat() => _ageInYears * 7,
             Dog() => _ageInYears * 5,
@@ -343,7 +343,7 @@ If we start our property with an underscore then we make the getter private but 
 
        var cat = Cat(name: "Tom", ageInYears: 3);
        var dog = Dog(name: "Rex", ageInYears: 3);
-   
+
        expect(cat.age(), 21);
        expect(dog.age(), 15);
 
@@ -358,4 +358,4 @@ a kind of two step route back.  You must go to the generated and then you can cl
 $ version of the class which will be next to it.
 
 Sometimes one class needs to be built before another.
-In that scenario use morphy2 as the annotation in one class and morphy in the other.  
+In that scenario use morphy2 as the annotation in one class and morphy in the other.
