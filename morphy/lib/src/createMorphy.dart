@@ -27,8 +27,8 @@ String createMorphy(
   //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor, explicitToJson));
-
+    sb.writeln(createJsonHeader(
+        className, classGenerics, hidePublicConstructor, explicitToJson));
   }
 
   sb.write(getClassDefinition(
@@ -123,7 +123,10 @@ String createMorphy(
     sb.writeln(commentEveryLine(explicitForJson.join("\n").toString()));
     sb.writeln(generateFromJsonHeader(className));
     sb.writeln(generateFromJsonBody(className, classGenerics, explicitForJson));
+    sb.writeln(generateFromJsonLeanHeader(className));
+    sb.writeln(generateFromJsonLeanBody(className));
     sb.writeln(generateToJson(className, classGenerics));
+    sb.writeln(generateToJsonLean(className));
   }
 
   sb.writeln("}");

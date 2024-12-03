@@ -488,7 +488,7 @@ String generateFromJsonBody(
   var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
 
   var end = """    } else {
-      return _\$${_className}FromJson(json, );
+      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
     }
   }
 """;
@@ -533,16 +533,6 @@ $toJsonParams);
 $recordType
 
     return data;
-  }
-
-  __Map<__String, dynamic> toJsonClean() {
-$getGenericFn
-    final __Map<__String, dynamic> data = _\$${_className}ToJson(this,
-$toJsonParams);
-
-$recordType
-
-    return data;
   }""";
 
   return result;
@@ -564,6 +554,36 @@ class ${classNameTrim}_Generics_Sing {
   ${classNameTrim}_Generics_Sing._internal() {}
 }
     """;
+
+  return result;
+}
+
+String generateFromJsonLeanHeader(String className) {
+  var _className = "${className.replaceFirst("\$", "")}";
+
+  return "factory ${_className.replaceFirst("\$", "")}.fromJsonLean(__Map<__String, dynamic> json) {";
+}
+
+String generateFromJsonLeanBody(String className) {
+  var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
+  return """
+    return _\$${_className}FromJson(json, );
+  }
+""";
+}
+
+String generateToJsonLean(String className) {
+  if (className.startsWith("\$\$")) {
+    return "";
+  }
+
+  var _className = "${className.replaceFirst("\$", "")}";
+  var result = """
+
+  __Map<__String, dynamic> toJsonLean() {
+    final __Map<__String, dynamic> data = _\$${_className}ToJson(this,);
+    return data;
+  }""";
 
   return result;
 }
