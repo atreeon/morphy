@@ -42,8 +42,7 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
-    const typedefs =
-      """   
+    const typedefs = """
 typedef __String = String;
 typedef __Object = Object;
 // ignore: unused_element
@@ -55,8 +54,7 @@ typedef __int = int;
 typedef __bool = bool;
 const __hashObjects = hashObjects;
 const __identical = identical;
-"""
-    ;
+""";
     final values = Set<String>();
 
     var classElements = library.allElements //

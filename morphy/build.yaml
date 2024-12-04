@@ -9,15 +9,25 @@ builders:
     target: ":morphy"
     import: "package:morphy/morphyBuilder.dart"
     builder_factories: ["morphyBuilder"]
-    build_extensions: {".dart": [".morphy.part"]}
+    build_extensions: { ".dart": [".morphy.dart"] }
     auto_apply: dependents
     build_to: source
-    runs_before: ["json_serializable:json_serializable", "typedef_for_fn_generator:typedef_for_fn","mock_creator_generator:mock_creator","copy_with_e_generator:copy_with_e", "copy_with_e_generator:copy_with_e","memoizer_generator:memoizer_generator"]
+    applies_builders: ["source_gen|combining_builder"]
+    runs_before: ["json_serializable:json_serializable"]
   morphy2:
     target: ":morphy2_generator"
     import: "package:morphy/morphy2Builder.dart"
     builder_factories: ["morphy2Builder"]
-    build_extensions: {".dart": [".morphy2.part"]}
+    build_extensions: { ".dart": [".morphy2.dart"] }
     auto_apply: dependents
     build_to: source
-    runs_before: ["json_serializable|json_serializable", "morphy:morphy", "typedef_for_fn_generator:typedef_for_fn","mock_creator_generator:mock_creator","copy_with_e_generator:copy_with_e", "copy_with_e_generator:copy_with_e","memoizer_generator:memoizer_generator"]
+    runs_before:
+      [
+        "json_serializable|json_serializable",
+        "morphy:morphy",
+        "typedef_for_fn_generator:typedef_for_fn",
+        "mock_creator_generator:mock_creator",
+        "copy_with_e_generator:copy_with_e",
+        "copy_with_e_generator:copy_with_e",
+        "memoizer_generator:memoizer_generator",
+      ]

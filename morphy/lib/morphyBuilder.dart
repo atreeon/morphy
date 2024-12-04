@@ -8,4 +8,4 @@ Builder morphyBuilder(BuilderOptions options) => //
         header: '''
 // ignore_for_file: UNNECESSARY_CAST
 // ignore_for_file: type=lint
-    ''');
+''');

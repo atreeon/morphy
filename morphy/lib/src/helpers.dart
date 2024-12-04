@@ -205,13 +205,13 @@ String getInitializer(List<NameType> fields) {
 
 String getToString(List<NameType> fields, String className) {
   if (fields.isEmpty) {
-    return """__String toString() => "($className-)""";
+    return """String toString() => "($className-)""";
   }
 
   var items = fields
       .map((e) => "${e.name}:\${${e.name}.toString()}")
       .joinToString(separator: "|");
-  return """__String toString() => "($className-$items)";""";
+  return """String toString() => "($className-$items)";""";
 }
 
 String getHashCode(List<NameType> fields) {
@@ -221,14 +221,14 @@ String getHashCode(List<NameType> fields) {
 
   var items =
       fields.map((e) => "${e.name}.hashCode").joinToString(separator: ", ");
-  return """__int get hashCode => __hashObjects([$items]);""";
+  return """int get hashCode => hashObjects([$items]);""";
 }
 
 String getEquals(List<NameType> fields, String className) {
   var sb = StringBuffer();
 
   sb.write(
-      "__bool operator ==(__Object other) => __identical(this, other) || other is $className && runtimeType == other.runtimeType");
+      "bool operator ==(__Object other) => __identical(this, other) || other is $className && runtimeType == other.runtimeType");
 
   sb.writeln(fields.isEmpty ? "" : " &&");
 
@@ -281,11 +281,9 @@ String getCopyWith({
   required String className,
   required bool isClassAbstract,
   required List<NameType> interfaceGenerics,
-  bool isExplicitSubType =
-      false, //for where we specify the explicit subtypes for changeTo
+  bool isExplicitSubType = false,
 }) {
   var sb = StringBuffer();
-
   var classNameTrimmed = className.replaceAll("\$", "");
   var interfaceNameTrimmed = interfaceName.replaceAll("\$", "");
 
@@ -378,7 +376,10 @@ String getCopyWith({
   sb.writeln(") {");
 
   if (isExplicitSubType) {
-    sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}._(");
+    // Use public constructor if changing to a different type
+    var usePrivateConstructor = interfaceNameTrimmed == classNameTrimmed;
+    sb.writeln(
+        "return ${getDataTypeWithoutDollars(interfaceName)}${usePrivateConstructor ? '._' : ''}(");
   } else {
     sb.writeln("return $classNameTrimmed._(");
   }
@@ -457,43 +458,21 @@ String generateFromJsonHeader(String className) {
 
 String generateFromJsonBody(
     String className, List<NameType> generics, List<Interface> interfaces) {
-  var _class = Interface(className, generics.map((e) => e.type ?? "").toList(),
-      generics.map((e) => e.name).toList(), []);
-  var _classes = [...interfaces, _class];
-
-  var body = _classes //
-      .where((c) => !c.interfaceName.startsWith("\$\$"))
-      .mapIndexed((i, c) {
-    var _interfaceName = "${c.interfaceName.replaceFirst("\$", "")}";
-    var start = i == 0 ? "if" : "} else if";
-    var genericTypes = c.typeParams.map((e) => "'_${e.name}_'").join(",");
-    // var types = c.typeParams.length == 0 ? "" : "<${c.typeParams.map((t) => "dynamic").join(', ')}>";
-
-    if (c.typeParams.length > 0) {
-      return """$start (json['_className_'] == "$_interfaceName") {
-      var fn_fromJson = getFromJsonToGenericFn(
-        ${_interfaceName}_Generics_Sing().fns,
-        json,
-        [$genericTypes],
-      );
-      return fn_fromJson(json);
-""";
-    } else {
-      return """$start (json['_className_'] == "$_interfaceName") {
-    return _\$${_interfaceName}FromJson(json, );
-""";
+  var _className = className.replaceFirst("\$", "");
+  return """
+    final className = json['_className_'] as String;
+    switch (className) {
+      case '$_className':
+        return _\$${_className}FromJson(json);
+      ${interfaces.map((e) {
+    var name = e.interfaceName.replaceAll("\$", "");
+    return """case '$name':
+        return $name.fromJson(json);""";
+  }).join("\n      ")}
+      default:
+        throw UnsupportedError("The _className_ '\$className' is not supported by the $_className.fromJson constructor.");
     }
-  }).join("\n");
-
-  var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
-
-  var end = """    } else {
-      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
-    }
-  }
-""";
-
-  return body + end;
+  }""";
 }
 
 String generateToJson(String className, List<NameType> generics) {
