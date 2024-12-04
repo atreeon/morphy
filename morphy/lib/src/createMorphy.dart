@@ -24,7 +24,6 @@ String createMorphy(
 
   sb.write(getClassComment(interfacesFromImplements, classComment));
 
-  //move this into a helper class!
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
     sb.writeln(createJsonHeader(
@@ -38,14 +37,20 @@ String createMorphy(
     sb.write(getClassGenerics(classGenerics));
   }
 
-  sb.write(" extends ${className}");
+  // Handle extends and implements
+  if (!isAbstract || (isAbstract && nonSealed)) {
+    // For concrete classes or non-sealed abstract classes ($-prefixed)
+    sb.write(" extends ${className}");
+  }
 
   if (classGenerics.isNotEmpty) {
     sb.write(getExtendsGenerics(classGenerics));
   }
+
   if (interfacesFromImplements.isNotEmpty) {
     sb.write(getImplements(interfacesFromImplements, className));
   }
+
   sb.writeln(" {");
   if (isAbstract) {
     sb.writeln(getPropertiesAbstract(allFields));

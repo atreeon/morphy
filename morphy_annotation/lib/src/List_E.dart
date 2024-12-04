@@ -44,7 +44,7 @@ extension List_E<T> on List<T> {
   }
 }
 
-extension List__E on List {
+extension ListE on List {
   bool equalOrderedD(List compareTo) {
     return _listDeepEqualsOrdered(this, compareTo);
   }

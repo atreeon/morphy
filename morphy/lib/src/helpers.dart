@@ -82,15 +82,22 @@ List<NameTypeClassComment> getDistinctFields(
   return adjustedFields;
 }
 
-String getClassDefinition(
-    {required bool isAbstract,
-    required bool nonSealed,
-    required String className}) {
+String getClassDefinition({
+  required bool isAbstract,
+  required bool nonSealed,
+  required String className,
+}) {
   var _className = className.replaceAll("\$", "");
 
-  var abstract = isAbstract ? (nonSealed ? "abstract " : "sealed ") : "";
+  if (isAbstract) {
+    if (!nonSealed) {
+      // Just generate a sealed class for $$-prefixed classes
+      return "sealed class $_className";
+    }
+    return "abstract class $_className";
+  }
 
-  return "${abstract}class $_className";
+  return "class $_className";
 }
 
 String getClassGenerics(List<NameType> generics) {
