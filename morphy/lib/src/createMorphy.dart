@@ -58,6 +58,7 @@ String createMorphy(
     if (allFields.isEmpty) {
       if (!hidePublicConstructor) {
         sb.writeln("${classNameTrim}();");
+        sb.writeln('\n');
       }
       sb.writeln("${classNameTrim}._();");
     } else {
@@ -79,17 +80,22 @@ String createMorphy(
       sb.writeln("${classNameTrim}._({");
       sb.writeln(getConstructorRows(allFields));
       sb.writeln("}) ${getInitializer(allFields)};");
+      sb.writeln('\n');
 
       if (hasConstContructor) {
         sb.writeln("const ${classNameTrim}.constant({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("}) ${getInitializer(allFields)};");
+        sb.writeln('\n');
       }
       sb.writeln(getToString(allFields, classNameTrim));
     }
 
+    sb.writeln('\n');
     sb.writeln(getHashCode(allFields));
+    sb.writeln('\n');
     sb.writeln(getEquals(allFields, classNameTrim));
+    sb.writeln('\n');
   }
 //
   var interfacesX = [

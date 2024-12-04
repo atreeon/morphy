@@ -333,7 +333,7 @@ void main() {
   group("getToString", () {
     test("1g", () {
       var result = getToString([], "MyClass");
-      expectS(result.toString(), """__String toString() => "(MyClass-)""");
+      expectS(result.toString(), """String toString() => "(MyClass-)""");
     });
 
     test("2g", () {
@@ -344,7 +344,7 @@ void main() {
       ], "MyClass");
 
       expectS(result.toString(),
-          """__String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
+          """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
     });
   });
 
@@ -363,7 +363,7 @@ void main() {
       ]);
 
       expectS(result.toString(),
-          """__int get hashCode => __hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
+          """int get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
     });
   });
 
@@ -371,7 +371,7 @@ void main() {
     test("1i", () {
       var result = getEquals([], "A");
       var expected =
-          """__bool operator ==(__Object other) => __identical(this, other) || other is A && runtimeType == other.runtimeType
+          """bool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType
 ;""";
 
       expectS(result, expected);
@@ -384,7 +384,7 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ], "C");
       var expected =
-          """__bool operator ==(__Object other) => __identical(this, other) || other is C && runtimeType == other.runtimeType &&
+          """bool operator ==(Object other) => identical(this, other) || other is C && runtimeType == other.runtimeType &&
 a == other.a && b == other.b && c == other.c;""";
 
       expectS(result, expected);
@@ -1369,7 +1369,7 @@ c: (this as C).c,
   group("generateFromJsonHeader", () {
     test("1r ", () {
       var result = generateFromJsonHeader("\$Pet");
-      expectS(result, "factory Pet.fromJson(__Map<__String, dynamic> json) {");
+      expectS(result, "factory Pet.fromJson(Map<String, dynamic> json) {");
     });
   });
 
@@ -1497,16 +1497,16 @@ c: (this as C).c,
       var result = generateToJson("\$Pet", []);
 
       var expected = """// ignore: unused_field\n
-  __Map<__Type, __Object? Function(__Never)> _fns = {};
+  Map<Type, Object? Function(Never)> _fns = {};
 
-  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
+  Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
     _fns = fns ?? {};
     return toJson();
   }
 
-  __Map<__String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
 
-    final __Map<__String, dynamic> data = _\$PetToJson(this,
+    final Map<String, dynamic> data = _\$PetToJson(this,
 );
     // Adding custom key-value pair
     data['_className_'] = 'Pet';
@@ -1529,21 +1529,21 @@ c: (this as C).c,
       );
 
       var expected = """// ignore: unused_field\n
-    __Map<__Type, __Object? Function(__Never)> _fns = {};
+    Map<Type, Object? Function(Never)> _fns = {};
 
-    __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
+    Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
     _fns = fns ?? {};
     return toJson();
   }
 
-  __Map<__String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     var fn_T = getGenericToJsonFn(_fns, T);
     var fn_T2 = getGenericToJsonFn(_fns, T2);
     var fn_T3 = getGenericToJsonFn(_fns, T3);
-    final __Map<__String, dynamic> data = _\$PetToJson(this,
-      fn_T as __Object? Function(T),
-      fn_T2 as __Object? Function(T2),
-      fn_T3 as __Object? Function(T3));
+    final Map<String, dynamic> data = _\$PetToJson(this,
+      fn_T as Object? Function(T),
+      fn_T2 as Object? Function(T2),
+      fn_T3 as Object? Function(T3));
     // Adding custom key-value pair
     data['_className_'] = 'Pet';
     data['_T_'] = T.toString();
@@ -1560,7 +1560,7 @@ c: (this as C).c,
       var result = generateToJson("\$\$Pet", []);
 
       var expected = """
-  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]);
+  Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]);
 """;
 
       expectS(result, expected);
@@ -1578,7 +1578,7 @@ c: (this as C).c,
 
       var expected = """
 class B_Generics_Sing {
-  __Map<__List<__String>, B<__Object> Function(__Map<__String, dynamic>)> fns = {};
+  Map<List<String>, B<Object> Function(Map<String, dynamic>)> fns = {};
 
   factory B_Generics_Sing() => _singleton;
   static final B_Generics_Sing _singleton = B_Generics_Sing._internal();
@@ -1602,7 +1602,7 @@ class B_Generics_Sing {
 
       var expected = """
 class C_Generics_Sing {
-  __Map<__List<__String>, C<__Object, __Object, __Object> Function(__Map<__String, dynamic>)> fns = {};
+  Map<List<String>, C<Object, Object, Object> Function(Map<String, dynamic>)> fns = {};
 
   factory C_Generics_Sing() => _singleton;
   static final C_Generics_Sing _singleton = C_Generics_Sing._internal();

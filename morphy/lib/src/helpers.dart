@@ -228,7 +228,7 @@ String getEquals(List<NameType> fields, String className) {
   var sb = StringBuffer();
 
   sb.write(
-      "bool operator ==(__Object other) => __identical(this, other) || other is $className && runtimeType == other.runtimeType");
+      "bool operator ==(Object other) => identical(this, other) || other is $className && runtimeType == other.runtimeType");
 
   sb.writeln(fields.isEmpty ? "" : " &&");
 
@@ -453,7 +453,7 @@ String getConstructorName(String trimmedClassName, bool hasCustomConstructor) {
 String generateFromJsonHeader(String className) {
   var _className = "${className.replaceFirst("\$", "")}";
 
-  return "factory ${_className.replaceFirst("\$", "")}.fromJson(__Map<__String, dynamic> json) {";
+  return "factory ${_className.replaceFirst("\$", "")}.fromJson(Map<String, dynamic> json) {";
 }
 
 String generateFromJsonBody(
@@ -477,7 +477,7 @@ String generateFromJsonBody(
 
 String generateToJson(String className, List<NameType> generics) {
   if (className.startsWith("\$\$")) {
-    return "__Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]);";
+    return "Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]);";
   }
 
   var _className = "${className.replaceFirst("\$", "")}";
@@ -487,7 +487,7 @@ String generateToJson(String className, List<NameType> generics) {
       .join("\n");
 
   var toJsonParams = generics //
-      .map((e) => "      fn_${e.name} as __Object? Function(${e.name})")
+      .map((e) => "      fn_${e.name} as Object? Function(${e.name})")
       .join(",\n");
 
   var recordType = generics //
@@ -496,16 +496,16 @@ String generateToJson(String className, List<NameType> generics) {
 
   var result = """
   // ignore: unused_field
-  __Map<__Type, __Object? Function(__Never)> _fns = {};
+  Map<Type, Object? Function(Never)> _fns = {};
 
-  __Map<__String, dynamic> toJsonCustom([__Map<__Type, __Object? Function(__Never)>? fns]){
+  Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
     _fns = fns ?? {};
     return toJson();
   }
 
-  __Map<__String, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
 $getGenericFn
-    final __Map<__String, dynamic> data = _\$${_className}ToJson(this,
+    final Map<String, dynamic> data = _\$${_className}ToJson(this,
 $toJsonParams);
     // Adding custom key-value pair
     data['_className_'] = '$_className';
@@ -521,11 +521,11 @@ String createJsonSingleton(String classNameTrim, List<NameType> generics) {
   if (generics.length == 0) //
     return "";
 
-  var objects = generics.map((e) => "__Object").join(", ");
+  var objects = generics.map((e) => "Object").join(", ");
 
   var result = """
 class ${classNameTrim}_Generics_Sing {
-  __Map<__List<__String>, $classNameTrim<${objects}> Function(__Map<__String, dynamic>)> fns = {};
+  Map<List<String>, $classNameTrim<${objects}> Function(Map<String, dynamic>)> fns = {};
 
   factory ${classNameTrim}_Generics_Sing() => _singleton;
   static final ${classNameTrim}_Generics_Sing _singleton = ${classNameTrim}_Generics_Sing._internal();
@@ -540,7 +540,7 @@ class ${classNameTrim}_Generics_Sing {
 String generateFromJsonLeanHeader(String className) {
   var _className = "${className.replaceFirst("\$", "")}";
 
-  return "factory ${_className.replaceFirst("\$", "")}.fromJsonLean(__Map<__String, dynamic> json) {";
+  return "factory ${_className.replaceFirst("\$", "")}.fromJsonLean(Map<String, dynamic> json) {";
 }
 
 String generateFromJsonLeanBody(String className) {
@@ -559,8 +559,8 @@ String generateToJsonLean(String className) {
   var _className = "${className.replaceFirst("\$", "")}";
   var result = """
 
-  __Map<__String, dynamic> toJsonLean() {
-    final __Map<__String, dynamic> data = _\$${_className}ToJson(this,);
+  Map<String, dynamic> toJsonLean() {
+    final Map<String, dynamic> data = _\$${_className}ToJson(this,);
     return data;
   }""";
 

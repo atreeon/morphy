@@ -42,24 +42,9 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
-    const typedefs = """
-typedef __String = String;
-typedef __Object = Object;
-// ignore: unused_element
-typedef __List<E> = List<E>;
-typedef __Map<K, V> = Map<K, V>;
-typedef __Never = Never;
-typedef __Type = Type;
-typedef __int = int;
-typedef __bool = bool;
-const __hashObjects = hashObjects;
-const __identical = identical;
-""";
     final values = Set<String>();
 
-    var classElements = library.allElements //
-        .whereType<ClassElement>()
-        .toList();
+    var classElements = library.allElements.whereType<ClassElement>().toList();
 
     for (var annotatedElement in library.annotatedWith(typeChecker)) {
       final generatedValue = generateForAnnotatedElement(
@@ -74,10 +59,7 @@ const __identical = identical;
       }
     }
 
-    return [
-      if (this is MorphyGenerator<Morphy> && values.isNotEmpty) typedefs,
-      ...values
-    ].join('\n\n');
+    return values.join('\n\n');
   }
 
   /// Implement to return source code to generate for [element].
