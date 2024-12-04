@@ -24,6 +24,7 @@ dependencies:
   source_gen: ^1.1.1
   dartx: ^1.2.0
   quiver: ^3.2.1
+  path: ^1.8.1
 
 dev_dependencies:
   build_runner: ^2.4.6

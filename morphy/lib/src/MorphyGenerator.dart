@@ -11,6 +11,7 @@ import 'package:morphy/src/createMorphy.dart';
 import 'package:morphy/src/helpers.dart';
 import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:source_gen/source_gen.dart';
+import 'package:path/path.dart' as p;
 
 class MorphyGenerator<TValueT extends MorphyX>
     extends GeneratorForAnnotationX<TValueT> {
@@ -49,8 +50,10 @@ class MorphyGenerator<TValueT extends MorphyX>
       throw Exception("not a class");
     }
 
-    verifyRequiredImports(element);
-    allAnnotatedClasses[element.name] = element;
+    _allAnnotatedClasses[element.name] = element;
+
+    // Verify required imports
+    verifyRequiredImports(element, buildStep);
 
     var hasConstConstructor = element.constructors.any((e) => e.isConst);
     var isAbstract = element.name.startsWith("\$\$");
@@ -239,35 +242,87 @@ class MorphyGenerator<TValueT extends MorphyX>
     return interfaces;
   }
 
-  void verifyRequiredImports(ClassElement element) {
+  void verifyRequiredImports(ClassElement element, BuildStep buildStep) {
     var sourceLibrary = element.library;
     var requiredTypes = collectRequiredTypes(element);
     var missingImports = <String>{};
 
-    for (var typeName in requiredTypes) {
-      var typeElement = _allAnnotatedClasses[typeName];
-      if (typeElement != null &&
-          typeElement.library != sourceLibrary &&
-          !sourceLibrary.importedLibraries
-              .any((lib) => lib == typeElement.library)) {
-        missingImports.add(typeElement.library.source.uri.toString());
+    var sourceUri = sourceLibrary.source.uri;
+
+    // Get the package name from the build step
+    var packageName = buildStep.inputId.package;
+    var packagePrefix = 'package:$packageName/';
+
+    for (var typeElement in requiredTypes) {
+      var targetLibrary = typeElement.library;
+      if (targetLibrary != null &&
+          targetLibrary != sourceLibrary &&
+          !sourceLibrary.libraryImports
+              .any((import) => import.importedLibrary == targetLibrary)) {
+        var targetUri = targetLibrary.source.uri;
+
+        String importUri;
+
+        if (sourceUri.scheme == 'package' && targetUri.scheme == 'package') {
+          if (sourceUri.toString().startsWith(packagePrefix) &&
+              targetUri.toString().startsWith(packagePrefix)) {
+            // Both URIs are in the same package, compute relative path
+            var sourcePath = sourceUri.path.substring(
+                packageName.length + 1); // Remove 'package:' and package name
+            var targetPath = targetUri.path.substring(packageName.length + 1);
+
+            var relativePath =
+                p.relative(targetPath, from: p.dirname(sourcePath));
+            // Ensure the relative path uses forward slashes
+            importUri = relativePath.replaceAll('\\', '/');
+          } else {
+            // Different packages, cannot compute relative path
+            importUri = targetUri.toString();
+          }
+        } else if (sourceUri.scheme == targetUri.scheme &&
+            sourceUri.scheme == 'file') {
+          // Both URIs are file URIs
+          var sourcePath = sourceUri.toFilePath();
+          var targetPath = targetUri.toFilePath();
+
+          var relativePath =
+              p.relative(targetPath, from: p.dirname(sourcePath));
+          // Ensure the relative path uses forward slashes
+          importUri = relativePath.replaceAll('\\', '/');
+        } else {
+          // Different schemes or cannot compute relative path
+          importUri = targetUri.toString();
+        }
+
+        missingImports.add(importUri);
       }
     }
 
     if (missingImports.isNotEmpty) {
+      var imports =
+          missingImports.map((importUri) => "import '$importUri';").join('\n');
       throw Exception('''
-Missing required imports in ${sourceLibrary.source.uri}:
-${missingImports.map((import) => "import '$import';").join('\n')}
-''');
+  Missing required imports in ${sourceLibrary.source.uri}:
+$imports
+  ''');
     }
   }
 
-  Set<String> collectRequiredTypes(ClassElement element) {
-    var types = <String>{};
+  Set<ClassElement> collectRequiredTypes(ClassElement element) {
+    var types = <ClassElement>{};
 
     // Add implemented interfaces and their inheritance chain
-    for (var interface in element.allSupertypes) {
-      types.add(interface.element.name);
+    for (var interface in element.interfaces) {
+      if (interface.element is ClassElement) {
+        types.add(interface.element as ClassElement);
+      }
+    }
+
+    // Add supertypes
+    for (var supertype in element.allSupertypes) {
+      if (supertype.element is ClassElement) {
+        types.add(supertype.element as ClassElement);
+      }
     }
 
     // Add explicit subtypes from annotation
@@ -278,7 +333,7 @@ ${missingImports.map((import) => "import '$import';").join('\n')}
         var subtypes = reader.read('explicitSubTypes').listValue;
         for (var type in subtypes) {
           if (type.toTypeValue()?.element is ClassElement) {
-            types.add((type.toTypeValue()?.element as ClassElement).name);
+            types.add(type.toTypeValue()!.element as ClassElement);
           }
         }
       }
