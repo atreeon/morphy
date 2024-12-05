@@ -300,11 +300,9 @@ packages:
   morphy_annotation:
     dependency: "direct main"
     description:
-      path: morphy_annotation
-      ref: git-ref
-      resolved-ref: a4a99c45b9f8ce844ca95ed57ec4cc06a0ed524a
-      url: "https://github.com/arrrrny/morphy.git"
-    source: git
+      path: "../morphy_annotation"
+      relative: true
+    source: path
     version: "2.0.0"
   node_preamble:
     dependency: transitive

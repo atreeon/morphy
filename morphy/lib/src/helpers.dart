@@ -268,10 +268,10 @@ String createJsonHeader(String className, List<NameType> classGenerics,
 
     if (classGenerics.length > 0) //
       sb.writeln(
-          "@JsonSerializable(explicitToJson: $explicitToJson, generateCompareTo: $generateCompareTo, genericArgumentFactories: true, $jsonConstructorName)");
+          "@JsonSerializable(explicitToJson: $explicitToJson, genericArgumentFactories: true, $jsonConstructorName)");
     else
       sb.writeln(
-          "@JsonSerializable(explicitToJson: $explicitToJson, generateCompareTo: $generateCompareTo, $jsonConstructorName)");
+          "@JsonSerializable(explicitToJson: $explicitToJson, $jsonConstructorName)");
   }
 
   return sb.toString();
