@@ -259,7 +259,7 @@ String getEquals(List<NameType> fields, String className) {
 }
 
 String createJsonHeader(String className, List<NameType> classGenerics,
-    bool privateConstructor, bool explicitToJson) {
+    bool privateConstructor, bool explicitToJson, bool generateCompareTo) {
   var sb = StringBuffer();
 
   if (!className.startsWith("\$\$")) {
@@ -268,10 +268,10 @@ String createJsonHeader(String className, List<NameType> classGenerics,
 
     if (classGenerics.length > 0) //
       sb.writeln(
-          "@JsonSerializable(explicitToJson: $explicitToJson, genericArgumentFactories: true, $jsonConstructorName)");
+          "@JsonSerializable(explicitToJson: $explicitToJson, generateCompareTo: $generateCompareTo, genericArgumentFactories: true, $jsonConstructorName)");
     else
       sb.writeln(
-          "@JsonSerializable(explicitToJson: $explicitToJson, $jsonConstructorName)");
+          "@JsonSerializable(explicitToJson: $explicitToJson, generateCompareTo: $generateCompareTo, $jsonConstructorName)");
   }
 
   return sb.toString();

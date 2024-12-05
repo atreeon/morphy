@@ -16,8 +16,11 @@ class Interface {
     List<String> genericName,
     this.fields, [
     this.isExplicitSubType = false,
-  ])  : assert(genericExtends.length == genericName.length, "typeArgs must have same length as typeParams"),
-        typeParams = genericName.mapIndexed((i, x) => NameType(x, genericExtends[i])).toList() {}
+  ])  : assert(genericExtends.length == genericName.length,
+            "typeArgs must have same length as typeParams"),
+        typeParams = genericName
+            .mapIndexed((i, x) => NameType(x, genericExtends[i]))
+            .toList() {}
 
   Interface.fromGenerics(
     this.interfaceName,
@@ -26,7 +29,8 @@ class Interface {
     this.isExplicitSubType = false,
   ]);
 
-  toString() => "${this.interfaceName.toString()}|${this.typeParams.toString()}|${this.fields.toString()}";
+  toString() =>
+      "${this.interfaceName.toString()}|${this.typeParams.toString()}|${this.fields.toString()}";
 }
 
 class InterfaceWithComment extends Interface {
@@ -40,7 +44,8 @@ class InterfaceWithComment extends Interface {
     this.comment,
   }) : super(type, typeArgsTypes, typeParamsNames, fields);
 
-  toString() => "${this.interfaceName.toString()}|${this.typeParams.toString()}|${this.fields.toString()}";
+  toString() =>
+      "${this.interfaceName.toString()}|${this.typeParams.toString()}|${this.fields.toString()}";
 }
 
 class ClassDef {

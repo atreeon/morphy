@@ -192,6 +192,7 @@ class MorphyGenerator<TValueT extends MorphyX>
       typesExplicit,
       nonSealed,
       annotation.read('explicitToJson').boolValue,
+      annotation.read('generateCompareTo').boolValue,
     ));
 
     return sb.toString();

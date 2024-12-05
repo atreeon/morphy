@@ -16,6 +16,7 @@ String createMorphy(
   List<Interface> explicitForJson,
   bool nonSealed,
   bool explicitToJson,
+  bool generateCompareTo,
 ) {
   //recursively go through otherClasses and get my fieldnames &
 
@@ -26,8 +27,8 @@ String createMorphy(
 
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
-    sb.writeln(createJsonHeader(
-        className, classGenerics, hidePublicConstructor, explicitToJson));
+    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor,
+        explicitToJson, generateCompareTo));
   }
 
   sb.write(getClassDefinition(
@@ -142,7 +143,53 @@ String createMorphy(
 
   sb.writeln("}");
 
-  sb.writeln();
+  if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
+    sb.writeln();
+    sb.writeln("extension \$${classNameTrim}CompareE on \$${classNameTrim} {");
+    sb.writeln('''
+           Map<String, dynamic> compareTo$classNameTrim($classNameTrim other) {
+             final Map<String, dynamic> diff = {};
+
+             ${allFields.map((field) {
+              final type = field.type ?? '';
+              final name = field.name;
+              final isNullable = type.endsWith('?');
+
+              // Handle complex types (not primitive types)
+              if (!type.contains('String') &&
+                  !type.contains('int') &&
+                  !type.contains('bool') &&
+                  !type.contains('double') &&
+                  !type.contains('num')) {
+                if (isNullable) {
+                  return '''
+                   if ($name != other.$name) {
+                     if ($name != null && other.$name != null) {
+                       diff['$name'] = () => $name.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+                     } else {
+                       diff['$name'] = () => other.$name;
+                     }
+                   }''';
+                } else {
+                  return '''
+                   if ($name != other.$name) {
+                     diff['$name'] = () => $name.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+                   }''';
+                }
+              }
+              return '''
+               if ($name != other.$name) {
+                 diff['$name'] = () => other.$name;
+               }''';
+            }).where((s) => s.isNotEmpty).join('\n      ')}
+
+
+             return diff;
+           }
+         ''');
+    sb.writeln("}");
+  }
+
   sb.writeln("extension ${className}changeToE on ${className} {");
 
   if (!isAbstract) {
