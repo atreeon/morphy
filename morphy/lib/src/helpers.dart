@@ -634,7 +634,13 @@ String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
             !type.contains('int') &&
             !type.contains('bool') &&
             !type.contains('double') &&
-            !type.contains('num')) {
+            !type.contains('num') &&
+            !type.contains('DateTime') &&
+            !type.contains('List') &&
+            !type.contains('Map') &&
+            !type.contains('Set') &&
+            !type.contains('dynamic') &&
+            !type.contains('Object')) {
           if (isNullable) {
             return '''
           if ($name != other.$name) {
