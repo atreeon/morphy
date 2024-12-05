@@ -150,11 +150,14 @@ String getEnumPropertyList(
     List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) //
     return '';
-
-  var first = "enum ${className.replaceAll("\$", "")}\$ {";
+  String classNameTrim = '${className.replaceAll("\$", "")}';
+  String enumName = '${classNameTrim}\$';
+  var patchTypeDef =
+      'typedef ${classNameTrim}Patch = Map<$enumName, dynamic>;\n';
+  var first = "enum $enumName {";
   var last = fields.map((e) => //
       e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
-  return first + last;
+  return patchTypeDef + first + last;
 }
 
 /// remove dollars from the dataType except for function types
@@ -572,4 +575,87 @@ String generateToJsonLean(String className) {
   }""";
 
   return result;
+}
+
+String commentEveryLine(String multilineString) {
+  return multilineString.split('\n').map((line) => '//' + line).join('\n');
+}
+
+String generateCompareExtension(
+  bool isAbstract,
+  String className,
+  String classNameTrim,
+  List<NameTypeClassComment> allFields,
+  bool generateCompareTo,
+) {
+  var sb = StringBuffer();
+  String enumClassName = "${classNameTrim}\$";
+  sb.writeln();
+  sb.writeln("extension \$${classNameTrim}CompareE on \$${classNameTrim} {");
+
+  // First version with String keys
+  sb.writeln('''
+      Map<String, dynamic> compareTo$classNameTrim($classNameTrim other) {
+        final Map<String, dynamic> diff = {};
+
+        ${_generateCompareFieldsLogic(allFields, useEnumKeys: false)}
+
+        return diff;
+      }
+    ''');
+
+  // Second version with Enum keys
+  sb.writeln('''
+      ${classNameTrim}Patch compareToEnum$classNameTrim($classNameTrim other) {
+        final ${classNameTrim}Patch diff = {};
+
+        ${_generateCompareFieldsLogic(allFields, useEnumKeys: true, enumClassName: enumClassName)}
+
+        return diff;
+      }
+    ''');
+
+  sb.writeln("}");
+  return sb.toString();
+}
+
+String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
+    {required bool useEnumKeys, String? enumClassName}) {
+  return allFields
+      .map((field) {
+        final type = field.type ?? '';
+        final name = field.name;
+        final isNullable = type.endsWith('?');
+        final keyString =
+            useEnumKeys ? '$enumClassName.${field.name}' : "'${field.name}'";
+
+        // Handle complex types (not primitive types)
+        if (!type.contains('String') &&
+            !type.contains('int') &&
+            !type.contains('bool') &&
+            !type.contains('double') &&
+            !type.contains('num')) {
+          if (isNullable) {
+            return '''
+          if ($name != other.$name) {
+            if ($name != null && other.$name != null) {
+              diff[$keyString] = () => $name!.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
+            } else {
+              diff[$keyString] = () => other.$name;
+            }
+          }''';
+          } else {
+            return '''
+          if ($name != other.$name) {
+            diff[$keyString] = () => $name.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+          }''';
+          }
+        }
+        return '''
+      if ($name != other.$name) {
+        diff[$keyString] = () => other.$name;
+      }''';
+      })
+      .where((s) => s.isNotEmpty)
+      .join('\n    ');
 }
