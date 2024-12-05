@@ -165,7 +165,7 @@ String createMorphy(
                   return '''
                    if ($name != other.$name) {
                      if ($name != null && other.$name != null) {
-                       diff['$name'] = () => $name.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+                       diff['$name'] = () => $name!.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
                      } else {
                        diff['$name'] = () => other.$name;
                      }
