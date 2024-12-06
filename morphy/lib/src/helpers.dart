@@ -586,6 +586,8 @@ String generateCompareExtension(
   String className,
   String classNameTrim,
   List<NameTypeClassComment> allFields,
+  List<Interface> knownInterfaces, // Add these parameters
+  List<String> knownClasses, // Add these parameters
   bool generateCompareTo,
 ) {
   var sb = StringBuffer();
@@ -598,7 +600,7 @@ String generateCompareExtension(
       Map<String, dynamic> compareTo$classNameTrim($classNameTrim other) {
         final Map<String, dynamic> diff = {};
 
-        ${_generateCompareFieldsLogic(allFields, useEnumKeys: false)}
+        ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: false)}
 
         return diff;
       }
@@ -609,7 +611,7 @@ String generateCompareExtension(
       ${classNameTrim}Patch compareToEnum$classNameTrim($classNameTrim other) {
         final ${classNameTrim}Patch diff = {};
 
-        ${_generateCompareFieldsLogic(allFields, useEnumKeys: true, enumClassName: enumClassName)}
+        ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: true, enumClassName: enumClassName)}
 
         return diff;
       }
@@ -620,6 +622,7 @@ String generateCompareExtension(
 }
 
 String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
+    List<Interface> knownInterfaces, List<String> knownClasses,
     {required bool useEnumKeys, String? enumClassName}) {
   return allFields
       .map((field) {
@@ -629,40 +632,158 @@ String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
         final keyString =
             useEnumKeys ? '$enumClassName.${field.name}' : "'${field.name}'";
         final methodName = useEnumKeys ? 'compareToEnum' : 'compareTo';
+        final baseType = type.replaceAll('?', ''); // Remove nullable indicator
 
-        // Handle complex types (not primitive types)
-        if (!type.contains('String') &&
-            !type.contains('int') &&
-            !type.contains('bool') &&
-            !type.contains('double') &&
-            !type.contains('num') &&
-            !type.contains('DateTime') &&
-            !type.contains('List') &&
-            !type.contains('Map') &&
-            !type.contains('Set') &&
-            !type.contains('dynamic') &&
-            !type.contains('Object')) {
-          if (isNullable) {
-            return '''
-          if ($name != other.$name) {
-            if ($name != null && other.$name != null) {
-              diff[$keyString] = () => $name!.$methodName${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
-            } else {
-              diff[$keyString] = () => other.$name;
-            }
-          }''';
-          } else {
-            return '''
-          if ($name != other.$name) {
-            diff[$keyString] = () => $name.$methodName${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
-          }''';
-          }
+        // Skip functions
+        if (type.contains('Function')) {
+          return '';
         }
-        return '''
-      if ($name != other.$name) {
-        diff[$keyString] = () => other.$name;
-      }''';
+
+        // Handle different types
+        if (type.startsWith('List<') || type.startsWith('Set<')) {
+          return _generateCollectionComparison(
+              name, type, keyString, isNullable);
+        }
+
+        if (type.startsWith('Map<')) {
+          return _generateMapComparison(name, keyString, isNullable);
+        }
+
+        if (type.contains('DateTime')) {
+          return _generateDateTimeComparison(name, keyString, isNullable);
+        }
+
+        // Check if type is a known interface or class
+        final isKnownType =
+            knownInterfaces.any((i) => i.interfaceName == baseType) ||
+                knownClasses.contains(baseType);
+
+        if (isKnownType) {
+          return _generateKnownTypeComparison(
+              name, baseType, keyString, methodName, isNullable);
+        }
+
+        // Direct comparison for all other types
+        return _generateSimpleComparison(name, keyString);
       })
       .where((s) => s.isNotEmpty)
       .join('\n    ');
+}
+
+String _generateCollectionComparison(
+    String name, String type, String keyString, bool isNullable) {
+  if (isNullable) {
+    return '''
+    if ($name != other.$name) {
+      if ($name != null && other.$name != null) {
+        if ($name!.length != other.$name!.length) {
+          diff[$keyString] = () => other.$name;
+        } else {
+          var hasDiff = false;
+          for (var i = 0; i < $name!.length; i++) {
+            if ($name![i] != other.$name![i]) {
+              hasDiff = true;
+              break;
+            }
+          }
+          if (hasDiff) {
+            diff[$keyString] = () => other.$name;
+          }
+        }
+      } else {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+  }
+
+  return '''
+    if ($name != other.$name) {
+      if ($name.length != other.$name.length) {
+        diff[$keyString] = () => other.$name;
+      } else {
+        var hasDiff = false;
+        for (var i = 0; i < $name.length; i++) {
+          if ($name[i] != other.$name[i]) {
+            hasDiff = true;
+            break;
+          }
+        }
+        if (hasDiff) {
+          diff[$keyString] = () => other.$name;
+        }
+      }
+    }''';
+}
+
+String _generateMapComparison(String name, String keyString, bool isNullable) {
+  if (isNullable) {
+    return '''
+    if ($name != other.$name) {
+      if ($name != null && other.$name != null) {
+        if ($name!.length != other.$name!.length ||
+           !$name!.keys.every((k) => other.$name!.containsKey(k) && $name![k] == other.$name![k])) {
+          diff[$keyString] = () => other.$name;
+        }
+      } else {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+  }
+
+  return '''
+    if ($name != other.$name) {
+      if ($name.length != other.$name.length ||
+         !$name.keys.every((k) => other.$name.containsKey(k) && $name[k] == other.$name[k])) {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+}
+
+String _generateDateTimeComparison(
+    String name, String keyString, bool isNullable) {
+  if (isNullable) {
+    return '''
+    if ($name != other.$name) {
+      if ($name != null && other.$name != null) {
+        if (!$name!.isAtSameMomentAs(other.$name!)) {
+          diff[$keyString] = () => other.$name;
+        }
+      } else {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+  }
+
+  return '''
+    if ($name != other.$name) {
+      if (!$name.isAtSameMomentAs(other.$name)) {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+}
+
+String _generateKnownTypeComparison(String name, String baseType,
+    String keyString, String methodName, bool isNullable) {
+  if (isNullable) {
+    return '''
+    if ($name != other.$name) {
+      if ($name != null && other.$name != null) {
+        diff[$keyString] = () => $name!.$methodName${baseType.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
+      } else {
+        diff[$keyString] = () => other.$name;
+      }
+    }''';
+  }
+
+  return '''
+    if ($name != other.$name) {
+      diff[$keyString] = () => $name.$methodName${baseType.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+    }''';
+}
+
+String _generateSimpleComparison(String name, String keyString) {
+  return '''
+    if ($name != other.$name) {
+      diff[$keyString] = () => other.$name;
+    }''';
 }

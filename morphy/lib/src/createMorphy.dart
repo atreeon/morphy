@@ -143,11 +143,20 @@ String createMorphy(
 
   sb.writeln("}");
   if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
+    // Create a list of all known classes from the interfaces
+    var knownClasses = [
+      ...interfacesAllInclSubInterfaces
+          .map((i) => i.interfaceName.replaceAll("\$", "")),
+      classNameTrim,
+    ].toSet().toList();
+
     sb.writeln(generateCompareExtension(
       isAbstract,
       className,
       classNameTrim,
       allFields,
+      interfacesAllInclSubInterfaces, // Pass all known interfaces
+      knownClasses, // Pass all known classes
       generateCompareTo,
     ));
   }
