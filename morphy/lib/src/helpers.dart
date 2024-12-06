@@ -628,6 +628,7 @@ String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
         final isNullable = type.endsWith('?');
         final keyString =
             useEnumKeys ? '$enumClassName.${field.name}' : "'${field.name}'";
+        final methodName = useEnumKeys ? 'compareToEnum' : 'compareTo';
 
         // Handle complex types (not primitive types)
         if (!type.contains('String') &&
@@ -645,7 +646,7 @@ String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
             return '''
           if ($name != other.$name) {
             if ($name != null && other.$name != null) {
-              diff[$keyString] = () => $name!.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
+              diff[$keyString] = () => $name!.$methodName${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name!);
             } else {
               diff[$keyString] = () => other.$name;
             }
@@ -653,7 +654,7 @@ String _generateCompareFieldsLogic(List<NameTypeClassComment> allFields,
           } else {
             return '''
           if ($name != other.$name) {
-            diff[$keyString] = () => $name.compareTo${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
+            diff[$keyString] = () => $name.$methodName${type.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '')}(other.$name);
           }''';
           }
         }
