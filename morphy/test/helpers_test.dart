@@ -1637,6 +1637,68 @@ class C_Generics_Sing {
     });
   });
 
+  group("generateToJsonLean", () {
+    test("1z non-abstract class", () {
+      var result = generateToJsonLean("\$Pet");
+      var expected = """
+
+    Map<String, dynamic> toJsonLean() {
+      final Map<String, dynamic> data = _\$PetToJson(this,);
+      return _sanitizeJson(data);
+    }
+
+    dynamic _sanitizeJson(dynamic json) {
+      if (json is Map<String, dynamic>) {
+        json.remove('_className_');
+        return json..forEach((key, value) {
+          json[key] = _sanitizeJson(value);
+        });
+      } else if (json is List) {
+        return json.map((e) => _sanitizeJson(e)).toList();
+      }
+      return json;
+    }""";
+      expectS(result, expected);
+    });
+
+    test("2z abstract class", () {
+      var result = generateToJsonLean("\$\$Pet");
+      expectS(result, "");
+    });
+
+    // Modify verification tests to match actual implementation
+    test("3z verify sanitization", () {
+      var result = generateToJsonLean("\$Pet");
+
+      // Verify key components are present
+      expect(result.contains("_sanitizeJson"), true);
+      expect(result.contains("json.remove('_className_')"), true);
+      expect(result.contains("json is Map<String, dynamic>"), true);
+      expect(result.contains("json is List"), true);
+    });
+
+    test("4z verify different data types", () {
+      var result = generateToJsonLean("\$Pet");
+
+      // Verify handling of different types
+      expect(result.contains("return json;"), true);
+      expect(result.contains("json is Map<String, dynamic>"), true);
+      expect(result.contains("json is List"), true);
+      expect(result.contains("_sanitizeJson(value)"), true);
+      expect(result.contains("_sanitizeJson(e)"), true);
+    });
+
+    test("5z verify method structure", () {
+      var result = generateToJsonLean("\$Pet");
+
+      // Verify method signature and structure
+      expect(result.contains("Map<String, dynamic> toJsonLean()"), true);
+      expect(result.contains("_\$PetToJson(this,)"),
+          true); // Note the trailing comma
+      expect(result.contains("return _sanitizeJson(data)"), true);
+    });
+  });
+
 //  group("getCopyWithSignature", () {
 //    test("1p", () {
 //      var result = getCopyWithSignature(
