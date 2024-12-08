@@ -462,27 +462,52 @@ String getConstructorName(String trimmedClassName, bool hasCustomConstructor) {
 
 String generateFromJsonHeader(String className) {
   var _className = "${className.replaceFirst("\$", "")}";
-
   return "factory ${_className.replaceFirst("\$", "")}.fromJson(Map<String, dynamic> json) {";
 }
 
 String generateFromJsonBody(
     String className, List<NameType> generics, List<Interface> interfaces) {
-  var _className = className.replaceFirst("\$", "");
-  return """
-    final className = json['_className_'] as String;
-    switch (className) {
-      case '$_className':
-        return _\$${_className}FromJson(json);
-      ${interfaces.map((e) {
-    var name = e.interfaceName.replaceAll("\$", "");
-    return """case '$name':
-        return $name.fromJson(json);""";
-  }).join("\n      ")}
-      default:
-        throw UnsupportedError("The _className_ '\$className' is not supported by the $_className.fromJson constructor.");
+  var _class = Interface(className, generics.map((e) => e.type ?? "").toList(),
+      generics.map((e) => e.name).toList(), []);
+  var _classes = [...interfaces, _class];
+  var _className = className.replaceAll("\$", "");
+
+  var body = """if (json['_className_'] == null) {
+      return _\$${_className}FromJson(json);
     }
-  }""";
+""";
+
+  // Add interface checks
+  var interfaceChecks = _classes
+      .where((c) => !c.interfaceName.startsWith("\$\$"))
+      .mapIndexed((i, c) {
+    var _interfaceName = "${c.interfaceName.replaceFirst("\$", "")}";
+    var genericTypes = c.typeParams.map((e) => "'_${e.name}_'").join(",");
+    var isCurrentClass = _interfaceName == className.replaceAll("\$", "");
+    var prefix = i == 0 ? "if" : "} else if";
+
+    if (c.typeParams.length > 0) {
+      return """$prefix (json['_className_'] == "$_interfaceName") {
+      var fn_fromJson = getFromJsonToGenericFn(
+        ${_interfaceName}_Generics_Sing().fns,
+        json,
+        [$genericTypes],
+      );
+      return fn_fromJson(json);""";
+    } else {
+      return """$prefix (json['_className_'] == "$_interfaceName") {
+      return ${isCurrentClass ? "_\$" : ""}${_interfaceName}${isCurrentClass ? "FromJson" : ".fromJson"}(json);""";
+    }
+  }).join("\n");
+
+  body += interfaceChecks;
+  if (interfaceChecks.isNotEmpty) body += "\n}";
+
+  body += """
+    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
+    }""";
+
+  return body;
 }
 
 String generateToJson(String className, List<NameType> generics) {
@@ -492,20 +517,30 @@ String generateToJson(String className, List<NameType> generics) {
 
   var _className = "${className.replaceFirst("\$", "")}";
 
-  var getGenericFn = generics //
-      .map((e) => "    var fn_${e.name} = getGenericToJsonFn(_fns, ${e.name});")
-      .join("\n");
+  var getGenericFn = generics.isEmpty
+      ? ""
+      : generics
+              .map((e) =>
+                  "    var fn_${e.name} = getGenericToJsonFn(_fns, ${e.name});")
+              .join("\n") +
+          "\n";
 
-  var toJsonParams = generics //
-      .map((e) => "      fn_${e.name} as Object? Function(${e.name})")
-      .join(",\n");
+  var toJsonParams = generics.isEmpty
+      ? ""
+      : generics
+              .map((e) => "      fn_${e.name} as Object? Function(${e.name})")
+              .join(",\n") +
+          "\n";
 
-  var recordType = generics //
-      .map((e) => "    data['_${e.name}_'] = ${e.name}.toString();")
-      .join("\n");
+  var recordType = generics.isEmpty
+      ? ""
+      : generics
+              .map((e) => "      data['_${e.name}_'] = ${e.name}.toString();")
+              .join("\n") +
+          "\n";
 
   var result = """
-  // ignore: unused_field
+  // ignore: unused_field\n
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
@@ -514,14 +549,39 @@ String generateToJson(String className, List<NameType> generics) {
   }
 
   Map<String, dynamic> toJson() {
-$getGenericFn
-    final Map<String, dynamic> data = _\$${_className}ToJson(this,
-$toJsonParams);
-    // Adding custom key-value pair
-    data['_className_'] = '$_className';
-$recordType
+$getGenericFn    final Map<String, dynamic> data = _\$${_className}ToJson(this${generics.isEmpty ? "" : ",\n$toJsonParams"});
+
+      data['_className_'] = '$_className';${recordType.isEmpty ? "" : "\n$recordType"}
 
     return data;
+  }""";
+
+  return result;
+}
+
+String generateToJsonLean(String className) {
+  if (className.startsWith("\$\$")) {
+    return "";
+  }
+
+  var _className = "${className.replaceFirst("\$", "")}";
+  var result = """
+
+  Map<String, dynamic> toJsonLean() {
+    final Map<String, dynamic> data = _\$${_className}ToJson(this,);
+    return _sanitizeJson(data);
+  }
+
+  dynamic _sanitizeJson(dynamic json) {
+    if (json is Map<String, dynamic>) {
+      json.remove('_className_');
+      return json..forEach((key, value) {
+        json[key] = _sanitizeJson(value);
+      });
+    } else if (json is List) {
+      return json.map((e) => _sanitizeJson(e)).toList();
+    }
+    return json;
   }""";
 
   return result;
@@ -543,36 +603,6 @@ class ${classNameTrim}_Generics_Sing {
   ${classNameTrim}_Generics_Sing._internal() {}
 }
     """;
-
-  return result;
-}
-
-String generateFromJsonLeanHeader(String className) {
-  var _className = "${className.replaceFirst("\$", "")}";
-
-  return "factory ${_className.replaceFirst("\$", "")}.fromJsonLean(Map<String, dynamic> json) {";
-}
-
-String generateFromJsonLeanBody(String className) {
-  var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
-  return """
-    return _\$${_className}FromJson(json, );
-  }
-""";
-}
-
-String generateToJsonLean(String className) {
-  if (className.startsWith("\$\$")) {
-    return "";
-  }
-
-  var _className = "${className.replaceFirst("\$", "")}";
-  var result = """
-
-  Map<String, dynamic> toJsonLean() {
-    final Map<String, dynamic> data = _\$${_className}ToJson(this,);
-    return data;
-  }""";
 
   return result;
 }

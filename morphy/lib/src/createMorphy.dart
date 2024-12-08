@@ -135,8 +135,6 @@ String createMorphy(
     sb.writeln(commentEveryLine(explicitForJson.join("\n").toString()));
     sb.writeln(generateFromJsonHeader(className));
     sb.writeln(generateFromJsonBody(className, classGenerics, explicitForJson));
-    sb.writeln(generateFromJsonLeanHeader(className));
-    sb.writeln(generateFromJsonLeanBody(className));
     sb.writeln(generateToJson(className, classGenerics));
     sb.writeln(generateToJsonLean(className));
   }

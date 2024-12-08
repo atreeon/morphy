@@ -551,7 +551,8 @@ a == other.a && b == other.b && c == other.c;""";
         ],
         "\$MyClass",
       );
-      expectS(result, "enum MyClass\$ {age,name}");
+      expectS(result,
+          "typedef MyClassPatch = Map<MyClass\$, dynamic>;\nenum MyClass\$ {age,name}");
     });
 
     test("2o no fields", () {
@@ -1161,7 +1162,7 @@ fn: fn == null ? this.fn as bool Function(\$X) : fn() as bool Function(\$X),
 required String y,
 String Function()? x,
 }) {
-return B._(
+return B(
 y: y as String,
 x: x == null ? this.x as String : x() as String,
 ) as B;}""");
@@ -1188,7 +1189,7 @@ required String y,
 required Z z,
 String Function()? x,
 }) {
-return B._(
+return B(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
@@ -1216,7 +1217,7 @@ required String y,
 required Z z,
 String Function()? x,
 }) {
-return B._(
+return B(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
@@ -1271,7 +1272,7 @@ z: z == null ? this.z as Z : z() as Z,
 required String y,
 String Function()? x,
 }) {
-return B._(
+return B(
 y: y as String,
 x: x == null ? this.x as String : x() as String,
 ) as B;}""");
@@ -1298,7 +1299,7 @@ required String y,
 required Z z,
 String Function()? x,
 }) {
-return B._(
+return B(
 y: y as String,
 z: z as Z,
 x: x == null ? this.x as String : x() as String,
@@ -1376,15 +1377,13 @@ c: (this as C).c,
   group("generateFromJsonBody", () {
     test("1s no explicit", () {
       var result = generateFromJsonBody("\$Pet", [], []);
-
-      var expected = """
-    if (json['_className_'] == "Pet") {
-      return _\$PetFromJson(json, );
-    } else {
-      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the Pet.fromJson constructor.");
-    }
-  }""";
-
+      var expected = """if (json['_className_'] == null) {
+        return _\$PetFromJson(json);
+        }
+        if (json['_className_'] == "Pet") {
+        return _\$PetFromJson(json);
+        }    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the Pet.fromJson constructor.");
+        }""";
       expectS(result, expected);
     });
 
@@ -1393,20 +1392,18 @@ c: (this as C).c,
         "\$Person",
         [],
         [
-          Interface("\$Manager", [], [], [NameType("hairLength", "int")]),
+          Interface("\$Manager", [], [], [NameType("hairLength", "int")])
         ],
       );
-
-      var expected = """
-    if (json['_className_'] == "Manager") {
-      return _\$ManagerFromJson(json, );
-    } else if (json['_className_'] == "Person") {
-      return _\$PersonFromJson(json, );
-    } else {
-      throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the Person.fromJson constructor.");
-    }
-  }""";
-
+      var expected = """if (json['_className_'] == null) {
+        return _\$PersonFromJson(json);
+        }
+        if (json['_className_'] == "Manager") {
+        return Manager.fromJson(json);
+        } else if (json['_className_'] == "Person") {
+        return _\$PersonFromJson(json);
+        }    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the Person.fromJson constructor.");
+        }""";
       expectS(result, expected);
     });
 
@@ -1421,18 +1418,18 @@ c: (this as C).c,
         [],
       );
 
-      var expected = """
-  if (json['_className_'] == "B") {
-    var fn_fromJson = getFromJsonToGenericFn(
-      B_Generics_Sing().fns,
-      json,
-      ['_T_','_T2_','_T3_'],
-    );
-    return fn_fromJson(json);
-  } else {
-    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the B.fromJson constructor.");
-  }
-}""";
+      var expected = """if (json['_className_'] == null) {
+        return _\$BFromJson(json);
+    }
+    if (json['_className_'] == "B") {
+        var fn_fromJson = getFromJsonToGenericFn(
+          B_Generics_Sing().fns,
+          json,
+          ['_T_','_T2_','_T3_'],
+        );
+        return fn_fromJson(json);
+    }    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the B.fromJson constructor.");
+    }""";
 
       expectS(result, expected);
     });
@@ -1442,24 +1439,24 @@ c: (this as C).c,
         "A",
         [],
         [
-          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], []),
+          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], [])
         ],
       );
 
-      var expected = """
-  if (json['_className_'] == "B") {
-    var fn_fromJson = getFromJsonToGenericFn(
-      B_Generics_Sing().fns,
-      json,
-      ['_T_','_T2_','_T3_'],
-    );
-    return fn_fromJson(json);
-  } else if (json[\'_className_\'] == "A") {
-    return _\$AFromJson(json, );
-  } else {
-    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the A.fromJson constructor.");
-  }
-}""";
+      var expected = """if (json['_className_'] == null) {
+        return _\$AFromJson(json);
+    }
+    if (json['_className_'] == "B") {
+        var fn_fromJson = getFromJsonToGenericFn(
+          B_Generics_Sing().fns,
+          json,
+          ['_T_','_T2_','_T3_'],
+        );
+        return fn_fromJson(json);
+    } else if (json['_className_'] == "A") {
+        return _\$AFromJson(json);
+    }    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the A.fromJson constructor.");
+    }""";
 
       expectS(result, expected);
     });
@@ -1469,52 +1466,44 @@ c: (this as C).c,
         "\$\$A",
         [],
         [
-          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], []),
+          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], [])
         ],
       );
 
-      var expected = """
-  if (json['_className_'] == "B") {
-    var fn_fromJson = getFromJsonToGenericFn(
-      B_Generics_Sing().fns,
-      json,
-      ['_T_','_T2_','_T3_'],
-    );
-    return fn_fromJson(json);
-  } else {
-    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the A.fromJson constructor.");
-  }
-}""";
+      var expected = """if (json['_className_'] == null) {
+        return _\$AFromJson(json);
+    }
+    if (json['_className_'] == "B") {
+        var fn_fromJson = getFromJsonToGenericFn(
+          B_Generics_Sing().fns,
+          json,
+          ['_T_','_T2_','_T3_'],
+        );
+        return fn_fromJson(json);
+    }    throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the A.fromJson constructor.");
+    }""";
 
       expectS(result, expected);
     });
   });
-
   group("generateToJson", () {
     //add this based on the generics
 
     test("1u", () {
       var result = generateToJson("\$Pet", []);
+      var expected = """// ignore: unused_field
+        Map<Type, Object? Function(Never)> _fns = {};
 
-      var expected = """// ignore: unused_field\n
-  Map<Type, Object? Function(Never)> _fns = {};
+        Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
+        _fns = fns ?? {};
+        return toJson();
+        }
 
-  Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
-    _fns = fns ?? {};
-    return toJson();
-  }
-
-  Map<String, dynamic> toJson() {
-
-    final Map<String, dynamic> data = _\$PetToJson(this,
-);
-    // Adding custom key-value pair
-    data['_className_'] = 'Pet';
-
-
-    return data;
-  }""";
-
+        Map<String, dynamic> toJson() {
+        final Map<String, dynamic> data = _\$PetToJson(this);
+        data['_className_'] = 'Pet';
+        return data;
+        }""";
       expectS(result, expected);
     });
 
@@ -1527,32 +1516,29 @@ c: (this as C).c,
           NameType("T3", null),
         ],
       );
+      var expected = """// ignore: unused_field
+        Map<Type, Object? Function(Never)> _fns = {};
 
-      var expected = """// ignore: unused_field\n
-    Map<Type, Object? Function(Never)> _fns = {};
+        Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
+        _fns = fns ?? {};
+        return toJson();
+        }
 
-    Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
-    _fns = fns ?? {};
-    return toJson();
-  }
-
-  Map<String, dynamic> toJson() {
-    var fn_T = getGenericToJsonFn(_fns, T);
-    var fn_T2 = getGenericToJsonFn(_fns, T2);
-    var fn_T3 = getGenericToJsonFn(_fns, T3);
-    final Map<String, dynamic> data = _\$PetToJson(this,
-      fn_T as Object? Function(T),
-      fn_T2 as Object? Function(T2),
-      fn_T3 as Object? Function(T3));
-    // Adding custom key-value pair
-    data['_className_'] = 'Pet';
-    data['_T_'] = T.toString();
-    data['_T2_'] = T2.toString();
-    data['_T3_'] = T3.toString();
-
-    return data;
-  }""";
-
+        Map<String, dynamic> toJson() {
+        var fn_T = getGenericToJsonFn(_fns, T);
+        var fn_T2 = getGenericToJsonFn(_fns, T2);
+        var fn_T3 = getGenericToJsonFn(_fns, T3);
+        final Map<String, dynamic> data = _\$PetToJson(this,
+        fn_T as Object? Function(T),
+        fn_T2 as Object? Function(T2),
+        fn_T3 as Object? Function(T3)
+        );
+        data['_className_'] = 'Pet';
+        data['_T_'] = T.toString();
+        data['_T2_'] = T2.toString();
+        data['_T3_'] = T3.toString();
+        return data;
+        }""";
       expectS(result, expected);
     });
 
@@ -1628,7 +1614,7 @@ class C_Generics_Sing {
 
   group("createJsonHeader", () {
     test("1w non abstract, no generics, private constructor", () {
-      var result = createJsonHeader("\$Pet", [], true, true);
+      var result = createJsonHeader("\$Pet", [], true, true, true);
       var expected =
           "@JsonSerializable(explicitToJson: true, constructor: 'forJsonDoNotUse')";
 
@@ -1636,15 +1622,15 @@ class C_Generics_Sing {
     });
 
     test("2w abstract", () {
-      var result = createJsonHeader("\$\$Pet", [], true, true);
+      var result = createJsonHeader("\$\$Pet", [], true, true, true);
       var expected = "";
 
       expectS(result, expected);
     });
 
     test("3w non abstract, generics, no private constructor", () {
-      var result = createJsonHeader(
-          "\$Pet", [NameTypeClass("name", "type", "className")], false, false);
+      var result = createJsonHeader("\$Pet",
+          [NameTypeClass("name", "type", "className")], false, false, false);
       var expected =
           "@JsonSerializable(explicitToJson: false, genericArgumentFactories: true, )";
       expectS(result, expected);
