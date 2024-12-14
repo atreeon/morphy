@@ -148,16 +148,92 @@ String getImplements(List<Interface> interfaces, String className) {
 
 String getEnumPropertyList(
     List<NameTypeClassComment> fields, String className) {
-  if (fields.isEmpty) //
-    return '';
+  if (fields.isEmpty) return '';
+
   String classNameTrim = '${className.replaceAll("\$", "")}';
   String enumName = '${classNameTrim}\$';
-  var patchTypeDef =
-      'typedef ${classNameTrim}Patch = Map<$enumName, dynamic>;\n';
-  var first = "enum $enumName {";
-  var last = fields.map((e) => //
-      e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
-  return patchTypeDef + first + last;
+
+  var sb = StringBuffer();
+
+  // Generate enum
+  sb.writeln("enum $enumName {");
+  sb.writeln(fields
+      .map((e) => e.name.startsWith("_") ? e.name.substring(1) : e.name)
+      .join(","));
+  sb.writeln("}\n");
+
+  // Generate patch class
+  sb.writeln("class ${classNameTrim}Patch {");
+  sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
+  sb.writeln();
+
+  // Static factory methods
+  sb.writeln(
+      "  static ${classNameTrim}Patch create([Map<String, dynamic>? diff]) {");
+  sb.writeln("    final patch = ${classNameTrim}Patch();");
+  sb.writeln("    if (diff != null) {");
+  sb.writeln("      diff.forEach((key, value) {");
+  sb.writeln("        try {");
+  sb.writeln(
+      "          final enumValue = $enumName.values.firstWhere((e) => e.name == key);");
+  sb.writeln("          if (value is Function) {");
+  sb.writeln("            patch._patch[enumValue] = value();");
+  sb.writeln("          } else {");
+  sb.writeln("            patch._patch[enumValue] = value;");
+  sb.writeln("          }");
+  sb.writeln("        } catch (_) {}");
+  sb.writeln("      });");
+  sb.writeln("    }");
+  sb.writeln("    return patch;");
+  sb.writeln("  }");
+  sb.writeln();
+
+  // Convert to map method
+  sb.writeln("  Map<$enumName, dynamic> toPatch() => Map.from(_patch);");
+  sb.writeln();
+
+  // Add toJson method
+  sb.writeln("  Map<String, dynamic> toJson() {");
+  sb.writeln("    final json = <String, dynamic>{};");
+  sb.writeln("    _patch.forEach((key, value) {");
+  sb.writeln("      if (value != null) {");
+  sb.writeln("        if (value is DateTime) {");
+  sb.writeln("          json[key.name] = value.toIso8601String();");
+  sb.writeln("        } else if (value is List) {");
+  sb.writeln(
+      "          json[key.name] = value.map((e) => e?.toJson ?? e).toList();");
+  sb.writeln("        } else {");
+  sb.writeln("          json[key.name] = value?.toJson ?? value;");
+  sb.writeln("        }");
+  sb.writeln("      }");
+  sb.writeln("    });");
+  sb.writeln("    return json;");
+  sb.writeln("  }");
+  sb.writeln();
+
+  // Add fromJson factory
+  sb.writeln(
+      "  static ${classNameTrim}Patch fromJson(Map<String, dynamic> json) {");
+  sb.writeln("    return create(json);");
+  sb.writeln("  }");
+  sb.writeln();
+
+  // Generate with methods
+  for (var field in fields) {
+    var name =
+        field.name.startsWith("_") ? field.name.substring(1) : field.name;
+    var type = getDataTypeWithoutDollars(field.type ?? "dynamic");
+
+    sb.writeln("  ${classNameTrim}Patch with$name($type value) {");
+    sb.writeln("    _patch[$enumName.$name] = value;");
+    sb.writeln("    return this;");
+    sb.writeln("  }");
+    sb.writeln();
+  }
+
+  sb.writeln("}");
+
+  return sb.toString();
 }
 
 /// remove dollars from the dataType except for function types
@@ -637,15 +713,15 @@ String generateCompareExtension(
     ''');
 
   // Second version with Enum keys
-  sb.writeln('''
-      ${classNameTrim}Patch compareToEnum$classNameTrim($classNameTrim other) {
-        final ${classNameTrim}Patch diff = {};
+  // sb.writeln('''
+  //     ${classNameTrim}Patch compareToEnum$classNameTrim($classNameTrim other) {
+  //       final ${classNameTrim}Patch diff = {};
 
-        ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: true, enumClassName: enumClassName)}
+  //       ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: true, enumClassName: enumClassName)}
 
-        return diff;
-      }
-    ''');
+  //       return diff;
+  //     }
+  //   ''');
 
   sb.writeln("}");
   return sb.toString();
