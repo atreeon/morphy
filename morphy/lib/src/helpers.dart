@@ -2,6 +2,8 @@
 import 'package:dartx/dartx.dart';
 import 'package:morphy/src/common/NameType.dart';
 import 'package:morphy/src/common/classes.dart';
+
+import 'method_generator.dart';
 // import 'package:meta/meta.dart';
 
 String getClassComment(List<Interface> interfaces, String classComment) {
@@ -150,8 +152,8 @@ String getEnumPropertyList(
     List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) return '';
 
-  String classNameTrim = '${className.replaceAll("\$", "")}';
-  String enumName = '${classNameTrim}\$';
+  String classNameTrimmed = '${className.replaceAll("\$", "")}';
+  String enumName = '${classNameTrimmed}\$';
 
   var sb = StringBuffer();
 
@@ -163,14 +165,14 @@ String getEnumPropertyList(
   sb.writeln("}\n");
 
   // Generate patch class
-  sb.writeln("class ${classNameTrim}Patch {");
+  sb.writeln("class ${classNameTrimmed}Patch {");
   sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
   sb.writeln();
 
   // Static factory methods
   sb.writeln(
-      "  static ${classNameTrim}Patch create([Map<String, dynamic>? diff]) {");
-  sb.writeln("    final patch = ${classNameTrim}Patch();");
+      "  static ${classNameTrimmed}Patch create([Map<String, dynamic>? diff]) {");
+  sb.writeln("    final patch = ${classNameTrimmed}Patch();");
   sb.writeln("    if (diff != null) {");
   sb.writeln("      diff.forEach((key, value) {");
   sb.writeln("        try {");
@@ -213,7 +215,7 @@ String getEnumPropertyList(
 
   // Add fromJson factory
   sb.writeln(
-      "  static ${classNameTrim}Patch fromJson(Map<String, dynamic> json) {");
+      "  static ${classNameTrimmed}Patch fromJson(Map<String, dynamic> json) {");
   sb.writeln("    return create(json);");
   sb.writeln("  }");
   sb.writeln();
@@ -224,7 +226,7 @@ String getEnumPropertyList(
         field.name.startsWith("_") ? field.name.substring(1) : field.name;
     var type = getDataTypeWithoutDollars(field.type ?? "dynamic");
 
-    sb.writeln("  ${classNameTrim}Patch with$name($type value) {");
+    sb.writeln("  ${classNameTrimmed}Patch with$name($type value) {");
     sb.writeln("    _patch[$enumName.$name] = value;");
     sb.writeln("    return this;");
     sb.writeln("  }");
@@ -366,169 +368,99 @@ String getCopyWith({
   required String interfaceName,
   required String className,
   required bool isClassAbstract,
-  required List<NameType> interfaceGenerics,
-  bool isExplicitSubType = false,
+  required bool isExplicitSubType,
 }) {
+  if (NameCleaner.isAbstract(interfaceName)) return '';
+
+  final cleanClassName = NameCleaner.clean(className);
+  final cleanInterfaceName = NameCleaner.clean(interfaceName);
+
+  return '''
+    $cleanClassName copyWith$cleanInterfaceName({
+      ${cleanInterfaceName}Patch? patchInput,
+      ${_generateParameters(interfaceFields)}
+    }) {
+      final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
+      ${_generatePatchAssignments(interfaceFields)}
+      final _patchMap = _patcher.toPatch();
+      return $cleanClassName._(
+        ${_generateEfficientConstructorParams(classFields, interfaceFields, cleanInterfaceName)}
+      );
+    }''';
+}
+
+String _generateParameters(List<NameType> fields) {
+  return fields.map((f) {
+    var type = NameCleaner.cleanType(f.type ?? 'dynamic');
+    var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
+    return '$type Function()? $name';
+  }).join(',\n      ');
+}
+
+String _generateEfficientConstructorParams(List<NameType> classFields,
+    List<NameType> interfaceFields, String interfaceName) {
+  var patchFields = interfaceFields.map((e) => e.name).toSet();
+  var params = classFields.map((f) {
+    var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
+    return patchFields.contains(f.name)
+        ? '$name: _patchMap[$interfaceName\$.$name] ?? this.$name'
+        : '$name: this.$name';
+  });
+
+  return params.join(',\n        ');
+}
+
+String _generatePatchAssignments(List<NameType> fields) {
+  return fields.map((f) {
+    var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
+    return """
+    if ($name != null) {
+      _patcher.with$name($name());
+    }""";
+  }).join("\n");
+}
+
+String _generateConstructorParams(List<NameType> classFields,
+    List<NameType> interfaceFields, String interfaceName) {
+  var interfaceFieldNames = interfaceFields.map((e) => e.name).toSet();
+
+  return classFields.map((f) {
+    var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
+    if (interfaceFieldNames.contains(f.name)) {
+      return "$name: _patchMap[${interfaceName}\$.$name] ?? this.$name,";
+    }
+    return "$name: this.$name,";
+  }).join("\n      ");
+}
+
+bool isAbstract(String name) {
+  return ['Participant', 'Entity'].contains(name.replaceAll("\$", ""));
+}
+
+String getConstructorParams(List<NameType> classFields,
+    List<NameType> interfaceFields, String className) {
+  var classNameTrim = className.replaceAll("\$", "");
+  var enumName = '${classNameTrim}\$';
   var sb = StringBuffer();
-  var classNameTrimmed = className.replaceAll("\$", "");
-  var interfaceNameTrimmed = interfaceName.replaceAll("\$", "");
 
-  // var interfaceGenericString = interfaceGenerics //
-  //     .map((e) => e.type == null //
-  //         ? e.name
-  //         : "${e.name} extends ${e.type}")
-  //     .joinToString(separator: ", ");
-
-  var interfaceGenericStringWithExtends = interfaceGenerics //
-      .map((e) => e.type == null //
-          ? e.name
-          : "${e.name} extends ${e.type}")
-      .joinToString(separator: ", ");
-
-  if (interfaceGenericStringWithExtends.length > 0) {
-    interfaceGenericStringWithExtends = "<$interfaceGenericStringWithExtends>";
+  for (var field in classFields) {
+    var name =
+        field.name.startsWith("_") ? field.name.substring(1) : field.name;
+    sb.writeln("      $name: _patch._patch[$enumName.$name] ?? this.$name,");
   }
-
-  var interfaceGenericStringNoExtends = interfaceGenerics //
-      .map((e) => e.name)
-      .joinToString(separator: ", ");
-
-  if (interfaceGenericStringNoExtends.length > 0) {
-    interfaceGenericStringNoExtends = "<$interfaceGenericStringNoExtends>";
-  }
-
-  isExplicitSubType //
-      ? sb.write(
-          "$interfaceNameTrimmed$interfaceGenericStringNoExtends changeTo$interfaceNameTrimmed$interfaceGenericStringWithExtends")
-      : sb.write(
-          "$interfaceNameTrimmed$interfaceGenericStringNoExtends copyWith$interfaceNameTrimmed$interfaceGenericStringWithExtends");
-
-  // if (interfaceGenerics.isNotEmpty) {
-  //   var generic = interfaceGenerics //
-  //       .map((e) => e.type == null //
-  //           ? e.name
-  //           : "${e.name} extends ${e.type}")
-  //       .joinToString(separator: ", ");
-  //   sb.write("<$generic>");
-  // }
-
-  sb.write("(");
-
-  //where property name of interface is the same as the one in the class
-  //use the type of the class
-
-  var fieldsForSignature = classFields //
-      .where((element) =>
-          interfaceFields.map((e) => e.name).contains(element.name));
-
-  // identify fields in the interface not in the class
-  var requiredFields = isExplicitSubType //
-      ? interfaceFields //
-          .where((x) => classFields.none((cf) => cf.name == x.name))
-          .toList()
-      : <NameType>[];
-
-  if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
-    sb.write("{");
-
-  sb.writeln();
-
-  sb.write(requiredFields.map((e) {
-    var interfaceType =
-        interfaceFields.firstWhere((element) => element.name == e.name).type;
-    return "required ${getDataTypeWithoutDollars(interfaceType!)} ${e.name},\n";
-  }).join());
-
-  sb.write(fieldsForSignature.map((e) {
-    var interfaceType = interfaceFields
-        .firstWhere(
-          (element) => element.name == e.name,
-        )
-        .type;
-
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
-
-    return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
-  }).join());
-
-  if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
-    sb.write("}");
-
-  if (isClassAbstract && !isExplicitSubType) {
-    sb.write(");");
-    return sb.toString();
-  }
-
-  sb.writeln(") {");
-
-  if (isExplicitSubType) {
-    // Use public constructor if changing to a different type
-    var usePrivateConstructor = interfaceNameTrimmed == classNameTrimmed;
-    sb.writeln(
-        "return ${getDataTypeWithoutDollars(interfaceName)}${usePrivateConstructor ? '._' : ''}(");
-  } else {
-    sb.writeln("return $classNameTrimmed._(");
-  }
-
-  sb.write(requiredFields //
-      .map((e) {
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
-    var classType = getDataTypeWithoutDollars(e.type!);
-    return "$name: $name as $classType,\n";
-  }).join());
-
-  sb.write(fieldsForSignature //
-      .map((e) {
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
-
-    var classType = getDataTypeWithoutDollars(
-        classFields.firstWhere((element) => element.name == e.name).type!);
-    return "$name: $name == null ? this.${e.name} as $classType : $name() as $classType,\n";
-  }).join());
-
-  var fieldsNotInSignature = classFields //
-      .where((element) =>
-          !interfaceFields.map((e) => e.name).contains(element.name));
-
-  sb.write(fieldsNotInSignature //
-      .map((e) =>
-          "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed).${e.name},\n")
-      .join());
-
-  sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");
-
-  // if (isExplicitSubType) {
-  //   sb.write(") as $interfaceNameTrimmed;");
-  // } else {
-  //   sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");
-  // }
-  sb.write("}");
 
   return sb.toString();
 }
 
-//String getCopyWithSignature(List<NameType> fields, String trimmedClassName) {
-//  var paramList = "\n" + fields.map((e) => "required ${e.type} ${e.name}").joinToString(separator: ",\n") + ",\n";
-//  return "$trimmedClassName cw$trimmedClassName({$paramList}) {";
-//}
+String getGenericString(List<NameType> generics, {bool withExtends = false}) {
+  if (generics.isEmpty) return '';
 
-//List<Interface> getValueTImplements(List<Interface> interfaces, String trimmedClassName, List<NameType> fields) {
-//  return [
-//    ...interfaces //
-//        .where((element) => element.type.startsWith("\$"))
-//        .toList(),
-//    Interface(trimmedClassName, typeArgsTypes, fields)
-//  ];
-//}
+  final genericList = generics
+      .map((g) => withExtends ? "${g.name} extends ${g.type}" : g.name)
+      .join(", ");
 
-//class Interface2 {
-//  final String type;
-//  final List<NameType> paramNameType;
-//
-//  Interface2(this.type, this.paramNameType);
-//
-//  toString() => "${this.type}|${this.paramNameType}";
-//}
+  return "<$genericList>";
+}
 
 String getConstructorName(String trimmedClassName, bool hasCustomConstructor) {
   return hasCustomConstructor //
@@ -616,7 +548,7 @@ String generateToJson(String className, List<NameType> generics) {
           "\n";
 
   var result = """
-  // ignore: unused_field\n
+  // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
   Map<String, dynamic> toJsonCustom([Map<Type, Object? Function(Never)>? fns]){
@@ -663,20 +595,20 @@ String generateToJsonLean(String className) {
   return result;
 }
 
-String createJsonSingleton(String classNameTrim, List<NameType> generics) {
+String createJsonSingleton(String classNameTrimmed, List<NameType> generics) {
   if (generics.length == 0) //
     return "";
 
   var objects = generics.map((e) => "Object").join(", ");
 
   var result = """
-class ${classNameTrim}_Generics_Sing {
-  Map<List<String>, $classNameTrim<${objects}> Function(Map<String, dynamic>)> fns = {};
+class ${classNameTrimmed}_Generics_Sing {
+  Map<List<String>, $classNameTrimmed<${objects}> Function(Map<String, dynamic>)> fns = {};
 
-  factory ${classNameTrim}_Generics_Sing() => _singleton;
-  static final ${classNameTrim}_Generics_Sing _singleton = ${classNameTrim}_Generics_Sing._internal();
+  factory ${classNameTrimmed}_Generics_Sing() => _singleton;
+  static final ${classNameTrimmed}_Generics_Sing _singleton = ${classNameTrimmed}_Generics_Sing._internal();
 
-  ${classNameTrim}_Generics_Sing._internal() {}
+  ${classNameTrimmed}_Generics_Sing._internal() {}
 }
     """;
 
@@ -690,20 +622,19 @@ String commentEveryLine(String multilineString) {
 String generateCompareExtension(
   bool isAbstract,
   String className,
-  String classNameTrim,
+  String classNameTrimmed,
   List<NameTypeClassComment> allFields,
   List<Interface> knownInterfaces, // Add these parameters
   List<String> knownClasses, // Add these parameters
   bool generateCompareTo,
 ) {
   var sb = StringBuffer();
-  String enumClassName = "${classNameTrim}\$";
   sb.writeln();
-  sb.writeln("extension \$${classNameTrim}CompareE on \$${classNameTrim} {");
+  sb.writeln("extension ${classNameTrimmed}CompareE on ${classNameTrimmed} {");
 
   // First version with String keys
   sb.writeln('''
-      Map<String, dynamic> compareTo$classNameTrim($classNameTrim other) {
+      Map<String, dynamic> compareTo$classNameTrimmed($classNameTrimmed other) {
         final Map<String, dynamic> diff = {};
 
         ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: false)}
@@ -714,8 +645,8 @@ String generateCompareExtension(
 
   // Second version with Enum keys
   // sb.writeln('''
-  //     ${classNameTrim}Patch compareToEnum$classNameTrim($classNameTrim other) {
-  //       final ${classNameTrim}Patch diff = {};
+  //     ${classNameTrimmed}Patch compareToEnum$classNameTrimmed($classNameTrimmed other) {
+  //       final ${classNameTrimmed}Patch diff = {};
 
   //       ${_generateCompareFieldsLogic(allFields, knownInterfaces, knownClasses, useEnumKeys: true, enumClassName: enumClassName)}
 

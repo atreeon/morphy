@@ -2,6 +2,8 @@ import 'package:morphy/src/common/NameType.dart';
 import 'package:morphy/src/common/classes.dart';
 import 'package:morphy/src/helpers.dart';
 
+import 'method_generator.dart';
+
 String createMorphy(
   bool isAbstract,
   List<NameTypeClassComment> allFields,
@@ -21,12 +23,12 @@ String createMorphy(
   //recursively go through otherClasses and get my fieldnames &
 
   var sb = StringBuffer();
-  var classNameTrim = className.replaceAll("\$", "");
+  var classNameTrimmed = className.replaceAll("\$", "");
 
   sb.write(getClassComment(interfacesFromImplements, classComment));
 
   if (generateJson) {
-    sb.writeln(createJsonSingleton(classNameTrim, classGenerics));
+    sb.writeln(createJsonSingleton(classNameTrimmed, classGenerics));
     sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor,
         explicitToJson, generateCompareTo));
   }
@@ -60,47 +62,47 @@ String createMorphy(
     sb.write(getClassComment(interfacesFromImplements, classComment));
 
     //constructor
-    // var constructorName = getConstructorName(classNameTrim, hidePublicConstructor);
+    // var constructorName = getConstructorName(classNameTrimmed, hidePublicConstructor);
     if (allFields.isEmpty) {
       if (!hidePublicConstructor) {
-        sb.writeln("${classNameTrim}();");
+        sb.writeln("${classNameTrimmed}();");
         sb.writeln('\n');
       }
-      sb.writeln("${classNameTrim}._();");
+      sb.writeln("${classNameTrimmed}._();");
     } else {
       //public constructor
       if (!hidePublicConstructor) {
-        sb.writeln("${classNameTrim}({");
+        sb.writeln("${classNameTrimmed}({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("}) ${getInitializer(allFields)};");
       }
 
       //the json needs a public constructor, we add this if public constructor is hidden
       if (hidePublicConstructor && generateJson) {
-        sb.writeln("${classNameTrim}.forJsonDoNotUse({");
+        sb.writeln("${classNameTrimmed}.forJsonDoNotUse({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("}) ${getInitializer(allFields)};");
       }
 
       //we always want to write a private constructor (just a duplicate)
-      sb.writeln("${classNameTrim}._({");
+      sb.writeln("${classNameTrimmed}._({");
       sb.writeln(getConstructorRows(allFields));
       sb.writeln("}) ${getInitializer(allFields)};");
       sb.writeln('\n');
 
       if (hasConstContructor) {
-        sb.writeln("const ${classNameTrim}.constant({");
+        sb.writeln("const ${classNameTrimmed}.constant({");
         sb.writeln(getConstructorRows(allFields));
         sb.writeln("}) ${getInitializer(allFields)};");
         sb.writeln('\n');
       }
-      sb.writeln(getToString(allFields, classNameTrim));
+      sb.writeln(getToString(allFields, classNameTrimmed));
     }
 
     sb.writeln('\n');
     sb.writeln(getHashCode(allFields));
     sb.writeln('\n');
-    sb.writeln(getEquals(allFields, classNameTrim));
+    sb.writeln(getEquals(allFields, classNameTrimmed));
     sb.writeln('\n');
   }
 //
@@ -114,19 +116,39 @@ String createMorphy(
   ];
 
   interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
+    // sb.writeln(
+    //   getCopyWith(
+    //     classFields: allFields,
+    //     interfaceFields: x.fields,
+    //     interfaceName: x.interfaceName,
+    //     className: className,
+    //     isClassAbstract: isAbstract,
+    //     // interfaceGenerics: x.typeParams,
+    //     isExplicitSubType: x.isExplicitSubType,
+    //   ),
+    // );
     sb.writeln(
-      getCopyWith(
+      MethodGenerator.generateCopyWithMethods(
         classFields: allFields,
         interfaceFields: x.fields,
         interfaceName: x.interfaceName,
         className: className,
         isClassAbstract: isAbstract,
-        interfaceGenerics: x.typeParams,
-        isExplicitSubType: x.isExplicitSubType,
       ),
     );
   });
 
+  // if (!isAbstract) {
+  //   sb.writeln(
+  //     MethodGenerator.generateCopyWithMethods(
+  //       classFields: allFields,
+  //       interfaceFields: allFields,
+  //       interfaceName: className,
+  //       className: className,
+  //       isClassAbstract: isAbstract,
+  //     ),
+  //   );
+  // }
   if (generateJson) {
     // sb.writeln("// $classGenerics");
     // sb.writeln("//interfacesX");
@@ -145,45 +167,45 @@ String createMorphy(
     var knownClasses = [
       ...interfacesAllInclSubInterfaces
           .map((i) => i.interfaceName.replaceAll("\$", "")),
-      classNameTrim,
+      classNameTrimmed,
     ].toSet().toList();
 
     sb.writeln(generateCompareExtension(
       isAbstract,
       className,
-      classNameTrim,
+      classNameTrimmed,
       allFields,
       interfacesAllInclSubInterfaces, // Pass all known interfaces
       knownClasses, // Pass all known classes
       generateCompareTo,
     ));
   }
-  sb.writeln("extension ${className}changeToE on ${className} {");
+
+  sb.writeln("extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {");
 
   if (!isAbstract) {
-    sb.writeln(
-      getCopyWith(
-        classFields: allFields,
-        interfaceFields: allFields,
-        interfaceName: className,
-        className: className,
-        isClassAbstract: isAbstract,
-        interfaceGenerics: classGenerics,
-        isExplicitSubType: true,
-      ),
-    );
+    // sb.writeln(
+    //   getCopyWith(
+    //     classFields: allFields,
+    //     interfaceFields: allFields,
+    //     interfaceName: className,
+    //     className: className,
+    //     isClassAbstract: isAbstract,
+    //     // interfaceGenerics: classGenerics,
+    //     isExplicitSubType: true,
+    //   ),
+    // );
+    //
   }
 
   interfacesX.where((element) => element.isExplicitSubType).forEach((x) {
     sb.writeln(
-      getCopyWith(
+      MethodGenerator.generateChangeToMethods(
         classFields: allFields,
         interfaceFields: x.fields,
         interfaceName: x.interfaceName,
         className: className,
         isClassAbstract: isAbstract,
-        interfaceGenerics: x.typeParams,
-        isExplicitSubType: x.isExplicitSubType,
       ),
     );
   });
