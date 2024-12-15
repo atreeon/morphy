@@ -116,17 +116,6 @@ String createMorphy(
   ];
 
   interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
-    // sb.writeln(
-    //   getCopyWith(
-    //     classFields: allFields,
-    //     interfaceFields: x.fields,
-    //     interfaceName: x.interfaceName,
-    //     className: className,
-    //     isClassAbstract: isAbstract,
-    //     // interfaceGenerics: x.typeParams,
-    //     isExplicitSubType: x.isExplicitSubType,
-    //   ),
-    // );
     sb.writeln(
       MethodGenerator.generateCopyWithMethods(
         classFields: allFields,
@@ -138,17 +127,6 @@ String createMorphy(
     );
   });
 
-  // if (!isAbstract) {
-  //   sb.writeln(
-  //     MethodGenerator.generateCopyWithMethods(
-  //       classFields: allFields,
-  //       interfaceFields: allFields,
-  //       interfaceName: className,
-  //       className: className,
-  //       isClassAbstract: isAbstract,
-  //     ),
-  //   );
-  // }
   if (generateJson) {
     // sb.writeln("// $classGenerics");
     // sb.writeln("//interfacesX");

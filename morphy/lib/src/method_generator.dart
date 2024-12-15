@@ -2,27 +2,34 @@ import 'common/NameType.dart';
 import 'helpers.dart';
 
 class MethodGenerator {
+  static String _generateTypeParams(List<NameType> generics) {
+    if (generics.isEmpty) return '';
+    return '<${generics.map((g) => FieldTypeAnalyzer.cleanType(g.type)).join(', ')}>';
+  }
+
   static String generateCopyWithMethods({
     required List<NameType> classFields,
     required List<NameType> interfaceFields,
     required String interfaceName,
     required String className,
     required bool isClassAbstract,
+    List<NameType> interfaceGenerics = const [], // Add this parameter
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
+    final typeParams = _generateTypeParams(interfaceGenerics);
 
     return '''
-      $cleanClassName copyWith$cleanInterfaceName({
+      $cleanClassName$typeParams copyWith$cleanInterfaceName({
         ${cleanInterfaceName}Patch? patchInput,
         ${_generateParameters(interfaceFields, classFields, true)}
       }) {
         final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
-        ${_generatePatchAssignments(interfaceFields)}
+        ${_generatePatchAssignments(interfaceFields, classFields, true)}
         final _patchMap = _patcher.toPatch();
-        return $cleanClassName._(
+        return $cleanClassName._$typeParams(
           ${_generateConstructorParams(classFields, interfaceFields, cleanInterfaceName, false)}
         );
       }''';
@@ -34,30 +41,36 @@ class MethodGenerator {
     required String interfaceName,
     required String className,
     required bool isClassAbstract,
+    List<NameType> interfaceGenerics = const [], // Add this parameter
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
+    final typeParams = _generateTypeParams(interfaceGenerics);
 
     return '''
-      $cleanInterfaceName changeTo$cleanInterfaceName({
+      $cleanInterfaceName$typeParams changeTo$cleanInterfaceName({
         ${_generateParameters(interfaceFields, classFields, false)}
       }) {
         final _patcher = ${cleanInterfaceName}Patch();
-        ${_generatePatchAssignments(interfaceFields)}
+        ${_generatePatchAssignments(interfaceFields, classFields, true)}
         final _patchMap = _patcher.toPatch();
-        return $cleanInterfaceName(
+        return $cleanInterfaceName$typeParams(
           ${_generateConstructorParams(interfaceFields, classFields, cleanInterfaceName, true)}
         );
       }''';
   }
 
-  static String _generatePatchAssignments(List<NameType> fields) {
+  static String _generatePatchAssignments(
+      List<NameType> fields, List<NameType> sourceFields, bool isCopyWith) {
+    var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
+
     return fields.map((f) {
       var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
       var isRequired = !f.type!.endsWith('?');
+      var hasField = sourceFieldNames.contains(f.name);
 
-      if (isRequired) {
+      if (isRequired && !hasField) {
         // Required fields - direct assignment
         return "_patcher.with$name($name());";
       } else {

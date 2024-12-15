@@ -368,25 +368,89 @@ String getCopyWith({
   required String interfaceName,
   required String className,
   required bool isClassAbstract,
-  required bool isExplicitSubType,
+  required List<NameType> interfaceGenerics,
+  bool isExplicitSubType = false,
 }) {
-  if (NameCleaner.isAbstract(interfaceName)) return '';
+  var sb = StringBuffer();
+  var classNameTrimmed = className.replaceAll("\$", "");
+  var interfaceNameTrimmed = interfaceName.replaceAll("\$", "");
 
-  final cleanClassName = NameCleaner.clean(className);
-  final cleanInterfaceName = NameCleaner.clean(interfaceName);
+  // Determine if this is a conversion to superclass or regular copyWith
+  var isConversionToSuperclass = !isExplicitSubType &&
+      interfaceNameTrimmed != classNameTrimmed &&
+      !interfaceName.startsWith("\$\$");
 
-  return '''
-    $cleanClassName copyWith$cleanInterfaceName({
-      ${cleanInterfaceName}Patch? patchInput,
-      ${_generateParameters(interfaceFields)}
-    }) {
-      final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
-      ${_generatePatchAssignments(interfaceFields)}
-      final _patchMap = _patcher.toPatch();
-      return $cleanClassName._(
-        ${_generateEfficientConstructorParams(classFields, interfaceFields, cleanInterfaceName)}
-      );
-    }''';
+  var methodName = isConversionToSuperclass
+      ? "changeTo$interfaceNameTrimmed"
+      : isExplicitSubType
+          ? "changeTo$interfaceNameTrimmed"
+          : "copyWith$interfaceNameTrimmed";
+
+  sb.write("$interfaceNameTrimmed ");
+  sb.write("$methodName");
+
+  sb.write("(");
+
+  // Only include fields that are in the target interface
+  var fieldsForSignature = classFields.where(
+      (element) => interfaceFields.map((e) => e.name).contains(element.name));
+
+  // Generate parameters
+  if (fieldsForSignature.isNotEmpty) {
+    sb.writeln("{");
+
+    // Only include patch for copyWith operations
+    if (!isConversionToSuperclass) {
+      sb.writeln("${interfaceNameTrimmed}Patch? patch,");
+    }
+
+    // Generate function parameters for fields
+    sb.write(fieldsForSignature.map((e) {
+      var type = getDataTypeWithoutDollars(e.type ?? "dynamic");
+      var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+      return "$type Function()? $name,";
+    }).join("\n"));
+
+    sb.writeln("}");
+  }
+
+  if (isClassAbstract && !isExplicitSubType) {
+    sb.write(");");
+    return sb.toString();
+  }
+
+  sb.writeln(") {");
+
+  // Create appropriate patch
+  sb.writeln("final _patch = ${interfaceNameTrimmed}Patch();");
+
+  // Add field assignments
+  for (var field in fieldsForSignature) {
+    var name =
+        field.name.startsWith("_") ? field.name.substring(1) : field.name;
+    sb.writeln("""
+    if ($name != null) {
+      _patch.with$name($name());
+    }""");
+  }
+
+  // Get the patch map
+  sb.writeln("var patch = _patch.toPatch();");
+
+  // Return statement using public constructor
+  sb.writeln("return $interfaceNameTrimmed(");
+
+  // Only include fields that exist in the target interface
+  for (var field in fieldsForSignature) {
+    var name =
+        field.name.startsWith("_") ? field.name.substring(1) : field.name;
+    sb.writeln("  $name: patch[$interfaceNameTrimmed\$.$name] ?? this.$name,");
+  }
+
+  sb.writeln(");");
+  sb.writeln("}");
+
+  return sb.toString();
 }
 
 String _generateParameters(List<NameType> fields) {
