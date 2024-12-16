@@ -185,7 +185,7 @@ String getPatchClass(
   String className,
   List<String> knownClasses,
 ) {
-  if (fields.isEmpty) return '';
+  if (fields.isEmpty || className.startsWith('\$\$')) return '';
 
   String classNameTrimmed = '${className.replaceAll("\$", "")}';
   String enumName = '${classNameTrimmed}\$';
@@ -265,13 +265,12 @@ String getPatchClass(
       "    if (value is Map) return value.map((k, v) => MapEntry(k.toString(), _convertToJson(v)));");
   sb.writeln(
       "    if (value is num || value is bool || value is String) return value;");
-  // sb.writeln("    if (value?.toJsonLean != null) return value.toJsonLean();");
-  // sb.writeln("    if (value?.toPatch != null) return value.toPatch();");
-  // sb.writeln(
-  //     "    if (value.toString().endsWith('Patch')) return value.toPatch();");
-  // sb.writeln();
+  sb.writeln("""    try {
+        if (value?.toJsonLean != null) return value.toJsonLean();
+      } catch (_) {}"""); // Safely handle if toJsonLean doesn't exist
+
+  // Fall back to toJson
   sb.writeln("    if (value?.toJson != null) return value.toJson();");
-  // sb.writeln("    if (value?.toJsonLean != null) return value.toJsonLean();");
 
   sb.writeln("    return value.toString();");
   sb.writeln("  }");
@@ -292,12 +291,16 @@ String getPatchClass(
     var capitalizedName =
         name.substring(0, 1).toUpperCase() + name.substring(1);
 
+    // Make sure we don't add ? if it's already nullable
+    var parameterType = baseType.endsWith('?') ? baseType : baseType + '?';
+
     sb.writeln(
-        "  ${classNameTrimmed}Patch with$capitalizedName($baseType value) {");
+        "  ${classNameTrimmed}Patch with$capitalizedName($parameterType value) {");
     sb.writeln("    _patch[$enumName.$name] = value;");
     sb.writeln("    return this;");
     sb.writeln("  }");
     sb.writeln();
+
     var patchType = getPatchType(field.type ?? "dynamic");
     if (!PRIMITIVE_TYPES.any((primitiveType) =>
             baseType.replaceAll("?", "").startsWith(primitiveType)) &&
