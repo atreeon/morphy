@@ -192,7 +192,9 @@ String getPatchClass(
 
   var sb = StringBuffer();
 
-  sb.writeln("class ${classNameTrimmed}Patch {");
+  // Add Patch<T> implementation
+  sb.writeln(
+      "class ${classNameTrimmed}Patch implements Patch<$classNameTrimmed> {");
   sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
   sb.writeln();
 
@@ -228,6 +230,11 @@ String getPatchClass(
 
   // Convert to map method
   sb.writeln("  Map<$enumName, dynamic> toPatch() => Map.from(_patch);");
+  sb.writeln();
+
+  sb.writeln("  $classNameTrimmed applyTo($classNameTrimmed entity) {");
+  sb.writeln("    return entity.copyWith$classNameTrimmed(patchInput: this);");
+  sb.writeln("  }");
   sb.writeln();
 
   // Add toJson method with _className_
