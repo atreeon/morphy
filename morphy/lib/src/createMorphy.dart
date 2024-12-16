@@ -114,18 +114,19 @@ String createMorphy(
       allFields,
     ),
   ];
-
-  interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
-    sb.writeln(
-      MethodGenerator.generateCopyWithMethods(
-        classFields: allFields,
-        interfaceFields: x.fields,
-        interfaceName: x.interfaceName,
-        className: className,
-        isClassAbstract: isAbstract,
-      ),
-    );
-  });
+  if (!isAbstract) {
+    interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
+      sb.writeln(
+        MethodGenerator.generateCopyWithMethods(
+          classFields: allFields,
+          interfaceFields: x.fields,
+          interfaceName: x.interfaceName,
+          className: className,
+          isClassAbstract: isAbstract,
+        ),
+      );
+    });
+  }
 
   if (generateJson) {
     // sb.writeln("// $classGenerics");
@@ -138,15 +139,14 @@ String createMorphy(
     sb.writeln(generateToJson(className, classGenerics));
     sb.writeln(generateToJsonLean(className));
   }
-
+  var knownClasses = [
+    ...interfacesAllInclSubInterfaces
+        .map((i) => i.interfaceName.replaceAll("\$", "")),
+    classNameTrimmed,
+  ].toSet().toList();
   sb.writeln("}");
   if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
     // Create a list of all known classes from the interfaces
-    var knownClasses = [
-      ...interfacesAllInclSubInterfaces
-          .map((i) => i.interfaceName.replaceAll("\$", "")),
-      classNameTrimmed,
-    ].toSet().toList();
 
     sb.writeln(generateCompareExtension(
       isAbstract,
@@ -158,39 +158,27 @@ String createMorphy(
       generateCompareTo,
     ));
   }
-
-  sb.writeln("extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {");
-
-  if (!isAbstract) {
-    // sb.writeln(
-    //   getCopyWith(
-    //     classFields: allFields,
-    //     interfaceFields: allFields,
-    //     interfaceName: className,
-    //     className: className,
-    //     isClassAbstract: isAbstract,
-    //     // interfaceGenerics: classGenerics,
-    //     isExplicitSubType: true,
-    //   ),
-    // );
-    //
-  }
-
-  interfacesX.where((element) => element.isExplicitSubType).forEach((x) {
+  if (interfacesX.any((element) => element.isExplicitSubType)) {
     sb.writeln(
-      MethodGenerator.generateChangeToMethods(
-        classFields: allFields,
-        interfaceFields: x.fields,
-        interfaceName: x.interfaceName,
-        className: className,
-        isClassAbstract: isAbstract,
-      ),
-    );
-  });
-  sb.writeln("}");
+        "extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {");
+
+    interfacesX.where((element) => element.isExplicitSubType).forEach((x) {
+      sb.writeln(
+        MethodGenerator.generateChangeToMethods(
+          classFields: allFields,
+          interfaceFields: x.fields,
+          interfaceName: x.interfaceName,
+          className: className,
+          isClassAbstract: isAbstract,
+        ),
+      );
+    });
+    sb.writeln("}");
+  }
 
   sb.writeln(getEnumPropertyList(allFields, className));
 
+  sb.writeln(getPatchClass(allFields, className, knownClasses));
   // return commentEveryLine(sb.toString());
   return sb.toString();
 }

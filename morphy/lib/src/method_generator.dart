@@ -69,15 +69,16 @@ class MethodGenerator {
       var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
       var isRequired = !f.type!.endsWith('?');
       var hasField = sourceFieldNames.contains(f.name);
-
+      var capitalizedName =
+          name.substring(0, 1).toUpperCase() + name.substring(1);
       if (isRequired && !hasField) {
         // Required fields - direct assignment
-        return "_patcher.with$name($name());";
+        return "_patcher.with$capitalizedName($name());";
       } else {
         // Optional fields - null check
         return """
         if ($name != null) {
-          _patcher.with$name($name());
+          _patcher.with$capitalizedName($name());
         }""";
       }
     }).join("\n");
@@ -106,22 +107,79 @@ class MethodGenerator {
     }).join(',\n      ');
   }
 
+  // static String _generateConstructorParams(List<NameType> targetClassFields,
+  //     List<NameType> sourceFields, String targetClassName, bool isChangeTo) {
+  //   var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
+
+  //   // For changeTo methods, we don't use private constructor
+  //   var constructorFields = targetClassFields.map((f) {
+  //     var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
+  //     var hasField = sourceFieldNames.contains(f.name);
+  //     var baseType = FieldTypeAnalyzer.cleanType(f.type).replaceAll("?", "");
+  //     var isEnum = f.isEnum;
+
+  //     if (hasField) {
+  //       // Check if it's a complex type that might need nested patch handling
+  //       if (!PRIMITIVE_TYPES.any((primitiveType) =>
+  //               baseType.replaceAll("?", "").startsWith(primitiveType)) &&
+  //           !isEnum) {
+  //         return '''$name: (_patchMap[$targetClassName\$.$name] is ${baseType}Patch)
+  //           ? (this.$name?.copyWith$baseType(
+  //               patchInput: _patchMap[$targetClassName\$.$name]
+  //             ) ?? $baseType.fromJson(
+  //               (_patchMap[$targetClassName\$.$name] as ${baseType}Patch).toJson()
+  //             ))
+  //           : _patchMap[$targetClassName\$.$name] ?? this.$name''';
+  //       }
+  //       return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
+  //     } else if (!isChangeTo) {
+  //       // For copyWith, keep existing values
+  //       return '$name: this.$name';
+  //     } else {
+  //       // For changeTo, use only patch values for new fields
+  //       return '$name: _patchMap[$targetClassName\$.$name]';
+  //     }
+  //   });
+
+  //   return constructorFields.join(',\n        ');
+  // }
+
   static String _generateConstructorParams(List<NameType> targetClassFields,
       List<NameType> sourceFields, String targetClassName, bool isChangeTo) {
     var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
 
-    // For changeTo methods, we don't use private constructor
     var constructorFields = targetClassFields.map((f) {
       var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
       var hasField = sourceFieldNames.contains(f.name);
+      var baseType = FieldTypeAnalyzer.cleanType(f.type).replaceAll("?", "");
+      var isEnum = f.isEnum;
 
       if (hasField) {
+        if (!PRIMITIVE_TYPES.any((primitiveType) =>
+                baseType.replaceAll("?", "").startsWith(primitiveType)) &&
+            !isEnum) {
+          return '''$name: (_patchMap[$targetClassName\$.$name] is ${baseType}Patch)
+            ? (this.$name?.copyWith$baseType(
+                patchInput: _patchMap[$targetClassName\$.$name]
+              ) ?? (() {
+                try {
+                  return $baseType.fromJson(
+                    (_patchMap[$targetClassName\$.$name] as ${baseType}Patch).toJson()
+                  );
+                } catch (e) {
+                  throw StateError(
+                    'Failed to create new $baseType instance from patch. '
+                    'The field "$name" is null and the patch does not contain all required fields. '
+                    'Error: \${e.toString()}'
+                  );
+                }
+              })())
+            : _patchMap[$targetClassName\$.$name] ?? this.$name''';
+        }
         return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
       } else if (!isChangeTo) {
-        // For copyWith, keep existing values
         return '$name: this.$name';
       } else {
-        // For changeTo, use only patch values for new fields
         return '$name: _patchMap[$targetClassName\$.$name]';
       }
     });

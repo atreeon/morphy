@@ -4,7 +4,21 @@ import 'package:morphy/src/common/NameType.dart';
 import 'package:morphy/src/common/classes.dart';
 
 import 'method_generator.dart';
+
 // import 'package:meta/meta.dart';
+const List<String> PRIMITIVE_TYPES = [
+  'String',
+  'DateTime',
+  'Duration',
+  'bool',
+  'int',
+  'double',
+  'num',
+  'dynamic',
+  'List<',
+  'Map<',
+  'Set<',
+];
 
 String getClassComment(List<Interface> interfaces, String classComment) {
   var a = interfaces
@@ -40,7 +54,7 @@ List<NameTypeClassComment> getDistinctFields(
 ) {
   var fields = fieldsRaw.map((f) => NameTypeClassComment(
       f.name, f.type, f.className?.replaceAll("\$", ""),
-      comment: f.comment));
+      comment: f.comment, isEnum: f.isEnum));
 
   var interfaces2 = interfaces //
       .map((x) => Interface.fromGenerics(
@@ -72,13 +86,13 @@ List<NameTypeClassComment> getDistinctFields(
       if (paramNameType.length > 0) {
         var name = removeDollarsFromPropertyType(paramNameType[0].type!);
         return NameTypeClassComment(classField.name, name, null,
-            comment: classField.comment);
+            comment: classField.comment, isEnum: classField.isEnum);
       }
     }
 
     var type = removeDollarsFromPropertyType(classField.type!);
     return NameTypeClassComment(classField.name, type, null,
-        comment: classField.comment);
+        comment: classField.comment, isEnum: classField.isEnum);
   }).toList();
 
   return adjustedFields;
@@ -163,8 +177,21 @@ String getEnumPropertyList(
       .map((e) => e.name.startsWith("_") ? e.name.substring(1) : e.name)
       .join(","));
   sb.writeln("}\n");
+  return sb.toString();
+}
 
-  // Generate patch class
+String getPatchClass(
+  List<NameTypeClassComment> fields,
+  String className,
+  List<String> knownClasses,
+) {
+  if (fields.isEmpty) return '';
+
+  String classNameTrimmed = '${className.replaceAll("\$", "")}';
+  String enumName = '${classNameTrimmed}\$';
+
+  var sb = StringBuffer();
+
   sb.writeln("class ${classNameTrimmed}Patch {");
   sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
   sb.writeln();
@@ -190,26 +217,56 @@ String getEnumPropertyList(
   sb.writeln("  }");
   sb.writeln();
 
+  // Generate fromPatch
+  sb.writeln(
+      "  static ${classNameTrimmed}Patch fromPatch(Map<${classNameTrimmed}\$, dynamic> patch) {");
+  sb.writeln("    final _patch = ${classNameTrimmed}Patch();");
+  sb.writeln("    _patch._patch.addAll(patch);");
+  sb.writeln("    return _patch;");
+  sb.writeln("  }");
+  sb.writeln();
+
   // Convert to map method
   sb.writeln("  Map<$enumName, dynamic> toPatch() => Map.from(_patch);");
   sb.writeln();
 
-  // Add toJson method
+  // Add toJson method with _className_
   sb.writeln("  Map<String, dynamic> toJson() {");
   sb.writeln("    final json = <String, dynamic>{};");
   sb.writeln("    _patch.forEach((key, value) {");
   sb.writeln("      if (value != null) {");
-  sb.writeln("        if (value is DateTime) {");
-  sb.writeln("          json[key.name] = value.toIso8601String();");
-  sb.writeln("        } else if (value is List) {");
-  sb.writeln(
-      "          json[key.name] = value.map((e) => e?.toJson ?? e).toList();");
+  sb.writeln("        if (value is Function) {");
+  sb.writeln("          final result = value();");
+  sb.writeln("          json[key.name] = _convertToJson(result);");
   sb.writeln("        } else {");
-  sb.writeln("          json[key.name] = value?.toJson ?? value;");
+  sb.writeln("          json[key.name] = _convertToJson(value);");
   sb.writeln("        }");
   sb.writeln("      }");
   sb.writeln("    });");
   sb.writeln("    return json;");
+  sb.writeln("  }");
+  sb.writeln();
+
+  // Add convertToJson method
+  sb.writeln("  dynamic _convertToJson(dynamic value) {");
+  sb.writeln("    if (value == null) return null;");
+  sb.writeln("    if (value is DateTime) return value.toIso8601String();");
+  sb.writeln("    if (value is Enum) return value.toString().split('.').last;");
+  sb.writeln(
+      "    if (value is List) return value.map((e) => _convertToJson(e)).toList();");
+  sb.writeln(
+      "    if (value is Map) return value.map((k, v) => MapEntry(k.toString(), _convertToJson(v)));");
+  sb.writeln(
+      "    if (value is num || value is bool || value is String) return value;");
+  // sb.writeln("    if (value?.toJsonLean != null) return value.toJsonLean();");
+  // sb.writeln("    if (value?.toPatch != null) return value.toPatch();");
+  // sb.writeln(
+  //     "    if (value.toString().endsWith('Patch')) return value.toPatch();");
+  // sb.writeln();
+  sb.writeln("    if (value?.toJson != null) return value.toJson();");
+  // sb.writeln("    if (value?.toJsonLean != null) return value.toJsonLean();");
+
+  sb.writeln("    return value.toString();");
   sb.writeln("  }");
   sb.writeln();
 
@@ -224,18 +281,44 @@ String getEnumPropertyList(
   for (var field in fields) {
     var name =
         field.name.startsWith("_") ? field.name.substring(1) : field.name;
-    var type = getDataTypeWithoutDollars(field.type ?? "dynamic");
+    var baseType = getDataTypeWithoutDollars(field.type ?? "dynamic");
+    var capitalizedName =
+        name.substring(0, 1).toUpperCase() + name.substring(1);
 
-    sb.writeln("  ${classNameTrimmed}Patch with$name($type value) {");
+    sb.writeln(
+        "  ${classNameTrimmed}Patch with$capitalizedName($baseType value) {");
     sb.writeln("    _patch[$enumName.$name] = value;");
     sb.writeln("    return this;");
     sb.writeln("  }");
     sb.writeln();
+    var patchType = getPatchType(field.type ?? "dynamic");
+    if (!PRIMITIVE_TYPES.any((primitiveType) =>
+            baseType.replaceAll("?", "").startsWith(primitiveType)) &&
+        !field.isEnum) {
+      sb.writeln(
+          "  ${classNameTrimmed}Patch with${capitalizedName}Patch(${patchType} value) {");
+      sb.writeln("    _patch[$enumName.$name] = value;");
+      sb.writeln("    return this;");
+      sb.writeln("  }");
+      sb.writeln();
+    }
   }
 
   sb.writeln("}");
 
   return sb.toString();
+}
+
+String getNormalType(String type) {
+  bool isNullable = type.endsWith('?');
+  String baseType = isNullable ? type.substring(0, type.length - 1) : type;
+  return baseType + (isNullable ? '?' : '');
+}
+
+String getPatchType(String type) {
+  bool isNullable = type.endsWith('?');
+  String baseType = isNullable ? type.substring(0, type.length - 1) : type;
+  return baseType + 'Patch' + (isNullable ? '?' : '');
 }
 
 /// remove dollars from the dataType except for function types
@@ -435,66 +518,33 @@ String getCopyWith({
   }
 
   // Get the patch map
-  sb.writeln("var patch = _patch.toPatch();");
+  sb.writeln("var _patchMap = _patch.toPatch();");
 
-  // Return statement using public constructor
+  // MODIFY THIS SECTION to handle nested patches
   sb.writeln("return $interfaceNameTrimmed(");
-
-  // Only include fields that exist in the target interface
   for (var field in fieldsForSignature) {
     var name =
         field.name.startsWith("_") ? field.name.substring(1) : field.name;
-    sb.writeln("  $name: patch[$interfaceNameTrimmed\$.$name] ?? this.$name,");
-  }
+    var baseType = getDataTypeWithoutDollars(field.type ?? "dynamic");
 
-  sb.writeln(");");
+    // Check if it's a complex type that might need nested patch handling
+    if (!PRIMITIVE_TYPES.any((primitiveType) =>
+        baseType.replaceAll("?", "").startsWith(primitiveType))) {
+      sb.writeln("""
+      $name: this.$name?.copyWith${baseType}(
+        patchInput: _patchMap[${interfaceNameTrimmed}\$.$name]
+      ) ?? this.$name,""");
+    } else {
+      // Handle primitive types normally
+      sb.writeln(
+          "      $name: _patchMap[${interfaceNameTrimmed}\$.$name] ?? this.$name,");
+    }
+  }
+  sb.writeln("  );");
+
   sb.writeln("}");
 
   return sb.toString();
-}
-
-String _generateParameters(List<NameType> fields) {
-  return fields.map((f) {
-    var type = NameCleaner.cleanType(f.type ?? 'dynamic');
-    var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
-    return '$type Function()? $name';
-  }).join(',\n      ');
-}
-
-String _generateEfficientConstructorParams(List<NameType> classFields,
-    List<NameType> interfaceFields, String interfaceName) {
-  var patchFields = interfaceFields.map((e) => e.name).toSet();
-  var params = classFields.map((f) {
-    var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
-    return patchFields.contains(f.name)
-        ? '$name: _patchMap[$interfaceName\$.$name] ?? this.$name'
-        : '$name: this.$name';
-  });
-
-  return params.join(',\n        ');
-}
-
-String _generatePatchAssignments(List<NameType> fields) {
-  return fields.map((f) {
-    var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
-    return """
-    if ($name != null) {
-      _patcher.with$name($name());
-    }""";
-  }).join("\n");
-}
-
-String _generateConstructorParams(List<NameType> classFields,
-    List<NameType> interfaceFields, String interfaceName) {
-  var interfaceFieldNames = interfaceFields.map((e) => e.name).toSet();
-
-  return classFields.map((f) {
-    var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
-    if (interfaceFieldNames.contains(f.name)) {
-      return "$name: _patchMap[${interfaceName}\$.$name] ?? this.$name,";
-    }
-    return "$name: this.$name,";
-  }).join("\n      ");
 }
 
 bool isAbstract(String name) {

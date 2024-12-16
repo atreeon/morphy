@@ -1,8 +1,9 @@
 class NameType {
   final String name;
   final String? type;
+  final bool isEnum;
 
-  NameType(this.name, this.type);
+  NameType(this.name, this.type, {this.isEnum = false});
 
   toString() => "${this.name}:${this.type}";
 }
@@ -10,7 +11,9 @@ class NameType {
 class NameTypeClass extends NameType {
   final String? className;
 
-  NameTypeClass(String name, String? type, this.className) : super(name, type);
+  NameTypeClass(String name, String? type, this.className,
+      {bool isEnum = false})
+      : super(name, type, isEnum: isEnum);
 
   toString() => "${this.name}:${this.type}:${this.className}";
   toStringNameType() => super.toString();
@@ -24,7 +27,8 @@ class NameTypeClassComment extends NameTypeClass {
     String? type,
     String? _class, {
     this.comment,
-  }) : super(name, type, _class);
+    bool isEnum = false,
+  }) : super(name, type, _class, isEnum: isEnum);
 }
 
 class NameTypeClassCommentData<TMeta1> extends NameTypeClassComment {
@@ -36,5 +40,6 @@ class NameTypeClassCommentData<TMeta1> extends NameTypeClassComment {
     String? _class, {
     this.meta1,
     String? comment,
-  }) : super(name, type, _class, comment: comment);
+    bool isEnum = false,
+  }) : super(name, type, _class, comment: comment, isEnum: isEnum);
 }

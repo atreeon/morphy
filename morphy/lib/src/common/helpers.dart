@@ -10,7 +10,8 @@ import 'classes.dart';
 ///
 /// [classComment] the comment of the class itself
 String getClassComment(List<Interface> interfaces, String? classComment) {
-  var a = interfaces.where((e) => e is InterfaceWithComment && e.comment != classComment) //
+  var a = interfaces
+      .where((e) => e is InterfaceWithComment && e.comment != classComment) //
       .map((e) {
     var interfaceComment = e is InterfaceWithComment && e.comment != null //
         ? "\n${e.comment}"
@@ -54,31 +55,30 @@ MethodDetails<TMeta1> getMethodDetailsForFunctionType<TMeta1>(
 
   var typeParameters2 = fn.typeParameters //
       .map((e) {
-        final bound = e.bound;
-        return GenericsNameType(e.name, bound == null ? null : typeToString(bound));
-      })
-      .toList();
+    final bound = e.bound;
+    return GenericsNameType(e.name, bound == null ? null : typeToString(bound));
+  }).toList();
 
-  return MethodDetails<TMeta1>(fn.documentationComment, fn.name ?? "", paramsPositional, paramsNamed, typeParameters2, returnType);
+  return MethodDetails<TMeta1>(fn.documentationComment, fn.name ?? "",
+      paramsPositional, paramsNamed, typeParameters2, returnType);
 }
 
-List<NameTypeClassComment> getAllFields(List<InterfaceType> interfaceTypes, ClassElement element) {
+List<NameTypeClassComment> getAllFields(
+    List<InterfaceType> interfaceTypes, ClassElement element) {
   var superTypeFields = interfaceTypes //
       .where((x) => x.element.name != "Object")
       .flatMap((st) => st.element.fields.map((f) => //
-          NameTypeClassComment(f.name, typeToString(f.type), st.element.name, comment: f.getter?.documentationComment)))
+          NameTypeClassComment(f.name, typeToString(f.type), st.element.name,
+              comment: f.getter?.documentationComment,
+              isEnum: f.type.element is EnumElement)))
       .toList();
 
-//  if(element is ClassElement){
-//    fields.addAll(element.fields.map((f) => //
-//    NameTypeClassComment(f.name, f.type.toString(), element.name, comment: f.getter?.documentationComment)).toList());
-//  } else if(element is InterfaceType){
-//    fields.addAll(element.fields.map((f) => //
-//    NameTypeClassComment(f.name, f.type.toString(), element.name, comment: f.getter?.documentationComment)).toList());
-//  }
-
-  var classFields = element.fields.map((f) => //
-      NameTypeClassComment(f.name, typeToString(f.type), element.name, comment: f.getter?.documentationComment)).toList();
+  var classFields = element.fields
+      .map((f) => //
+          NameTypeClassComment(f.name, typeToString(f.type), element.name,
+              comment: f.getter?.documentationComment,
+              isEnum: f.type.element is EnumElement))
+      .toList();
 
   //distinct, will keep classFields over superTypeFields
   return (classFields + superTypeFields).distinctBy((x) => x.name).toList();
@@ -87,51 +87,70 @@ List<NameTypeClassComment> getAllFields(List<InterfaceType> interfaceTypes, Clas
 String typeToString(DartType type) {
   final alias = type.alias;
   final manual = alias != null
-    ? aliasToString(alias)
-    : type is FunctionType
-      ? functionToString(type)
-      : type is RecordType
-        ? recordToString(type)
-        : type is ParameterizedType
-          ? genericToString(type)
-          : null;
-  final nullMarker = type.nullabilitySuffix == NullabilitySuffix.question ? '?'
-    : type.nullabilitySuffix == NullabilitySuffix.star ? '*'
-    : '';
+      ? aliasToString(alias)
+      : type is FunctionType
+          ? functionToString(type)
+          : type is RecordType
+              ? recordToString(type)
+              : type is ParameterizedType
+                  ? genericToString(type)
+                  : null;
+  final nullMarker = type.nullabilitySuffix == NullabilitySuffix.question
+      ? '?'
+      : type.nullabilitySuffix == NullabilitySuffix.star
+          ? '*'
+          : '';
   return manual != null ? "$manual$nullMarker" : type.toString();
 }
 
-String aliasToString(InstantiatedTypeAliasElement alias) => "${alias.element.name}${alias.typeArguments.isEmpty ? '' : "<${alias.typeArguments.map(typeToString).join(', ')}>"}";
+String aliasToString(InstantiatedTypeAliasElement alias) =>
+    "${alias.element.name}${alias.typeArguments.isEmpty ? '' : "<${alias.typeArguments.map(typeToString).join(', ')}>"}";
 
 String functionToString(FunctionType type) {
-  final generics = type.typeFormals.isNotEmpty ? "<${
-    type.typeFormals
-      .map((param) {
-        final bound = param.bound;
-        return "${param.name}${bound == null ? "" : " = ${typeToString(bound)}"}";
-      })
-      .join(', ')
-  }>" : '';
-  final normal = type.normalParameterNames.mapIndexed(
-    (index, name) => "${typeToString(type.normalParameterTypes[index])} $name"
-  ).join(', ');
-  final named = type.namedParameterTypes.mapEntries((entry) => "${entry.value.element!.hasRequired ? 'required ' : ''}${typeToString(entry.value)} ${entry.key}").join(', ');
-  final optional = type.optionalParameterNames.mapIndexed(
-    (index, name) => "${typeToString(type.optionalParameterTypes[index])} $name"
-  ).join(', ');
-  return "${typeToString(type.returnType)} Function$generics(${
-    [if (normal.isNotEmpty) normal, if (named.isNotEmpty) "{$named}", if (optional.isNotEmpty) "[$optional]"].join(', ')
-  })";
+  final generics = type.typeFormals.isNotEmpty
+      ? "<${type.typeFormals.map((param) {
+          final bound = param.bound;
+          return "${param.name}${bound == null ? "" : " = ${typeToString(bound)}"}";
+        }).join(', ')}>"
+      : '';
+  final normal = type.normalParameterNames
+      .mapIndexed((index, name) =>
+          "${typeToString(type.normalParameterTypes[index])} $name")
+      .join(', ');
+  final named = type.namedParameterTypes
+      .mapEntries((entry) =>
+          "${entry.value.element!.hasRequired ? 'required ' : ''}${typeToString(entry.value)} ${entry.key}")
+      .join(', ');
+  final optional = type.optionalParameterNames
+      .mapIndexed((index, name) =>
+          "${typeToString(type.optionalParameterTypes[index])} $name")
+      .join(', ');
+  return "${typeToString(type.returnType)} Function$generics(${[
+    if (normal.isNotEmpty) normal,
+    if (named.isNotEmpty) "{$named}",
+    if (optional.isNotEmpty) "[$optional]"
+  ].join(', ')})";
 }
 
 String recordToString(RecordType type) {
-  final positional = type.positionalFields.map((e) => typeToString(e.type)).join(', ');
-  final named = type.namedFields.map((e) => "${typeToString(e.type)} ${e.name}").join(', ');
-  final trailing = type.positionalFields.length == 1 && type.namedFields.length == 0 ? ',' : '';
-  return "(${[if (positional.isNotEmpty) positional, if (named.isNotEmpty) "{$named}"].join(', ')}$trailing)";
+  final positional =
+      type.positionalFields.map((e) => typeToString(e.type)).join(', ');
+  final named = type.namedFields
+      .map((e) => "${typeToString(e.type)} ${e.name}")
+      .join(', ');
+  final trailing =
+      type.positionalFields.length == 1 && type.namedFields.length == 0
+          ? ','
+          : '';
+  return "(${[
+    if (positional.isNotEmpty) positional,
+    if (named.isNotEmpty) "{$named}"
+  ].join(', ')}$trailing)";
 }
 
 String genericToString(ParameterizedType type) {
-  final arguments = type.typeArguments.isEmpty ? '' : "<${type.typeArguments.map(typeToString).join(', ')}>";
+  final arguments = type.typeArguments.isEmpty
+      ? ''
+      : "<${type.typeArguments.map(typeToString).join(', ')}>";
   return "${type.element!.name}$arguments";
 }
