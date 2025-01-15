@@ -11,7 +11,12 @@ environment:
 #    path: ../morphy_annotation
 
 dependencies:
-  morphy_annotation: ^1.1.0
+  morphy_annotation:
+    git:
+      url: https://github.com/atreeon/morphy.git
+      ref: toString2
+      path: morphy_annotation
+#  morphy_annotation: ^1.4.0
   analyzer: '>=6.0.0 <=7.0.0'
   build: ^2.1.0
   source_gen: ^1.1.1
