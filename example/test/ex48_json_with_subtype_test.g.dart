@@ -21,7 +21,9 @@ Map<String, dynamic> _$AToJson(A instance) => <String, dynamic>{
     };
 
 X _$XFromJson(Map<String, dynamic> json) => X(
-      items: (json['items'] as List<dynamic>).map((e) => e as int).toList(),
+      items: (json['items'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$XToJson(X instance) => <String, dynamic>{

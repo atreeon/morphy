@@ -83,6 +83,7 @@ String createMorphy(
         sb.writeln("}) ${getInitialiser(allFields)};");
       }
       sb.writeln(getToString(allFields, classNameTrim));
+      sb.writeln(getToString2(allFields, classNameTrim));
     }
 
     sb.writeln(getHashCode(allFields));

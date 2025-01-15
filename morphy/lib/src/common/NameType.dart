@@ -18,13 +18,17 @@ class NameTypeClass extends NameType {
 
 class NameTypeClassComment extends NameTypeClass {
   final String? comment;
+  final bool? isMorphy;
 
   NameTypeClassComment(
     String name,
     String? type,
     String? _class, {
     this.comment,
+     this.isMorphy,
   }) : super(name, type, _class);
+
+  toString() => "${this.name}:${this.type}:${this.className}:${this.isMorphy}";
 }
 
 class NameTypeClassCommentData<TMeta1> extends NameTypeClassComment {

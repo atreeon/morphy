@@ -36,7 +36,18 @@ List<NameTypeClassComment> getDistinctFields(
   List<NameTypeClassComment> fieldsRaw,
   List<InterfaceWithComment> interfaces,
 ) {
-  var fields = fieldsRaw.map((f) => NameTypeClassComment(f.name, f.type, f.className?.replaceAll("\$", ""), comment: f.comment));
+  var fields = fieldsRaw.map(
+    (f) {
+      var isMorphy = (f.type?.startsWith("\$") ?? false) && !(f.type?.endsWith(")") ?? false);
+      return NameTypeClassComment(
+        f.name,
+        f.type,
+        f.className?.replaceAll("\$", ""),
+        comment: f.comment,
+        isMorphy: isMorphy,
+      );
+    },
+  );
 
   var interfaces2 = interfaces //
       .map((x) => Interface.fromGenerics(
@@ -62,12 +73,12 @@ List<NameTypeClassComment> getDistinctFields(
           .toList();
       if (paramNameType.length > 0) {
         var name = removeDollarsFromPropertyType(paramNameType[0].type!);
-        return NameTypeClassComment(classField.name, name, null, comment: classField.comment);
+        return NameTypeClassComment(classField.name, name, null, comment: classField.comment, isMorphy: classField.isMorphy);
       }
     }
 
     var type = removeDollarsFromPropertyType(classField.type!);
-    return NameTypeClassComment(classField.name, type, null, comment: classField.comment);
+    return NameTypeClassComment(classField.name, type, null, comment: classField.comment, isMorphy: classField.isMorphy);
   }).toList();
 
   return adjustedFields;
@@ -196,6 +207,65 @@ String getToString(List<NameType> fields, String className) {
 
   var items = fields.map((e) => "${e.name}:\${${e.name}.toString()}").joinToString(separator: "|");
   return """String toString() => "($className-$items)";""";
+}
+
+String getToString2(List<NameTypeClassComment> fields, String className) {
+  if (fields.isEmpty) {
+    return """String toString2() => "$className()""";
+  }
+
+  var startString = "\\\"";
+  var start = "\${";
+  var nullCheck = " == null ? null : ";
+  var end = ".toString()}";
+  var endMorphy = ".toString2()}";
+  var endString = "\\\"";
+
+  var items = fields.map((e) {
+    var field = e.name.toString();
+
+    var check = "$start$field$nullCheck ";
+
+    var stringValue = "$startString$start $field $end$endString";
+    var stringNullable = "$check \"$stringValue \" }";
+
+    var dateTimeValue = "DateTime.parse($startString$start $field $end$endString)";
+    var dateTimeNullable = "$check \"$dateTimeValue \" }";
+
+    var intValue = "$start $field $end";
+    var intNullable = "$check \"$intValue \" }";
+
+    // var morphyOutput = "$check $field.toString2()}";
+    var morphyValue = "$start $field $endMorphy";
+    var morphyNullable = "$check $field!.toString2()}";
+
+    var defaultValue = "$start $field $end";
+    var defaultNullable = "$check \"$defaultValue \" }";
+
+    // var string = "$startString $start $field $nullCheck $field$end $endString";
+    var value = switch (e.type) {
+      "String" => stringValue,
+      "String?" => stringNullable,
+      "DateTime" => dateTimeValue,
+      "DateTime?" => dateTimeNullable,
+      "int" => intValue,
+      "int?" => intNullable,
+      _ => (e.isMorphy ?? false) //
+          ? e.type?.contains('?') ?? false
+              ? morphyNullable
+              : morphyValue
+          : e.type?.contains('?') ?? false
+              ? defaultNullable
+              : defaultValue,
+
+      // "String" => "\\\"\${${e.name.toString()} == null ? \\\"null\\\" : ${e.name.toString()}.toString()}\\\"",
+      // _ => "\\\" ${e.className} \\\"",
+      // _ => "\\\" ${e.isMorphy} \\\"",
+    };
+
+    return "${e.name}:$value";
+  }).joinToString(separator: ",");
+  return """String toString2() => "$className($items)\";""";
 }
 
 String getHashCode(List<NameType> fields) {
@@ -339,7 +409,7 @@ String getCopyWith({
     return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
   }).join());
 
-  if (fieldsForSignature.isNotEmpty|| requiredFields.isNotEmpty) //
+  if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
     sb.write("}");
 
   if (isClassAbstract && !isExplicitSubType) {

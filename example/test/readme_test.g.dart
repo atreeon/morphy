@@ -8,7 +8,7 @@ part of 'readme_test.dart';
 
 Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
       name: json['name'] as String,
-      age: json['age'] as int,
+      age: (json['age'] as num).toInt(),
     );
 
 Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
@@ -21,7 +21,7 @@ FrankensteinsDogCat _$FrankensteinsDogCatFromJson(Map<String, dynamic> json) =>
       whiskerLength: (json['whiskerLength'] as num).toDouble(),
       woofSound: json['woofSound'] as String,
       name: json['name'] as String,
-      age: json['age'] as int,
+      age: (json['age'] as num).toInt(),
     );
 
 Map<String, dynamic> _$FrankensteinsDogCatToJson(
@@ -36,7 +36,7 @@ Map<String, dynamic> _$FrankensteinsDogCatToJson(
 Cat _$CatFromJson(Map<String, dynamic> json) => Cat(
       whiskerLength: (json['whiskerLength'] as num).toDouble(),
       name: json['name'] as String,
-      age: json['age'] as int,
+      age: (json['age'] as num).toInt(),
     );
 
 Map<String, dynamic> _$CatToJson(Cat instance) => <String, dynamic>{
@@ -48,7 +48,7 @@ Map<String, dynamic> _$CatToJson(Cat instance) => <String, dynamic>{
 Dog _$DogFromJson(Map<String, dynamic> json) => Dog(
       woofSound: json['woofSound'] as String,
       name: json['name'] as String,
-      age: json['age'] as int,
+      age: (json['age'] as num).toInt(),
     );
 
 Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
@@ -60,7 +60,7 @@ Map<String, dynamic> _$DogToJson(Dog instance) => <String, dynamic>{
 Fish _$FishFromJson(Map<String, dynamic> json) => Fish(
       fishColour: $enumDecode(_$eFishColourEnumMap, json['fishColour']),
       name: json['name'] as String,
-      age: json['age'] as int,
+      age: (json['age'] as num).toInt(),
     );
 
 Map<String, dynamic> _$FishToJson(Fish instance) => <String, dynamic>{
@@ -85,7 +85,7 @@ Map<String, dynamic> _$XToJson(X instance) => <String, dynamic>{
 
 Y _$YFromJson(Map<String, dynamic> json) => Y(
       val: json['val'] as String,
-      valY: json['valY'] as int,
+      valY: (json['valY'] as num).toInt(),
     );
 
 Map<String, dynamic> _$YToJson(Y instance) => <String, dynamic>{
@@ -95,7 +95,7 @@ Map<String, dynamic> _$YToJson(Y instance) => <String, dynamic>{
 
 Z _$ZFromJson(Map<String, dynamic> json) => Z(
       val: json['val'] as String,
-      valY: json['valY'] as int,
+      valY: (json['valY'] as num).toInt(),
       valZ: (json['valZ'] as num).toDouble(),
     );
 

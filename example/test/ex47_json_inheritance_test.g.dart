@@ -24,7 +24,9 @@ Map<String, dynamic> _$BToJson(B instance) => <String, dynamic>{
 
 C _$CFromJson(Map<String, dynamic> json) => C(
       id: json['id'] as String,
-      items: (json['items'] as List<dynamic>).map((e) => e as int).toList(),
+      items: (json['items'] as List<dynamic>)
+          .map((e) => (e as num).toInt())
+          .toList(),
     );
 
 Map<String, dynamic> _$CToJson(C instance) => <String, dynamic>{

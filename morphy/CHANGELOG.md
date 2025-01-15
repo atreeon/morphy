@@ -1,3 +1,6 @@
+## 1.4.0
+- recreatable objects using String2
+
 ## 1.3.0
 - bug fixes, subclass with no members now works, generic copy with bug now fixed where type is incorrect
 - in order to fix the above problem the type returned from the copywith is now the type of the named copywith function, eg b.copyWith_A now returns an A type
