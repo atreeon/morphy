@@ -1633,6 +1633,29 @@ class C_Generics_Sing {
     });
   });
 
+  group("stripListString", () {
+    test("1x", () {
+      var result = stripListString("List<String>?");
+
+      expect(result, "String");
+
+    });
+
+    test("2x", () {
+      var result = stripListString("List<int>");
+
+      expect(result, "int");
+
+    });
+
+    test("2x", () {
+      var result = stripListString("List<\$Pet?>?");
+
+      expect(result, "\$Pet?");
+
+    });
+  });
+
 //  group("getCopyWithSignature", () {
 //    test("1p", () {
 //      var result = getCopyWithSignature(

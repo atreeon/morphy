@@ -209,6 +209,30 @@ String getToString(List<NameType> fields, String className) {
   return """String toString() => "($className-$items)";""";
 }
 
+String stripListString(String listString) {
+  var blah = listString.replaceFirst("List", "");
+
+  if (!blah.startsWith("<")) {
+    return blah;
+  }
+
+  var blah2 = blah.endsWith("?") ? blah.substring(0, blah.length - 1) : blah;
+
+  //remove < & >
+  return blah2.substring(1, blah2.length - 1);
+}
+
+//todo: still doesn't quite work with lists
+// String getStuff(String value) {
+//   if(value.startsWith("List")) {
+//     var listGeneric = stripListString(value);
+//     if(
+//   }else {
+//     getToString2(fields, className);
+//   }
+//
+// }
+
 String getToString2(List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) {
     return """String toString2() => "$className()""";
@@ -242,28 +266,31 @@ String getToString2(List<NameTypeClassComment> fields, String className) {
     var defaultValue = "$start $field $end";
     var defaultNullable = "$check \"$defaultValue \" }";
 
-    // var string = "$startString $start $field $nullCheck $field$end $endString";
-    var value = switch (e.type) {
-      "String" => stringValue,
-      "String?" => stringNullable,
-      "DateTime" => dateTimeValue,
-      "DateTime?" => dateTimeNullable,
-      "int" => intValue,
-      "int?" => intNullable,
-      _ => (e.isMorphy ?? false) //
-          ? e.type?.contains('?') ?? false
-              ? morphyNullable
-              : morphyValue
-          : e.type?.contains('?') ?? false
-              ? defaultNullable
-              : defaultValue,
+    var listBase = ".map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString()";
+    var listValue = "$start$field$listBase}";
+    var listNullable = "$check $field!$listBase }";
 
-      // "String" => "\\\"\${${e.name.toString()} == null ? \\\"null\\\" : ${e.name.toString()}.toString()}\\\"",
-      // _ => "\\\" ${e.className} \\\"",
-      // _ => "\\\" ${e.isMorphy} \\\"",
-    };
+    var value2 = e.type?.startsWith("List<") ?? false
+        ? (e.type?.endsWith("?") ?? false) //
+            ? listNullable
+            : listValue
+        : switch (e.type) {
+            "String" => stringValue,
+            "String?" => stringNullable,
+            "DateTime" => dateTimeValue,
+            "DateTime?" => dateTimeNullable,
+            "int" => intValue,
+            "int?" => intNullable,
+            _ => (e.isMorphy ?? false) //
+                ? e.type?.contains('?') ?? false
+                    ? morphyNullable
+                    : morphyValue
+                : e.type?.contains('?') ?? false
+                    ? defaultNullable
+                    : defaultValue,
+          };
 
-    return "${e.name}:$value";
+    return "${e.name}:$value2";
   }).joinToString(separator: ",");
   return """String toString2() => "$className($items)\";""";
 }
