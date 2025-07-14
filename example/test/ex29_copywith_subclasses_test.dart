@@ -49,37 +49,37 @@ abstract class $Y implements $$X {
 main() {
   test("ba", () {
     A ba = B(b: 5, a: "A");
-    A ba_copy = ba.copyWith_A(a: () => "a");
+    A ba_copy = ba.copyWithA(a: () => "a");
     expect(ba_copy.toString(), "(B-a:a|b:5)");
   });
 
   test("bb", () {
     B bb = B(b: 5, a: "A");
-    B bb_copy = bb.copyWith_B(a: () => "a", b: () => 6);
+    B bb_copy = bb.copyWithB(a: () => "a", b: () => 6);
     expect(bb_copy.toString(), "(B-a:a|b:6)");
   });
 
   test("ca", () {
     A ca = C(b: 5, a: "A", c: true);
-    A ca_copy = ca.copyWith_A(a: () => "a");
+    A ca_copy = ca.copyWithA(a: () => "a");
     expect(ca_copy.toString(), "(C-a:a|b:5|c:true)");
   });
 
   test("cb", () {
     B cb = C(b: 5, a: "A", c: true);
-    B cb_copy = cb.copyWith_B(a: () => "a", b: () => 6);
+    B cb_copy = cb.copyWithB(a: () => "a", b: () => 6);
     expect(cb_copy.toString(), "(C-a:a|b:6|c:true)");
   });
 
   test("cc", () {
     C cc = C(b: 5, a: "A", c: true);
-    var cc_copy = cc.copyWith_C(a: () => "a", b: () => 6, c: () => false);
+    var cc_copy = cc.copyWithC(a: () => "a", b: () => 6, c: () => false);
     expect(cc_copy.toString(), "(C-a:a|b:6|c:false)");
   });
 
   test("da", () {
     D da = D(b: 5, a: "A");
-    var da_copy = da.copyWith_A(a: () => "a");
+    var da_copy = da.copyWithA(a: () => "a");
     expect(da_copy.toString(), "(D-a:a|b:5)");
   });
 

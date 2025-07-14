@@ -218,11 +218,11 @@ abstract class $Task {
 }
 
 // Test self-referencing class with factory methods
-@morphy
+@Morphy(generateJson: true)
 abstract class $TreeNode {
   String get value;
-  List<TreeNode>? get children;
-  TreeNode? get parent;
+  List<$TreeNode>? get children;
+  $TreeNode? get parent;
 
   factory $TreeNode.root(String value) =>
       TreeNode._(value: value, children: [], parent: null);
@@ -236,8 +236,6 @@ abstract class $TreeNode {
     List<TreeNode> children,
   ) => TreeNode._(value: value, children: children, parent: parent);
 }
-
-String _encrypt(String value) => "encrypted_$value";
 
 void main() {
   group('Comprehensive Factory Method Tests', () {

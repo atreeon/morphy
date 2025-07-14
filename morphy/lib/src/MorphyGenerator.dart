@@ -380,38 +380,81 @@ $imports
         var parameters = constructor.parameters.map((param) {
           var paramType = param.type.toString();
 
-          // Debug: Print the type resolution for TreeNode
-          if (element.name.contains('TreeNode')) {
-            print(
-              'TreeNode factory parameter: ${param.name} has type: $paramType',
-            );
-            print('Type element: ${param.type.element}');
-            print('Type display name: ${param.type.element?.displayName}');
-          }
-
           // Handle self-referencing types
           if (paramType.contains('InvalidType') || paramType == 'dynamic') {
-            // Check if this is a self-reference to the current class
             var className = element.name.replaceAll('\$', '');
+
+            // Check if this is a self-reference to the current class
             if (param.type.element?.displayName == element.name ||
                 param.type.element?.displayName == className) {
               paramType = className;
             } else {
-              // Try to resolve from the parameter's source
-              var source = param.source?.contents.data;
-              if (source != null) {
-                var paramIndex = constructor.parameters.indexOf(param);
+              // For InvalidType, try to resolve from the source code
+              try {
                 var constructorSource = constructor.source.contents.data;
-                // Extract the parameter type from source
-                var paramPattern = RegExp(
-                  r'(\w+(?:<[^>]+>)?)\s+' + RegExp.escape(param.name),
+
+                // Look for the parameter in the factory method signature
+                var factoryPattern = RegExp(
+                  r'factory\s+\$' +
+                      RegExp.escape(className) +
+                      r'\.' +
+                      RegExp.escape(constructor.name) +
+                      r'\s*\(([^)]*)\)',
+                  multiLine: true,
                 );
-                var match = paramPattern.firstMatch(constructorSource);
-                if (match != null) {
-                  var sourceType = match.group(1)!;
-                  if (sourceType.contains(className)) {
-                    paramType = sourceType.replaceAll('\$', '');
+
+                var factoryMatch = factoryPattern.firstMatch(constructorSource);
+                if (factoryMatch != null) {
+                  var paramsList = factoryMatch.group(1) ?? '';
+
+                  // Extract parameter definitions
+                  var paramPattern = RegExp(
+                    r'(?:required\s+)?([A-Za-z_][A-Za-z0-9_]*(?:<[^>]+>)?(?:\?)?)\s+' +
+                        RegExp.escape(param.name),
+                  );
+
+                  var paramMatch = paramPattern.firstMatch(paramsList);
+                  if (paramMatch != null) {
+                    var sourceType = paramMatch.group(1)!;
+
+                    // If the source type references the class name, use the clean class name
+                    // but preserve nullable markers
+                    if (sourceType == className ||
+                        sourceType == element.name.replaceAll('\$', '') ||
+                        sourceType == '$className?' ||
+                        sourceType == '${element.name.replaceAll('\$', '')}?') {
+                      paramType = sourceType
+                          .replaceAll('\$', '')
+                          .replaceAll(
+                            element.name.replaceAll('\$', ''),
+                            className,
+                          );
+                    } else if (sourceType.contains(className)) {
+                      paramType = sourceType.replaceAll('\$', '');
+                    } else if (sourceType.contains('List<$className>') ||
+                        sourceType.contains('List<$className?>') ||
+                        sourceType.contains(
+                          'List<${element.name.replaceAll('\$', '')}>',
+                        ) ||
+                        sourceType.contains(
+                          'List<${element.name.replaceAll('\$', '')}?>',
+                        )) {
+                      paramType = sourceType
+                          .replaceAll('\$', '')
+                          .replaceAll(
+                            element.name.replaceAll('\$', ''),
+                            className,
+                          );
+                    } else {
+                      // Use the source type as-is, but clean dollar signs
+                      paramType = sourceType.replaceAll('\$', '');
+                    }
                   }
+                }
+              } catch (e) {
+                // If source parsing fails, try basic InvalidType replacement
+                if (paramType.contains('InvalidType')) {
+                  paramType = paramType.replaceAll('InvalidType', className);
                 }
               }
             }
@@ -517,5 +560,71 @@ $imports
         .map((p) => '${p.name}: ${p.name}')
         .join(', ');
     return 'return ${className}._(${paramList});';
+  }
+
+  String _fixSelfReferencingType(
+    String type,
+    String originalClassName,
+    String targetClassName,
+  ) {
+    // Handle InvalidType which often indicates unresolved self-references
+    if (type.contains('InvalidType')) {
+      // Replace InvalidType with the target class name, preserving nullability and generics
+      var result = type.replaceAll('InvalidType', targetClassName);
+      return result;
+    }
+
+    // Handle direct references to the original class name (with $)
+    if (type.contains(originalClassName)) {
+      return type.replaceAll(originalClassName, targetClassName);
+    }
+
+    // Handle cases where the type is just 'dynamic' but should be self-referencing
+    // Try to determine from context if this should be the target class
+    if (type == 'dynamic') {
+      // For now, we can't determine this without source analysis
+      // but we could enhance this later
+      return type;
+    }
+
+    return type;
+  }
+
+  String _fixSelfReferencingTypeWithSource(
+    String type,
+    String originalClassName,
+    String targetClassName,
+    String fieldName,
+    String source,
+  ) {
+    // Handle InvalidType by checking source for nullability
+    if (type.contains('InvalidType')) {
+      // Look for the field declaration in source to determine nullability
+      var fieldPattern = RegExp(
+        targetClassName.replaceAll('\$', '') + r'\?\s+get\s+' + RegExp.escape(fieldName),
+        multiLine: true,
+      );
+      
+      var nullableMatch = fieldPattern.firstMatch(source);
+      if (nullableMatch != null) {
+        // Field is nullable in source
+        return type.replaceAll('InvalidType', targetClassName + '?');
+      } else {
+        // Check for non-nullable version
+        var nonNullablePattern = RegExp(
+          targetClassName.replaceAll('\$', '') + r'\s+get\s+' + RegExp.escape(fieldName),
+          multiLine: true,
+        );
+        if (nonNullablePattern.firstMatch(source) != null) {
+          return type.replaceAll('InvalidType', targetClassName);
+        }
+      }
+      
+      // Fallback: just replace InvalidType
+      return type.replaceAll('InvalidType', targetClassName);
+    }
+
+    // Use the regular fix for other cases
+    return _fixSelfReferencingType(type, originalClassName, targetClassName);
   }
 }
