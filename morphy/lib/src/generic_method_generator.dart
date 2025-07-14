@@ -37,34 +37,44 @@ class GenericMethodGenerator {
   }
 
   static String _generateParams(
-      List<NameType> fields, List<NameType> typeParams) {
-    return fields.map((f) {
-      var name = f.name;
-      var type = f.type ?? 'dynamic';
-      return '$type Function()? $name';
-    }).join(',\n      ');
+    List<NameType> fields,
+    List<NameType> typeParams,
+  ) {
+    return fields
+        .map((f) {
+          var name = f.name;
+          var type = f.type ?? 'dynamic';
+          return '$type? $name';
+        })
+        .join(',\n      ');
   }
 
   static String _generatePatchAssignments(List<NameType> fields) {
-    return fields.map((f) {
-      var name = f.name;
-      var isRequired = !(f.type?.endsWith('?') ?? true);
+    return fields
+        .map((f) {
+          var name = f.name;
+          var isRequired = !(f.type?.endsWith('?') ?? true);
 
-      if (isRequired) {
-        return '_patcher.with$name($name());';
-      }
-      return '''
+          if (isRequired) {
+            return '_patcher.with$name($name);';
+          }
+          return '''
       if ($name != null) {
-        _patcher.with$name($name());
+        _patcher.with$name($name);
       }''';
-    }).join('\n    ');
+        })
+        .join('\n    ');
   }
 
   static String _generateConstructorParams(
-      List<NameType> fields, String className) {
-    return fields.map((f) {
-      var name = f.name;
-      return '$name: _patchMap[$className\$.$name] ?? this.$name';
-    }).join(',\n        ');
+    List<NameType> fields,
+    String className,
+  ) {
+    return fields
+        .map((f) {
+          var name = f.name;
+          return '$name: _patchMap[$className\$.$name] ?? this.$name';
+        })
+        .join(',\n        ');
   }
 }

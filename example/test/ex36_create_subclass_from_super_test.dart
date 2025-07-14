@@ -8,7 +8,7 @@ part 'ex36_create_subclass_from_super_test.morphy.dart';
 /// Use .copyToX to create a subclass from a superclass
 /// todo: whats the difference between copyToX & cwX
 
-@Morphy(explicitSubTypes:  [$B])
+@Morphy(explicitSubTypes: [$B])
 abstract class $A {
   String get x;
 }
@@ -22,7 +22,7 @@ abstract class $B implements $A {
 main() {
   test("a to b (super to sub)", () {
     A a = A(x: "x");
-    B b = a.changeTo_B(y: "y");
+    B b = a.changeToB(y: "y");
 
     expect(b.toString(), "(B-x:x|y:y)");
   });

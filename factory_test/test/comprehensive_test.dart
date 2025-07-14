@@ -11,6 +11,7 @@ part 'comprehensive_test.morphy.dart';
   generateCompareTo: true,
   hidePublicConstructor: false,
   nonSealed: false,
+  generateCopyWithFn: true,
 )
 abstract class $BasicUser {
   String get name;
@@ -278,7 +279,7 @@ void main() {
 
       test('should work with copyWith', () {
         var user = BasicUser.create("John", 30);
-        var updated = user.copyWithBasicUser(email: () => "john@example.com");
+        var updated = user.copyWithBasicUserFn(email: () => "john@example.com");
         expect(updated.email, "john@example.com");
         expect(updated.name, "John");
       });

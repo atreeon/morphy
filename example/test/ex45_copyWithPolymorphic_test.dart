@@ -16,7 +16,7 @@ part 'ex45_copyWithPolymorphic_test.morphy.dart';
 
 // ignore_for_file: unqualified_reference_to_non_local_static_member
 
-@Morphy(explicitSubTypes: [$Sub])
+@Morphy(generateCopyWithFn: true, explicitSubTypes: [$Sub])
 abstract class $Super {
   String get id;
 }
@@ -35,8 +35,12 @@ main() {
       ];
 
       //copyWith_Super called on both Super & Sub objects
-      var result = supers.map((e) => //
-          e.copyWith_Super(id: () => e.id + "_")).toList();
+      var result = supers
+          .map(
+            (e) => //
+                e.copyWithSuperFn(id: () => e.id + "_"),
+          )
+          .toList();
 
       //they both retain their original type
       expect(result[0] is Sub, false);

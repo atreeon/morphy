@@ -5,7 +5,7 @@ part 'ex58_copywith_nullable.morphy.dart';
 
 //nullable types and copyWith
 
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $Pet {
   String? get type;
 
@@ -20,13 +20,13 @@ main() {
     expect(a, expected);
 
     //set type to null
-    var a_copy = a.copyWith_Pet(type: () => null);
+    var a_copy = a.copyWithPetFn(type: () => null);
 
     var expected2 = Pet(type: null, name: "bob");
     expect(a_copy, expected2);
 
     //copy just one param
-    var a_copy3 = a.copyWith_Pet(name: () => "bobby");
+    var a_copy3 = a.copyWithPetFn(name: () => "bobby");
 
     var expected3 = Pet(type: "cat", name: "bobby");
     expect(a_copy3, expected3);

@@ -16,7 +16,7 @@ abstract class $$Super {
 @Morphy(explicitSubTypes: [$SubB])
 abstract class $SubA implements $$Super {}
 
-@Morphy()
+@Morphy(generateCopyWithFn: true)
 abstract class $SubB implements $$Super {
   String get z;
   List<$C> get cs;
@@ -30,12 +30,16 @@ abstract class $C {
 main() {
   test("subA to subB (sub sibling to sub)", () {
     //does copy with work
-    var b = SubB(z: "z", cs: [C(m: "m")], x: "x");
-    var b_copy1 = b.copyWith_SubB();
+    var b = SubB(
+      z: "z",
+      cs: [C(m: "m")],
+      x: "x",
+    );
+    var b_copy1 = b.copyWithSubB();
     expect(b_copy1.toString(), "(SubB-z:z|cs:[(C-m:m)]|x:x)");
 
     //copywith from SubB to SubB (traditional copy with)
-    var b_copy2 = b.copyWith_SubB(cs: () => [C(m: "m2")]);
+    var b_copy2 = b.copyWithSubBFn(cs: () => [C(m: "m2")]);
     expect(b_copy2.toString(), "(SubB-z:z|cs:[(C-m:m2)]|x:x)");
 
     //copy TO from one sibling to another
@@ -43,7 +47,10 @@ main() {
     //copyTo creates a new type of the type that is specified
     //  here we take a SubA object and we create a new objet of type SubB
     SubA subA = SubA(x: "x");
-    SubB subB = subA.changeTo_SubB(z: "z", cs: [C(m: "m")]);
+    SubB subB = subA.changeToSubB(
+      z: "z",
+      cs: [C(m: "m")],
+    );
 
     expect(subB.toString(), "(SubB-z:z|cs:[(C-m:m)]|x:x)");
   });

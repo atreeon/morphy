@@ -14,13 +14,9 @@ main() {
       C(id: "3", xyz: "my custom"),
     ];
 
-    var result = aList.map((e) => e.changeTo_A()).toList();
+    var result = aList.map((e) => e.changeToA()).toList();
 
-    final expected = [
-      A(id: "1"),
-      A(id: "2"),
-      A(id: "3"),
-    ];
+    final expected = [A(id: "1"), A(id: "2"), A(id: "3")];
 
     expect(result, expected);
   });

@@ -6,22 +6,22 @@ import 'package:test/test.dart';
 part 'readme_test.g.dart';
 part 'readme_test.morphy.dart';
 
-@Morphy(generateJson: true, explicitSubTypes: [$Cat])
+@Morphy(generateJson: true, generateCopyWithFn: true, explicitSubTypes: [$Cat])
 abstract class $Pet {
   String get name;
 
   int get age;
 }
 
-@Morphy(generateJson: true)
+@Morphy(generateJson: true, generateCopyWithFn: true)
 abstract class $FrankensteinsDogCat implements $Dog, $Cat {}
 
-@Morphy(generateJson: true)
+@Morphy(generateJson: true, generateCopyWithFn: true)
 abstract class $Cat implements $Pet {
   double get whiskerLength;
 }
 
-@Morphy(generateJson: true)
+@Morphy(generateJson: true, generateCopyWithFn: true)
 abstract class $Dog implements $Pet {
   String get woofSound;
 }
@@ -66,7 +66,7 @@ abstract class $Y implements $X {
   int get valY;
 }
 
-@Morphy(generateJson: true)
+@Morphy(generateJson: true, generateCopyWithFn: true)
 abstract class $Z implements $Y {
   double get valZ;
 }
@@ -87,7 +87,7 @@ main() {
 
   test("3 CopyWith simple", () {
     var flossy = Pet(name: "Flossy", age: 5);
-    var plossy = flossy.copyWith_Pet(name: () => "Plossy");
+    var plossy = flossy.copyWithPetFn(name: () => "Plossy");
 
     expect(flossy.age, plossy.age);
   });
@@ -110,9 +110,10 @@ main() {
       Dog(woofSound: "rowf", name: "Colin", age: 4),
     ];
 
-    var petsOlder = pets //
-        .map((e) => e.copyWith_Pet(age: () => e.age + 1))
-        .toList();
+    var petsOlder =
+        pets //
+            .map((e) => e.copyWithPetFn(age: () => e.age + 1))
+            .toList();
 
     expect(petsOlder[0].age, 5);
     expect(petsOlder[1].age, 5);
@@ -140,14 +141,19 @@ main() {
   test("9 Change To", () {
     var flossy = Pet(name: "Flossy", age: 5);
 
-    var bagpussCat = flossy.changeTo_Cat(whiskerLength: 13.75);
+    var bagpussCat = flossy.changeToCat(whiskerLength: 13.75);
 
     expect(bagpussCat.whiskerLength, 13.75);
     expect(bagpussCat.runtimeType, Cat);
   });
 
   test("10 Multiple Inheritance", () {
-    var frankie = FrankensteinsDogCat(whiskerLength: 13.75, woofSound: "rowf", name: "frankie", age: 1);
+    var frankie = FrankensteinsDogCat(
+      whiskerLength: 13.75,
+      woofSound: "rowf",
+      name: "frankie",
+      age: 1,
+    );
     expect(frankie is Cat, true);
     expect(frankie is Dog, true);
   });
@@ -176,7 +182,7 @@ main() {
 
   test("14 Generate JSOn", () {
     var flossy = Pet(name: "Flossy", age: 5);
-    var json = flossy.toJson_2({});
+    var json = flossy.toJsonCustom({});
 
     expect(json, {'name': 'Flossy', 'age': 5, '_className_': 'Pet'});
   });
@@ -197,12 +203,12 @@ main() {
       Z(val: "xyz", valY: 2, valZ: 4.34),
     ];
 
-    var resultInJsonFormat = xObjects.map((e) => e.toJson_2({})).toList();
+    var resultInJsonFormat = xObjects.map((e) => e.toJsonCustom({})).toList();
 
     var expectedJson = [
       {'val': 'x', '_className_': 'X'},
       {'val': 'xy', 'valY': 1, '_className_': 'Y'},
-      {'val': 'xyz', 'valY': 2, 'valZ': 4.34, '_className_': 'Z'}
+      {'val': 'xyz', 'valY': 2, 'valZ': 4.34, '_className_': 'Z'},
     ];
 
     expect(resultInJsonFormat, expectedJson);

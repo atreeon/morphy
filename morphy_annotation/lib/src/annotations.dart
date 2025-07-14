@@ -6,6 +6,7 @@ const morphy = Morphy(
   explicitSubTypes: null,
   explicitToJson: true,
   generateCompareTo: true,
+  generateCopyWithFn: false,
 );
 
 /// ### Morphy2 will be created before Morphy, sometimes the generator needs a related class to be built before another.
@@ -16,6 +17,7 @@ const morphy2 = Morphy2(
   explicitSubTypes: null,
   explicitToJson: true,
   generateCompareTo: true,
+  generateCopyWithFn: false,
 );
 
 class Morphy implements MorphyX {
@@ -29,6 +31,9 @@ class Morphy implements MorphyX {
 
   ///if we specify the class as an abstract class we make it abstract and not sealed
   final bool nonSealed;
+
+  ///if we want to generate function-based copyWith methods (copyWithFn)
+  final bool generateCopyWithFn;
 
   /// {@template MorphyX}
   /// ### normal class; prepend class with a single dollar & make abstract
@@ -109,8 +114,9 @@ class Morphy implements MorphyX {
     this.generateJson = false,
     this.explicitToJson = true,
     this.hidePublicConstructor = false,
-    this.nonSealed = false,
     this.generateCompareTo = true,
+    this.nonSealed = false,
+    this.generateCopyWithFn = false,
   });
 }
 
@@ -121,6 +127,7 @@ class Morphy2 implements MorphyX {
   final bool hidePublicConstructor;
   final bool nonSealed;
   final bool generateCompareTo;
+  final bool generateCopyWithFn;
 
   const Morphy2({
     this.explicitSubTypes = null,
@@ -129,6 +136,7 @@ class Morphy2 implements MorphyX {
     this.hidePublicConstructor = false,
     this.nonSealed = false,
     this.generateCompareTo = true,
+    this.generateCopyWithFn = false,
   });
 }
 

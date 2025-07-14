@@ -32,13 +32,13 @@ main() {
 
   test("1 ba copy with", () {
     var b = B(x: 1, y: "y", z: "z");
-    var ba_copy = b.copyWithA(x: () => 2, y: () => "Y");
+    var ba_copy = b.copyWithA(x: 2, y: "Y");
     expect(ba_copy.toString(), "(B-x:2|y:Y|z:z)");
   });
 
   test("2 bb copy with", () {
     var b = B(x: 1, y: "y", z: "z");
-    var bb_copy = b.copyWithB(x: () => 2, y: () => "Y", z: () => "Z");
+    var bb_copy = b.copyWithB(x: 2, y: "Y", z: "Z");
     expect(bb_copy.toString(), "(B-x:2|y:Y|z:Z)");
   });
 }

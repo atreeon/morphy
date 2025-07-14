@@ -10,23 +10,30 @@ class Interface {
   /// If true the subtype has been explicitly declared in the Morphy annotation
   final bool isExplicitSubType;
 
+  /// If true the interface is a sealed class (starts with $$)
+  final bool isSealed;
+
   Interface(
     this.interfaceName,
     List<String> genericExtends,
     List<String> genericName,
     this.fields, [
     this.isExplicitSubType = false,
-  ])  : assert(genericExtends.length == genericName.length,
-            "typeArgs must have same length as typeParams"),
-        typeParams = genericName
-            .mapIndexed((i, x) => NameType(x, genericExtends[i]))
-            .toList() {}
+    this.isSealed = false,
+  ]) : assert(
+         genericExtends.length == genericName.length,
+         "typeArgs must have same length as typeParams",
+       ),
+       typeParams = genericName
+           .mapIndexed((i, x) => NameType(x, genericExtends[i]))
+           .toList() {}
 
   Interface.fromGenerics(
     this.interfaceName,
     this.typeParams,
     this.fields, [
     this.isExplicitSubType = false,
+    this.isSealed = false,
   ]);
 
   toString() =>
@@ -42,7 +49,8 @@ class InterfaceWithComment extends Interface {
     List<String> typeParamsNames,
     List<NameType> fields, {
     this.comment,
-  }) : super(type, typeArgsTypes, typeParamsNames, fields);
+    bool isSealed = false,
+  }) : super(type, typeArgsTypes, typeParamsNames, fields, false, isSealed);
 
   toString() =>
       "${this.interfaceName.toString()}|${this.typeParams.toString()}|${this.fields.toString()}";
@@ -68,10 +76,7 @@ class GenericsNameType {
   final String name;
   final String? type;
 
-  GenericsNameType(
-    this.name,
-    this.type,
-  );
+  GenericsNameType(this.name, this.type);
 
   toString() => "${this.name}:${this.type}";
 }

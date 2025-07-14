@@ -17,12 +17,12 @@ class Employee implements Person {
   Employee(this.name, this.id);
 }
 
-@morphy
+@Morphy(explicitToJson: false)
 abstract class $A {
   Person get a;
 }
 
-@morphy
+@Morphy(explicitToJson: false)
 abstract class $B implements $A {
   Employee get a;
 }

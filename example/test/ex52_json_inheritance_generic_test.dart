@@ -17,20 +17,35 @@ main() {
     ];
 
     var result = toJsonAs
-        .map((e) => e.toJson_2(
-              {
-                A: (A x) => x.toJson(),
-                B: (B x) => x.toJson(),
-                C: (C x) => x.toJson(),
-              },
-            ))
+        .map(
+          (e) => e.toJsonCustom({
+            A: (A x) => x.toJson(),
+            B: (B x) => x.toJson(),
+            C: (C x) => x.toJson(),
+          }),
+        )
         .toList();
 
     var expected = [
       {'id': 'x', '_className_': 'A', '_T1_': 'String'},
       {'id': 1, '_className_': 'A', '_T1_': 'int'},
-      {'id': '2', 'valT1': 'myString', 'valT2': 5, '_className_': 'B', '_T1_': 'String', '_T2_': 'int'},
-      {'id': 'id', 'valT1': 'valT1', 'valT2': 'valT2', 'xyz': 'xyz', '_className_': 'C', '_T1_': 'String', '_T2_': 'String'}
+      {
+        'id': '2',
+        'valT1': 'myString',
+        'valT2': 5,
+        '_className_': 'B',
+        '_T1_': 'String',
+        '_T2_': 'int',
+      },
+      {
+        'id': 'id',
+        'valT1': 'valT1',
+        'valT2': 'valT2',
+        'xyz': 'xyz',
+        '_className_': 'C',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
     ];
 
     expect(result, expected);
@@ -40,21 +55,44 @@ main() {
     var json = [
       {'id': 'x', '_className_': 'A', '_T1_': 'String'},
       {'id': 1, '_className_': 'A', '_T1_': 'int'},
-      {'id': '2', 'valT1': 'myString', 'valT2': 5, '_className_': 'B', '_T1_': 'String', '_T2_': 'int'},
-      {'id': 'id', 'valT1': 'valT1', 'valT2': 'valT2', 'xyz': 'xyz', '_className_': 'C', '_T1_': 'String', '_T2_': 'String'}
+      {
+        'id': '2',
+        'valT1': 'myString',
+        'valT2': 5,
+        '_className_': 'B',
+        '_T1_': 'String',
+        '_T2_': 'int',
+      },
+      {
+        'id': 'id',
+        'valT1': 'valT1',
+        'valT2': 'valT2',
+        'xyz': 'xyz',
+        '_className_': 'C',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
     ];
 
     A_Generics_Sing().fns = {
-      ["String"]: (Map<String, dynamic> json) => _$AFromJson<String>(json, (x) => x as String),
-      ["int"]: (Map<String, dynamic> json) => _$AFromJson<int>(json, (x) => x as int),
+      ["String"]: (Map<String, dynamic> json) =>
+          _$AFromJson<String>(json, (x) => x as String),
+      ["int"]: (Map<String, dynamic> json) =>
+          _$AFromJson<int>(json, (x) => x as int),
     };
 
     B_Generics_Sing().fns = {
-      ["String", "int"]: (Map<String, dynamic> json) => _$BFromJson<String, int>(json, (x) => x as String, (x) => x as int),
+      ["String", "int"]: (Map<String, dynamic> json) =>
+          _$BFromJson<String, int>(json, (x) => x as String, (x) => x as int),
     };
 
     C_Generics_Sing().fns = {
-      ["String", "String"]: (Map<String, dynamic> json) => _$CFromJson<String, String>(json, (x) => x as String, (x) => x as String),
+      ["String", "String"]: (Map<String, dynamic> json) =>
+          _$CFromJson<String, String>(
+            json,
+            (x) => x as String,
+            (x) => x as String,
+          ),
     };
 
     var result = json.map((e) => A.fromJson(e)).toList();
@@ -80,17 +118,30 @@ main() {
     ];
 
     var result = toJsonBs
-        .map((e) => e.toJson_2(
-              {
-                B: (B x) => x.toJson(),
-                C: (C x) => x.toJson(),
-              },
-            ))
+        .map(
+          (e) =>
+              e.toJsonCustom({B: (B x) => x.toJson(), C: (C x) => x.toJson()}),
+        )
         .toList();
 
     var expected = [
-      {'id': '2', 'valT1': 'myString', 'valT2': '5', '_className_': 'B', '_T1_': 'String', '_T2_': 'String'},
-      {'id': 'id', 'valT1': 'valT1', 'valT2': 'valT2', 'xyz': 'xyz', '_className_': 'C', '_T1_': 'String', '_T2_': 'String'}
+      {
+        'id': '2',
+        'valT1': 'myString',
+        'valT2': '5',
+        '_className_': 'B',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
+      {
+        'id': 'id',
+        'valT1': 'valT1',
+        'valT2': 'valT2',
+        'xyz': 'xyz',
+        '_className_': 'C',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
     ];
 
     expect(result, expected);
@@ -98,16 +149,41 @@ main() {
 
   test("4 fromJson as A", () {
     var json = [
-      {'id': '2', 'valT1': 'myString', 'valT2': '5', '_className_': 'B', '_T1_': 'String', '_T2_': 'String'},
-      {'id': 'id', 'valT1': 'valT1', 'valT2': 'valT2', 'xyz': 'xyz', '_className_': 'C', '_T1_': 'String', '_T2_': 'String'}
+      {
+        'id': '2',
+        'valT1': 'myString',
+        'valT2': '5',
+        '_className_': 'B',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
+      {
+        'id': 'id',
+        'valT1': 'valT1',
+        'valT2': 'valT2',
+        'xyz': 'xyz',
+        '_className_': 'C',
+        '_T1_': 'String',
+        '_T2_': 'String',
+      },
     ];
 
     B_Generics_Sing().fns = {
-      ["String", "String"]: (Map<String, dynamic> json) => _$BFromJson<String, String>(json, (x) => x as String, (x) => x as String),
+      ["String", "String"]: (Map<String, dynamic> json) =>
+          _$BFromJson<String, String>(
+            json,
+            (x) => x as String,
+            (x) => x as String,
+          ),
     };
 
     C_Generics_Sing().fns = {
-      ["String", "String"]: (Map<String, dynamic> json) => _$CFromJson<String, String>(json, (x) => x as String, (x) => x as String),
+      ["String", "String"]: (Map<String, dynamic> json) =>
+          _$CFromJson<String, String>(
+            json,
+            (x) => x as String,
+            (x) => x as String,
+          ),
     };
 
     var result = json.map((e) => A.fromJson(e)).toList();

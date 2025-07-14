@@ -132,11 +132,12 @@ String getClassDefinition({
   var _className = className.replaceAll("\$", "");
 
   if (isAbstract) {
-    if (!nonSealed) {
-      // Just generate a sealed class for $$-prefixed classes
-      return "sealed class $_className";
+    if (nonSealed) {
+      // Generate abstract class when nonSealed is explicitly true
+      return "abstract class $_className";
     }
-    return "abstract class $_className";
+    // Generate sealed class when nonSealed is false (default)
+    return "sealed class $_className";
   }
 
   return "class $_className";
@@ -189,7 +190,6 @@ String getImplements(List<Interface> interfaces, String className) {
         return "${type}<${e.typeParams.map((e) => e.type).joinToString(separator: ", ")}>";
       })
       .joinToString(separator: ", ");
-
   return " implements $types";
 }
 
@@ -221,7 +221,57 @@ String getPatchClass(
   List<String> knownClasses, [
   List<String> genericTypeNames = const [],
 ]) {
-  if (fields.isEmpty || className.startsWith('\$\$')) return '';
+  if (fields.isEmpty) {
+    // Generate a minimal patch class for classes with no fields
+    String classNameTrimmed = '${className.replaceAll("\$", "")}';
+    String enumName = '${classNameTrimmed}\$';
+    var sb = StringBuffer();
+
+    sb.writeln("enum $enumName { }");
+    sb.writeln();
+
+    sb.writeln(
+      "class ${classNameTrimmed}Patch implements Patch<$classNameTrimmed> {",
+    );
+    sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
+    sb.writeln();
+
+    sb.writeln(
+      "  static ${classNameTrimmed}Patch create([Map<String, dynamic>? diff]) {",
+    );
+    sb.writeln("    return ${classNameTrimmed}Patch();");
+    sb.writeln("  }");
+    sb.writeln();
+
+    sb.writeln(
+      "  static ${classNameTrimmed}Patch fromPatch(Map<${classNameTrimmed}\$, dynamic> patch) {",
+    );
+    sb.writeln("    return ${classNameTrimmed}Patch();");
+    sb.writeln("  }");
+    sb.writeln();
+
+    sb.writeln("  Map<$enumName, dynamic> toPatch() => Map.from(_patch);");
+    sb.writeln();
+
+    sb.writeln("  $classNameTrimmed applyTo($classNameTrimmed entity) {");
+    sb.writeln(
+      "    return entity.patchWith$classNameTrimmed(patchInput: this);",
+    );
+    sb.writeln("  }");
+    sb.writeln();
+
+    sb.writeln("  Map<String, dynamic> toJson() => {};");
+    sb.writeln();
+
+    sb.writeln(
+      "  static ${classNameTrimmed}Patch fromJson(Map<String, dynamic> json) {",
+    );
+    sb.writeln("    return ${classNameTrimmed}Patch();");
+    sb.writeln("  }");
+    sb.writeln("}");
+
+    return sb.toString();
+  }
 
   String classNameTrimmed = '${className.replaceAll("\$", "")}';
   String enumName = '${classNameTrimmed}\$';
@@ -273,7 +323,7 @@ String getPatchClass(
   sb.writeln();
 
   sb.writeln("  $classNameTrimmed applyTo($classNameTrimmed entity) {");
-  sb.writeln("    return entity.copyWith$classNameTrimmed(patchInput: this);");
+  sb.writeln("    return entity.patchWith$classNameTrimmed(patchInput: this);");
   sb.writeln("  }");
   sb.writeln();
 
@@ -341,7 +391,7 @@ String getPatchClass(
     var isGenericType = genericTypeNames.contains(cleanBaseType);
     var parameterType = isGenericType
         ? 'dynamic'
-        : (baseType.endsWith('?') ? baseType : baseType + '?');
+        : (baseType.endsWith('?') ? baseType : "$baseType?");
 
     sb.writeln(
       "  ${classNameTrimmed}Patch with$capitalizedName($parameterType value) {",
@@ -358,7 +408,8 @@ String getPatchClass(
           (primitiveType) => cleanPatchBaseType.startsWith(primitiveType),
         ) &&
         !field.isEnum &&
-        !isPatchGenericType) {
+        !isPatchGenericType &&
+        knownClasses.contains(cleanPatchBaseType)) {
       sb.writeln(
         "  ${classNameTrimmed}Patch with${capitalizedName}Patch(${patchType} value) {",
       );
@@ -383,6 +434,35 @@ String getNormalType(String type) {
 String getPatchType(String type) {
   bool isNullable = type.endsWith('?');
   String baseType = isNullable ? type.substring(0, type.length - 1) : type;
+
+  // Handle function types like X Function() -> XPatch Function()
+  if (baseType.contains(' Function(')) {
+    var functionMatch = RegExp(
+      r'([^(]+)\s+Function\(([^)]*)\)',
+    ).firstMatch(baseType);
+    if (functionMatch != null) {
+      var returnType = functionMatch.group(1) ?? '';
+      var params = functionMatch.group(2) ?? '';
+      return '${returnType}Patch Function($params)' + (isNullable ? '?' : '');
+    }
+  }
+
+  // Handle record types like (Int, Int) -> cannot have patch types
+  if (baseType.startsWith('(') && baseType.endsWith(')')) {
+    // Record types cannot have patch types, return dynamic
+    return 'dynamic' + (isNullable ? '?' : '');
+  }
+
+  // Handle generic types like BS<BI> -> BSPatch<BI>
+  if (baseType.contains('<')) {
+    var match = RegExp(r'([^<]+)<(.+)>').firstMatch(baseType);
+    if (match != null) {
+      var genericType = match.group(1) ?? '';
+      var params = match.group(2) ?? '';
+      return '${genericType}Patch<$params>' + (isNullable ? '?' : '');
+    }
+  }
+
   return baseType + 'Patch' + (isNullable ? '?' : '');
 }
 
@@ -580,7 +660,8 @@ String getCopyWith({
           .map((e) {
             var type = getDataTypeWithoutDollars(e.type ?? "dynamic");
             var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
-            return "$type Function()? $name,";
+            var nullableType = type.endsWith('?') ? type : "$type?";
+            return "$nullableType $name,";
           })
           .join("\n"),
     );
@@ -605,7 +686,7 @@ String getCopyWith({
         : field.name;
     sb.writeln("""
     if ($name != null) {
-      _patch.with$name($name());
+      _patch.with$name($name);
     }""");
   }
 

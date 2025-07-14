@@ -28,7 +28,7 @@ abstract class $SubB implements $$Super {
 main() {
   test("subA to subB (sub sibling to sub)", () {
     SubA subA = SubA(x: "x");
-    SubB subB = subA.changeTo_SubB(z: "z");
+    SubB subB = subA.changeToSubB(z: "z");
 
     expect(subB.toString(), "(SubB-z:z|x:x)");
   });

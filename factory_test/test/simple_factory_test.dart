@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 part 'simple_factory_test.morphy.dart';
 part 'simple_factory_test.g.dart';
 
-@Morphy(generateJson: true)
+@Morphy(generateJson: true, generateCopyWithFn: true)
 abstract class $Person {
   String? get firstName;
   String? get lastName;
@@ -13,8 +13,7 @@ abstract class $Person {
   factory $Person.fromNames({
     required String firstName,
     required String lastName,
-  }) =>
-      Person._(firstName: firstName, lastName: lastName, age: null);
+  }) => Person._(firstName: firstName, lastName: lastName, age: null);
 
   factory $Person.withAge(String firstName, String lastName, int age) =>
       Person._(firstName: firstName, lastName: lastName, age: age);
@@ -59,7 +58,7 @@ void main() {
 
     test('factory methods should work with copyWith', () {
       var person = Person.fromNames(firstName: "John", lastName: "Doe");
-      var aged = person.copyWithPerson(age: () => 25);
+      var aged = person.copyWithPersonFn(age: () => 25);
 
       expect(aged.firstName, "John");
       expect(aged.lastName, "Doe");

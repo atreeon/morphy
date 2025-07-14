@@ -3,15 +3,16 @@ import 'package:test/test.dart';
 
 part 'factory_method_test.morphy.dart';
 
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $Person {
   String? get firstName;
   String? get lastName;
   int? get age;
 
-  factory $Person.fromNames(
-          {required String firstName, required String lastName}) =>
-      Person._(firstName: firstName, lastName: lastName, age: null);
+  factory $Person.fromNames({
+    required String firstName,
+    required String lastName,
+  }) => Person._(firstName: firstName, lastName: lastName, age: null);
 
   factory $Person.withAge(String firstName, String lastName, int age) =>
       Person._(firstName: firstName, lastName: lastName, age: age);
@@ -20,7 +21,7 @@ abstract class $Person {
       Person._(firstName: null, lastName: null, age: null);
 }
 
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $Actor {
   String? get stageName;
   int? get yearsActive;
@@ -31,16 +32,17 @@ abstract class $Employee implements $Person {
   String? get department;
   double? get salary;
 
-  factory $Employee.newHire(
-          {required String firstName,
-          required String lastName,
-          required String department}) =>
-      Employee._(
-          firstName: firstName,
-          lastName: lastName,
-          age: null,
-          department: department,
-          salary: null);
+  factory $Employee.newHire({
+    required String firstName,
+    required String lastName,
+    required String department,
+  }) => Employee._(
+    firstName: firstName,
+    lastName: lastName,
+    age: null,
+    department: department,
+    salary: null,
+  );
 }
 
 void main() {
@@ -71,7 +73,10 @@ void main() {
 
     test('should create Employee using newHire factory', () {
       var employee = Employee.newHire(
-          firstName: "Alice", lastName: "Johnson", department: "Engineering");
+        firstName: "Alice",
+        lastName: "Johnson",
+        department: "Engineering",
+      );
 
       expect(employee.firstName, "Alice");
       expect(employee.lastName, "Johnson");
@@ -89,7 +94,7 @@ void main() {
 
     test('factory methods should work with copyWith', () {
       var person = Person.fromNames(firstName: "John", lastName: "Doe");
-      var aged = person.copyWithPerson(age: () => 25);
+      var aged = person.copyWithPersonFn(age: () => 25);
 
       expect(aged.firstName, "John");
       expect(aged.lastName, "Doe");

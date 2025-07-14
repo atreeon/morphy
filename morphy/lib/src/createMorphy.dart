@@ -20,6 +20,7 @@ String createMorphy(
   bool nonSealed,
   bool explicitToJson,
   bool generateCompareTo,
+  bool generateCopyWithFn,
   List<FactoryMethodInfo> factoryMethods,
 ) {
   //recursively go through otherClasses and get my fieldnames &
@@ -60,15 +61,7 @@ String createMorphy(
     // If factory methods exist, implement instead of extend
     if (factoryMethods.isNotEmpty) {
       // Consolidate the main class and interfaces into single implements clause
-      // Include generic parameters for the main class
-      var mainClassWithGenerics = className;
-      if (classGenerics.isNotEmpty) {
-        var genericParams = classGenerics.map((e) => e.name).join(', ');
-        mainClassWithGenerics = '$className<$genericParams>';
-      }
-      var allImplements = <String>[
-        mainClassWithGenerics,
-      ]; // Keep the original $ClassName
+      var allImplements = <String>[className]; // Keep the original $ClassName
       if (interfacesFromImplements.isNotEmpty) {
         allImplements.addAll(
           interfacesFromImplements.map((e) {
@@ -83,6 +76,9 @@ String createMorphy(
       sb.write(" implements ${allImplements.join(', ')}");
     } else {
       sb.write(" extends ${className}");
+      if (classGenerics.isNotEmpty) {
+        sb.write(getExtendsGenerics(classGenerics));
+      }
       if (interfacesFromImplements.isNotEmpty) {
         sb.write(getImplements(interfacesFromImplements, className));
       }
@@ -94,13 +90,24 @@ String createMorphy(
     }
   }
 
-  if (classGenerics.isNotEmpty && factoryMethods.isEmpty) {
-    sb.write(getExtendsGenerics(classGenerics));
-  }
-
   sb.writeln(" {");
   if (isAbstract) {
     sb.writeln(getPropertiesAbstract(allFields));
+
+    // Add abstract copyWith methods for sealed classes
+    var selfInterface = Interface.fromGenerics(
+      className,
+      classGenerics.map((e) => NameType(e.name, e.type)).toList(),
+      allFields,
+    );
+    sb.writeln(
+      MethodGenerator.generateAbstractCopyWithMethods(
+        interfaceFields: selfInterface.fields,
+        interfaceName: selfInterface.interfaceName,
+        interfaceGenerics: selfInterface.typeParams,
+        generateCopyWithFn: generateCopyWithFn,
+      ),
+    );
   } else {
     sb.writeln(getProperties(allFields));
     sb.write(getClassComment(interfacesFromImplements, classComment));
@@ -164,6 +171,15 @@ String createMorphy(
       allFields,
     ),
   ];
+
+  // Create list of known Morphy classes early so it can be used in method generators
+  var knownClasses = [
+    ...interfacesAllInclSubInterfaces.map(
+      (i) => i.interfaceName.replaceAll("\$", ""),
+    ),
+    classNameTrimmed,
+  ].toSet().toList();
+
   if (!isAbstract) {
     interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
       sb.writeln(
@@ -173,11 +189,26 @@ String createMorphy(
           interfaceName: x.interfaceName,
           className: className,
           isClassAbstract: isAbstract,
-          interfaceGenerics: classGenerics
-              .map((e) => NameType(e.name, e.name))
-              .toList(),
+          interfaceGenerics: x.typeParams,
+          generateCopyWithFn: generateCopyWithFn,
+          knownClasses: knownClasses,
         ),
       );
+      // Generate changeTo methods for inherited interfaces (upward conversion: child to parent)
+      if (x.interfaceName != classNameTrimmed) {
+        sb.writeln(
+          MethodGenerator.generateChangeToMethods(
+            classFields: allFields,
+            interfaceFields: x.fields,
+            interfaceName: x.interfaceName,
+            className: className,
+            isClassAbstract: isAbstract,
+            interfaceGenerics: x.typeParams,
+            knownClasses: knownClasses,
+            isInterfaceSealed: x.isSealed,
+          ),
+        );
+      }
     });
   }
 
@@ -192,12 +223,6 @@ String createMorphy(
     sb.writeln(generateToJson(className, classGenerics));
     sb.writeln(generateToJsonLean(className));
   }
-  var knownClasses = [
-    ...interfacesAllInclSubInterfaces.map(
-      (i) => i.interfaceName.replaceAll("\$", ""),
-    ),
-    classNameTrimmed,
-  ].toSet().toList();
   sb.writeln("}");
   if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
     // Create a list of all known classes from the interfaces
@@ -214,6 +239,7 @@ String createMorphy(
       ),
     );
   }
+  // Generate changeTo methods for explicitSubTypes (downward conversion: parent to child)
   if (interfacesX.any((element) => element.isExplicitSubType)) {
     sb.writeln(
       "extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {",
@@ -227,6 +253,9 @@ String createMorphy(
           interfaceName: x.interfaceName,
           className: className,
           isClassAbstract: isAbstract,
+          interfaceGenerics: x.typeParams,
+          knownClasses: knownClasses,
+          isInterfaceSealed: x.isSealed,
         ),
       );
     });

@@ -27,7 +27,7 @@ abstract class $Sub implements $Super {
 main() {
   test("1", () {
     var _super = Super(id: "id");
-    var result = _super.changeTo_Sub(description: "description");
+    var result = _super.changeToSub(description: "description");
     expect(result is Sub, true);
   });
 }

@@ -58,8 +58,9 @@ class MorphyGenerator<TValueT extends MorphyX>
     verifyRequiredImports(element, buildStep);
 
     var hasConstConstructor = element.constructors.any((e) => e.isConst);
-    var isAbstract = element.name.startsWith("\$\$");
     var nonSealed = annotation.read('nonSealed').boolValue;
+    // Determine if this is an abstract/sealed class
+    var isAbstract = element.name.startsWith("\$\$") && !nonSealed;
 
     // If this is implementing a sealed class, verify it's in the same library
     for (var interface in element.interfaces) {
@@ -128,6 +129,7 @@ class MorphyGenerator<TValueT extends MorphyX>
             .map((e) => NameType(e.name, typeToString(e.type)))
             .toList(),
         comment: e.element.documentationComment,
+        isSealed: interfaceName.startsWith("\$\$"),
       );
     }).toList();
 
@@ -175,17 +177,23 @@ class MorphyGenerator<TValueT extends MorphyX>
     var allValueTInterfaces = allInterfaces
         .map(
           (e) => Interface.fromGenerics(
-            e.element.name,
-            e.element.typeParameters.map((TypeParameterElement x) {
-              final bound = x.bound;
-              return NameType(
-                x.name,
-                bound == null ? null : typeToString(bound),
-              );
+            // Use clean names for interface generation (remove $$ and $)
+            e.element.name.startsWith("\$\$")
+                ? e.element.name.replaceAll("\$\$", "")
+                : e.element.name.replaceAll("\$", ""),
+            e.typeArguments.asMap().entries.map((entry) {
+              final index = entry.key;
+              final typeArg = entry.value;
+              final paramName = e.element.typeParameters.length > index
+                  ? e.element.typeParameters[index].name
+                  : 'T$index';
+              return NameType(paramName, typeToString(typeArg));
             }).toList(),
             getAllFieldsIncludingSubtypes(
               e.element as ClassElement,
             ).where((x) => x.name != "hashCode").toList(),
+            false, // isExplicitSubType
+            e.element.name.startsWith("\$\$"), // isSealed
           ),
         )
         .union(typesExplicit)
@@ -208,6 +216,7 @@ class MorphyGenerator<TValueT extends MorphyX>
         nonSealed,
         annotation.read('explicitToJson').boolValue,
         annotation.read('generateCompareTo').boolValue,
+        annotation.read('generateCopyWithFn').boolValue,
         factoryMethods,
       ),
     );
@@ -601,10 +610,12 @@ $imports
     if (type.contains('InvalidType')) {
       // Look for the field declaration in source to determine nullability
       var fieldPattern = RegExp(
-        targetClassName.replaceAll('\$', '') + r'\?\s+get\s+' + RegExp.escape(fieldName),
+        targetClassName.replaceAll('\$', '') +
+            r'\?\s+get\s+' +
+            RegExp.escape(fieldName),
         multiLine: true,
       );
-      
+
       var nullableMatch = fieldPattern.firstMatch(source);
       if (nullableMatch != null) {
         // Field is nullable in source
@@ -612,14 +623,16 @@ $imports
       } else {
         // Check for non-nullable version
         var nonNullablePattern = RegExp(
-          targetClassName.replaceAll('\$', '') + r'\s+get\s+' + RegExp.escape(fieldName),
+          targetClassName.replaceAll('\$', '') +
+              r'\s+get\s+' +
+              RegExp.escape(fieldName),
           multiLine: true,
         );
         if (nonNullablePattern.firstMatch(source) != null) {
           return type.replaceAll('InvalidType', targetClassName);
         }
       }
-      
+
       // Fallback: just replace InvalidType
       return type.replaceAll('InvalidType', targetClassName);
     }

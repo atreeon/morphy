@@ -30,12 +30,13 @@ abstract class $Todo2_complete_assigned implements $Todo2_complete {
   String get managerId;
 }
 
-String getDescription(Todo2 todo) =>
-    switch (todo) {
-      Todo2_incomplete() => "incomplete",
-      Todo2_complete_assigned(managerId: var managerId) => "assigned to: $managerId",
-      Todo2_complete(completedDate: var completedDate) => "completed on $completedDate",
-    };
+String getDescription(Todo2 todo) => switch (todo) {
+  Todo2_incomplete() => "incomplete",
+  Todo2_complete_assigned(managerId: var managerId) =>
+    "assigned to: $managerId",
+  Todo2_complete(completedDate: var completedDate) =>
+    "completed on $completedDate",
+};
 
 void main() {
   group("sealed", () {

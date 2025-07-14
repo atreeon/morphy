@@ -25,13 +25,14 @@ main() {
     var aList = [
       A(id: "1"),
       B<String>(id: "2", blah: "sdf"),
-      B<X>(id: "3", blah: X(xyz: "my custom")),
+      B<X>(
+        id: "3",
+        blah: X(xyz: "my custom"),
+      ),
     ];
 
     var result = aList
-        .map((e) => e.toJson_2(
-              {X: (X x) => x.toJson()},
-            ))
+        .map((e) => e.toJsonCustom({X: (X x) => x.toJson()}))
         .toList();
 
     var expected = [
@@ -41,8 +42,8 @@ main() {
         'id': '3',
         'blah': {'xyz': 'my custom', '_className_': 'X'},
         '_className_': 'B',
-        '_T_': 'X'
-      }
+        '_T_': 'X',
+      },
     ];
 
     expect(result, expected);

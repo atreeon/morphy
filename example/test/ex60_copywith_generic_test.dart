@@ -9,13 +9,13 @@ main() {
   test("1", () {
     var a = A<int>(x: 1, y: 2);
 
-    var aAsInt = a.copyWithA(x: () => 2);
+    var aAsInt = a.copyWithAFn(x: () => 2);
 
     expect(aAsInt.runtimeType, A<int>);
   });
 }
 
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $A<T> {
   T get x;
   T get y;

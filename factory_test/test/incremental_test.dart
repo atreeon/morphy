@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 part 'incremental_test.morphy.dart';
 
 // Test 1: Basic factory method
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $User {
   String get name;
   int get age;
@@ -26,8 +26,7 @@ abstract class $Product {
     required String title,
     required double price,
     String? description,
-  }) =>
-      Product._(title: title, price: price, description: description);
+  }) => Product._(title: title, price: price, description: description);
 }
 
 // Test 3: Inheritance with factory methods
@@ -49,8 +48,7 @@ abstract class $Cat implements $Animal {
     required String breed,
     required int age,
     bool indoor = true,
-  }) =>
-      Cat._(species: "Felis catus", age: age, breed: breed, indoor: indoor);
+  }) => Cat._(species: "Felis catus", age: age, breed: breed, indoor: indoor);
 }
 
 // Test 4: Hidden constructor with factory methods
@@ -81,7 +79,10 @@ abstract class $Account {
       Account._(email: email, role: UserRole.user, active: true);
 
   factory $Account.guest() => Account._(
-      email: "guest@example.com", role: UserRole.guest, active: false);
+    email: "guest@example.com",
+    role: UserRole.guest,
+    active: false,
+  );
 }
 
 void main() {
@@ -101,7 +102,7 @@ void main() {
 
       test('should work with copyWith', () {
         var user = User.create("John", 30);
-        var updated = user.copyWithUser(age: () => 31);
+        var updated = user.copyWithUserFn(age: () => 31);
         expect(updated.name, "John");
         expect(updated.age, 31);
       });
@@ -127,10 +128,7 @@ void main() {
       });
 
       test('should handle optional parameters with defaults', () {
-        var product = Product.detailed(
-          title: "Basic Widget",
-          price: 5.99,
-        );
+        var product = Product.detailed(title: "Basic Widget", price: 5.99);
         expect(product.title, "Basic Widget");
         expect(product.price, 5.99);
         expect(product.description, null);
@@ -160,9 +158,7 @@ void main() {
       });
 
       test('should work with polymorphic collections', () {
-        var animals = <Animal>[
-          Cat.kitten("British Shorthair"),
-        ];
+        var animals = <Animal>[Cat.kitten("British Shorthair")];
         expect(animals.length, 1);
         expect(animals[0] is Cat, true);
       });
