@@ -15,8 +15,10 @@ class ConstructorParameterGenerator {
       final hasField = sourceFieldNames.contains(f.name);
 
       if (hasField) {
-        // For interface fields, use parameter or current value
-        return '$name: $name ?? this.$name';
+        // For interface fields, use parameter or current value with cast if needed
+        final cleanType = FieldTypeAnalyzer.cleanType(f.type);
+        final castType = cleanType.endsWith('?') ? cleanType : '$cleanType?';
+        return '$name: $name as $castType ?? this.$name';
       } else {
         // For class-only fields, keep current value
         return '$name: this.$name';
@@ -132,10 +134,10 @@ class ConstructorParameterGenerator {
               })())
             : _patchMap[$targetClassName\$.$name]''';
         }
-        return '$name: _patchMap[$targetClassName\$.$name]';
+        return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
       } else {
         // For changeTo, use only patch values for new fields
-        return '$name: _patchMap[$targetClassName\$.$name]';
+        return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
       }
     });
 

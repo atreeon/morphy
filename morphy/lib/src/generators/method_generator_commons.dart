@@ -100,14 +100,35 @@ class TypeResolver {
     }
 
     // For concrete implementations, replace generic parameter names with concrete types
+    String resolvedType = type;
+
     for (var generic in interfaceGenerics) {
-      if (type == generic.name) {
-        // Replace with the concrete type
-        return generic.type ?? 'dynamic';
-      }
+      // Handle both simple types (T) and complex types (List<T>, Map<K, V>, etc.)
+      resolvedType = _replaceGenericInType(
+        resolvedType,
+        generic.name,
+        generic.type ?? 'dynamic',
+      );
     }
 
-    return type;
+    return resolvedType;
+  }
+
+  /// Helper method to replace generic parameters in complex types
+  static String _replaceGenericInType(
+    String type,
+    String genericParam,
+    String concreteType,
+  ) {
+    // Handle simple case: exact match (T -> int)
+    if (type == genericParam) {
+      return concreteType;
+    }
+
+    // Handle complex types like List<T>, Map<K, V>, etc.
+    // Use regex to replace generic parameters while preserving structure
+    final pattern = RegExp(r'\b' + RegExp.escape(genericParam) + r'\b');
+    return type.replaceAll(pattern, concreteType);
   }
 
   /// Check if a type is a generic type

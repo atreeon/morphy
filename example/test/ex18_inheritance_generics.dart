@@ -2,6 +2,8 @@ import 'package:morphy_annotation/morphy_annotation.dart';
 
 part 'ex18_inheritance_generics.morphy.dart';
 
+// Trigger regeneration to test casting fix
+
 //superclass
 @morphy
 abstract class $A<T> {

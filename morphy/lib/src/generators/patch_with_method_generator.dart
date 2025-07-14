@@ -149,6 +149,7 @@ class PatchWithMethodGenerator {
       interfaceFields,
       interfaceGenerics,
       isAbstractInterface: false,
+      isInterfaceMethod: true,
     );
 
     final patchAssignments = ParameterGenerator.generatePatchAssignments(
@@ -202,6 +203,7 @@ class PatchWithMethodGenerator {
       interfaceFields,
       interfaceGenerics,
       isAbstractInterface: false,
+      isInterfaceMethod: true,
     );
 
     final patchAssignments =

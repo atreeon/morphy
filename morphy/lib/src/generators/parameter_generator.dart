@@ -8,6 +8,7 @@ class ParameterGenerator {
     List<NameType> targetFields,
     List<NameType> interfaceGenerics, {
     bool isAbstractInterface = false,
+    bool isInterfaceMethod = false,
   }) {
     final parameters = targetFields
         .map((f) {
@@ -17,7 +18,11 @@ class ParameterGenerator {
             interfaceGenerics,
             isAbstractInterface: isAbstractInterface,
           );
-          final cleanedType = FieldTypeAnalyzer.cleanType(resolvedType);
+          // Skip type cleaning for interface methods to preserve $ prefix
+          final cleanedType = isInterfaceMethod
+              ? resolvedType
+              : FieldTypeAnalyzer.cleanType(resolvedType);
+
           final nullableType = cleanedType.endsWith('?')
               ? cleanedType
               : '$cleanedType?';
@@ -34,6 +39,7 @@ class ParameterGenerator {
     List<NameType> sourceFields,
     List<NameType> interfaceGenerics, {
     bool isAbstractInterface = false,
+    bool isInterfaceMethod = false,
   }) {
     final sourceFieldNames = sourceFields.map((f) => f.name).toSet();
 
@@ -53,7 +59,11 @@ class ParameterGenerator {
             interfaceGenerics,
             isAbstractInterface: isAbstractInterface,
           );
-          final cleanedType = FieldTypeAnalyzer.cleanType(resolvedType);
+          // Skip type cleaning for interface methods to preserve $ prefix
+          final cleanedType = isInterfaceMethod
+              ? resolvedType
+              : FieldTypeAnalyzer.cleanType(resolvedType);
+
           final nullableType = cleanedType.endsWith('?')
               ? cleanedType
               : '$cleanedType?';
@@ -69,6 +79,7 @@ class ParameterGenerator {
     List<NameType> fields,
     List<NameType> interfaceGenerics, {
     bool isAbstractInterface = true,
+    bool isInterfaceMethod = false,
   }) {
     final parameters = fields
         .map((f) {
@@ -78,7 +89,11 @@ class ParameterGenerator {
             interfaceGenerics,
             isAbstractInterface: isAbstractInterface,
           );
-          final cleanedType = FieldTypeAnalyzer.cleanType(resolvedType);
+          // Skip type cleaning for interface methods to preserve $ prefix
+          final cleanedType = isInterfaceMethod
+              ? resolvedType
+              : FieldTypeAnalyzer.cleanType(resolvedType);
+
           final nullableType = cleanedType.endsWith('?')
               ? cleanedType
               : '$cleanedType?';
@@ -94,6 +109,7 @@ class ParameterGenerator {
     List<NameType> targetFields,
     List<NameType> interfaceGenerics, {
     bool isAbstractInterface = false,
+    bool isInterfaceMethod = false,
   }) {
     final parameters = targetFields
         .map((f) {
@@ -103,7 +119,11 @@ class ParameterGenerator {
             interfaceGenerics,
             isAbstractInterface: isAbstractInterface,
           );
-          final cleanedType = FieldTypeAnalyzer.cleanType(resolvedType);
+          // Skip type cleaning for interface methods to preserve $ prefix
+          final cleanedType = isInterfaceMethod
+              ? resolvedType
+              : FieldTypeAnalyzer.cleanType(resolvedType);
+
           return '$cleanedType Function()? $name';
         })
         .join(',\n        ');
@@ -114,8 +134,9 @@ class ParameterGenerator {
   /// Generate patch assignments for patchWith methods
   static String generatePatchAssignments(
     List<NameType> fields,
-    List<NameType> sourceFields,
-  ) {
+    List<NameType> sourceFields, {
+    bool isInterfaceMethod = false,
+  }) {
     final sourceFieldNames = sourceFields.map((e) => e.name).toSet();
 
     return fields
@@ -126,18 +147,46 @@ class ParameterGenerator {
           final capitalizedName =
               MethodGeneratorCommons.getCapitalizedFieldName(f.name);
 
+          // Check if we need casting from $Type to Type
+          final originalType = f.type ?? '';
+          final needsCasting = originalType.contains('\$') && isInterfaceMethod;
+
+          final castingCode = needsCasting
+              ? _generateTypeCasting(originalType)
+              : '';
+
           // Required fields - direct assignment
           if (isRequired && !hasField) {
-            return "_patcher.with$capitalizedName($name);";
+            return "_patcher.with$capitalizedName($name$castingCode);";
           } else {
             // Optional fields - null check
             return """
             if ($name != null) {
-              _patcher.with$capitalizedName($name);
+              _patcher.with$capitalizedName($name$castingCode);
             }""";
           }
         })
         .join("\n");
+  }
+
+  /// Generate appropriate casting code for $Type to Type conversion
+  static String _generateTypeCasting(String originalType) {
+    // Handle List<$X> -> List<X> casting
+    if (originalType.contains('List<\$')) {
+      final match = RegExp(r'List<\$(\w+)>').firstMatch(originalType);
+      if (match != null) {
+        final innerType = match.group(1);
+        return '.cast<$innerType>()';
+      }
+    }
+
+    // Handle simple $Type -> Type casting
+    if (originalType.startsWith('\$')) {
+      final cleanType = originalType.replaceFirst('\$', '');
+      return ' as $cleanType';
+    }
+
+    return '';
   }
 
   /// Generate function-based patch assignments

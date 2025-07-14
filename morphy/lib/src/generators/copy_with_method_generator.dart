@@ -32,6 +32,7 @@ class CopyWithMethodGenerator {
       interfaceFields,
       interfaceGenerics,
       isAbstractInterface: false,
+      isInterfaceMethod: true,
     );
 
     final constructorParams =
@@ -148,6 +149,7 @@ class CopyWithMethodGenerator {
       interfaceFields,
       interfaceGenerics,
       isAbstractInterface: false,
+      isInterfaceMethod: true,
     );
 
     final constructorParams = _generateFunctionBasedConstructorParams(

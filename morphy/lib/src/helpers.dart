@@ -383,7 +383,12 @@ String getPatchClass(
 
     // Make sure we don't add ? if it's already nullable
     var cleanBaseType = baseType.replaceAll("?", "");
-    var isGenericType = genericTypeNames.contains(cleanBaseType);
+    var isGenericType =
+        genericTypeNames.contains(cleanBaseType) ||
+        baseType.contains('<') &&
+            genericTypeNames.any((g) => baseType.contains(g));
+
+    // For generic types, use dynamic to avoid unresolved type errors
     var parameterType = isGenericType
         ? 'dynamic'
         : (baseType.endsWith('?') ? baseType : "$baseType?");

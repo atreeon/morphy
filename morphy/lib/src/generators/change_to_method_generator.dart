@@ -33,11 +33,13 @@ class ChangeToMethodGenerator {
       classFields,
       interfaceGenerics,
       isAbstractInterface: false,
+      isInterfaceMethod: true,
     );
 
     final patchAssignments = ParameterGenerator.generatePatchAssignments(
       interfaceFields,
       classFields,
+      isInterfaceMethod: true,
     );
 
     final constructorParams =
