@@ -22,7 +22,7 @@ To create a new class.
 ```
 2. copy and paste the following code into a new dart file:
    ```
-    import 'package:morphy_annotation/morphy_annotation.dart';
+    import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
     part 'Pet.morphy.dart';
 
     @morphy
@@ -51,7 +51,7 @@ As in the simplest example above, `morphy` class definitions must
 2. be made abstract (the generated class is not made abstract, details below on how to make classes abstract)
 3. have the @morphy annotation added directly to the class name
 4. have the part file added to the top of the file, ie `part 'Pet.morphy.dart';`
-5. import the morphy_annotation package, ie `import 'package:morphy_annotation/morphy_annotation.dart';`
+5. import the morphy_annotation package, ie `import 'package:zikzak_morphy_annotation/morphy_annotation.dart';`
 6. and all properties must be defined as getters, ie `String get type;`
 
 ## Basic features (comes with every class)

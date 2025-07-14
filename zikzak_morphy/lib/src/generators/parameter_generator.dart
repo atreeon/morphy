@@ -171,13 +171,28 @@ class ParameterGenerator {
 
   /// Generate appropriate casting code for $Type to Type conversion
   static String _generateTypeCasting(String originalType) {
-    // Handle List<$X> -> List<X> casting
+    // Handle List<$$X> -> List<X> casting (double dollar)
+    if (originalType.contains('List<\$\$')) {
+      final match = RegExp(r'List<\$\$(\w+)>').firstMatch(originalType);
+      if (match != null) {
+        final innerType = match.group(1);
+        return '.cast<$innerType>()';
+      }
+    }
+
+    // Handle List<$X> -> List<X> casting (single dollar)
     if (originalType.contains('List<\$')) {
       final match = RegExp(r'List<\$(\w+)>').firstMatch(originalType);
       if (match != null) {
         final innerType = match.group(1);
         return '.cast<$innerType>()';
       }
+    }
+
+    // Handle simple $$Type -> Type casting
+    if (originalType.startsWith('\$\$')) {
+      final cleanType = originalType.replaceFirst('\$\$', '');
+      return ' as $cleanType';
     }
 
     // Handle simple $Type -> Type casting

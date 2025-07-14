@@ -1,7 +1,7 @@
 targets:
   $default:
     builders:
-      morphy|morphyBuilder:
+      zikzak_morphy|morphy:
         enabled: true
         generate_for:
           - test/**

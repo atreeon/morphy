@@ -1,8 +1,8 @@
 //import 'package:analyzer_models/analyzer_models.dart';
-import 'package:morphy/src/common/NameType.dart';
-import 'package:morphy/src/common/classes.dart';
-import 'package:morphy/src/common/formatCodeStringForComparison.dart';
-import 'package:morphy/src/helpers.dart';
+import 'package:zikzak_morphy/src/common/NameType.dart';
+import 'package:zikzak_morphy/src/common/classes.dart';
+import 'package:zikzak_morphy/src/common/formatCodeStringForComparison.dart';
+import 'package:zikzak_morphy/src/helpers.dart';
 import 'package:test/test.dart';
 
 var expectS = (String a, String b) =>
@@ -43,11 +43,21 @@ void main() {
 
     test("3x with all comments", () {
       var interfaces = [
-        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [],
-            comment: "///blah1"),
+        InterfaceWithComment(
+          "\$A",
+          ["int", "String"],
+          ["T1", "T2"],
+          [],
+          comment: "///blah1",
+        ),
         InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], []),
-        InterfaceWithComment("\$A", ["int", "String"], ["T1", "T2"], [],
-            comment: "///blah2"),
+        InterfaceWithComment(
+          "\$A",
+          ["int", "String"],
+          ["T1", "T2"],
+          [],
+          comment: "///blah2",
+        ),
       ];
 
       var result = getClassComment(interfaces, "///blah");
@@ -86,11 +96,7 @@ void main() {
 
       var result = getDistinctFields(fields, interfaces);
 
-      var expected = [
-        "x:int",
-        "y:String",
-        "z:String",
-      ];
+      var expected = ["x:int", "y:String", "z:String"];
 
       expect(result.map((e) => e.toStringNameType()).toList(), expected);
     });
@@ -108,43 +114,31 @@ void main() {
 
       var result = getDistinctFields(fields, interfaces);
 
-      var expected = [
-        "x:Ta",
-        "y:Tb",
-        "z:String",
-      ];
+      var expected = ["x:Ta", "y:Tb", "z:String"];
 
       expect(result.map((e) => e.toStringNameType()).toList(), expected);
     });
 
     test("3a", () {
-      var fields = [
-        NameTypeClassComment("batch", "\$BS<\$BI>", "\$BQR"),
-      ];
+      var fields = [NameTypeClassComment("batch", "\$BS<\$BI>", "\$BQR")];
 
       var interfaces = <InterfaceWithComment>[];
 
       var result = getDistinctFields(fields, interfaces);
 
-      var expected = [
-        "batch:BS<\$BI>",
-      ];
+      var expected = ["batch:BS<\$BI>"];
 
       expect(result.map((e) => e.toStringNameType()).toList(), expected);
     });
 
     test("4a", () {
-      var fields = [
-        NameTypeClassComment("batch", "\$\$BS<\$\$BI>", "\$BQR"),
-      ];
+      var fields = [NameTypeClassComment("batch", "\$\$BS<\$\$BI>", "\$BQR")];
 
       var interfaces = <InterfaceWithComment>[];
 
       var result = getDistinctFields(fields, interfaces);
 
-      var expected = [
-        "batch:BS<\$\$BI>",
-      ];
+      var expected = ["batch:BS<\$\$BI>"];
 
       expect(result.map((e) => e.toStringNameType()).toList(), expected);
     });
@@ -162,11 +156,7 @@ void main() {
 
       var result = getDistinctFields(fields, interfaces);
 
-      var expected = [
-        "x:int",
-        "y:String",
-        "z:String",
-      ];
+      var expected = ["x:int", "y:String", "z:String"];
 
       expect(result.map((e) => e.toStringNameType()).toList(), expected);
     });
@@ -175,21 +165,30 @@ void main() {
   group("getClassDefinition", () {
     test("1b", () {
       var result = getClassDefinition(
-          isAbstract: false, nonSealed: false, className: "\$Pet");
+        isAbstract: false,
+        nonSealed: false,
+        className: "\$Pet",
+      );
 
       expectS(result, "class Pet");
     });
 
     test("2b", () {
       var result = getClassDefinition(
-          isAbstract: true, nonSealed: false, className: "\$\$Pet");
+        isAbstract: true,
+        nonSealed: false,
+        className: "\$\$Pet",
+      );
 
       expectS(result, "sealed class Pet");
     });
 
     test("3b", () {
       var result = getClassDefinition(
-          isAbstract: true, nonSealed: true, className: "\$\$Pet");
+        isAbstract: true,
+        nonSealed: true,
+        className: "\$\$Pet",
+      );
 
       expectS(result, "abstract class Pet");
     });
@@ -215,8 +214,9 @@ void main() {
 
   group("getExtendsGenerics", () {
     test("1d", () {
-      var result =
-          getExtendsGenerics([NameTypeClassComment("T", "\$\$C", null)]);
+      var result = getExtendsGenerics([
+        NameTypeClassComment("T", "\$\$C", null),
+      ]);
 
       expectS(result, "<T>");
     });
@@ -283,11 +283,9 @@ void main() {
     });
 
     test("3f", () {
-      var result = getProperties([
-        NameTypeClassComment("a", "\$BS", null),
-      ]);
+      var result = getProperties([NameTypeClassComment("a", "\$BS", null)]);
 
-//      expectS(result.toString(), "final \$BS a;");
+      //      expectS(result.toString(), "final \$BS a;");
       expectS(result.toString(), "final BS a;");
     });
 
@@ -296,7 +294,7 @@ void main() {
         NameTypeClassComment("a", "List<\$BS>", null),
       ]);
 
-//      expectS(result.toString(), "final List<\$BS> a;");
+      //      expectS(result.toString(), "final List<\$BS> a;");
       expectS(result.toString(), "final List<BS> a;");
     });
 
@@ -318,16 +316,19 @@ void main() {
     });
 
     test(
-        "7f private properties (get turned into public getters & private setters)",
-        () {
-      var result = getProperties([
-        NameTypeClassComment("_age", "int", null),
-        NameTypeClassComment("name", "String", null, comment: "///blah"),
-      ]);
+      "7f private properties (get turned into public getters & private setters)",
+      () {
+        var result = getProperties([
+          NameTypeClassComment("_age", "int", null),
+          NameTypeClassComment("name", "String", null, comment: "///blah"),
+        ]);
 
-      expectS(
-          result.toString(), "final int _age;\n///blah\nfinal String name;");
-    });
+        expectS(
+          result.toString(),
+          "final int _age;\n///blah\nfinal String name;",
+        );
+      },
+    );
   });
 
   group("getToString", () {
@@ -343,8 +344,10 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ], "MyClass");
 
-      expectS(result.toString(),
-          """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""");
+      expectS(
+        result.toString(),
+        """String toString() => "(MyClass-a:\${a.toString()}|b:\${b.toString()}|c:\${c.toString()})";""",
+      );
     });
   });
 
@@ -362,8 +365,10 @@ void main() {
         NameTypeClassComment("c", "String", null),
       ]);
 
-      expectS(result.toString(),
-          """int get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);""");
+      expectS(
+        result.toString(),
+        """int get hashCode => hashObjects([a.hashCode, b.hashCode, c.hashCode]);""",
+      );
     });
   });
 
@@ -414,63 +419,57 @@ a == other.a && b == other.b && c == other.c;""";
       ]);
 
       expectS(
-          result.toString(), "///blah blah\nint get age;\nString get name;");
+        result.toString(),
+        "///blah blah\nint get age;\nString get name;",
+      );
     });
   });
 
   group("getConstructorRows", () {
     test("2k", () {
-      var result = getConstructorRows(
-        [
-          NameTypeClassComment("age", "int", null),
-          NameTypeClassComment("name", "String", null),
-        ],
-      );
+      var result = getConstructorRows([
+        NameTypeClassComment("age", "int", null),
+        NameTypeClassComment("name", "String", null),
+      ]);
 
       expectS(result.toString(), "required this.age,\nrequired this.name,");
     });
 
     test("3k with null list", () {
-      var result = getConstructorRows(
-        [
-          NameTypeClassComment("age", "int", null),
-          NameTypeClassComment("name", "String?", null),
-        ],
-      );
+      var result = getConstructorRows([
+        NameTypeClassComment("age", "int", null),
+        NameTypeClassComment("name", "String?", null),
+      ]);
 
       expectS(result.toString(), "required this.age,\nthis.name,");
     });
 
     test("4k with null collection", () {
-      var result = getConstructorRows(
-        [
-          NameTypeClassComment("age", "int", null),
-          NameTypeClassComment("listOfStrings", "List<String?>", null),
-        ],
-      );
+      var result = getConstructorRows([
+        NameTypeClassComment("age", "int", null),
+        NameTypeClassComment("listOfStrings", "List<String?>", null),
+      ]);
 
-      expectS(result.toString(),
-          "required this.age,\nrequired this.listOfStrings,");
+      expectS(
+        result.toString(),
+        "required this.age,\nrequired this.listOfStrings,",
+      );
     });
 
     test("5k private properties not null", () {
-      var result = getConstructorRows(
-        [
-          NameTypeClassComment("_age", "int", null),
-          NameTypeClassComment("name", "String", null),
-        ],
-      );
+      var result = getConstructorRows([
+        NameTypeClassComment("_age", "int", null),
+        NameTypeClassComment("name", "String", null),
+      ]);
 
       expectS(result.toString(), "required int age,\nrequired this.name,");
     });
 
     test("6k private nullable", () {
-      var result = getConstructorRows(
-        [
-          NameTypeClassComment("_age", "int?", null),
-          NameTypeClassComment("name", "String?", null),
-        ],
-      );
+      var result = getConstructorRows([
+        NameTypeClassComment("_age", "int?", null),
+        NameTypeClassComment("name", "String?", null),
+      ]);
 
       expectS(result.toString(), "int? age,\nthis.name,");
     });
@@ -478,23 +477,19 @@ a == other.a && b == other.b && c == other.c;""";
 
   group("get intializer list", () {
     test("1l with a private", () {
-      var result = getInitializer(
-        [
-          NameTypeClassComment("_age", "int?", null),
-          NameTypeClassComment("name", "String?", null),
-        ],
-      );
+      var result = getInitializer([
+        NameTypeClassComment("_age", "int?", null),
+        NameTypeClassComment("name", "String?", null),
+      ]);
 
       expectS(result.toString(), " : _age = age");
     });
 
     test("2l without a private", () {
-      var result = getInitializer(
-        [
-          NameTypeClassComment("age", "int?", null),
-          NameTypeClassComment("name", "String?", null),
-        ],
-      );
+      var result = getInitializer([
+        NameTypeClassComment("age", "int?", null),
+        NameTypeClassComment("name", "String?", null),
+      ]);
 
       expectS(result.toString(), "");
     });
@@ -521,12 +516,14 @@ a == other.a && b == other.b && c == other.c;""";
     });
 
     test(
-        "4m if a Function data type and we have a morphy class then don't remove",
-        () {
-      var result =
-          removeDollarsFromPropertyType("bool Function(int blah, \$X blim)");
-      expectS(result, "bool Function(int blah, \$X blim)");
-    });
+      "4m if a Function data type and we have a morphy class then don't remove",
+      () {
+        var result = removeDollarsFromPropertyType(
+          "bool Function(int blah, \$X blim)",
+        );
+        expectS(result, "bool Function(int blah, \$X blim)");
+      },
+    );
   });
 
   group("getConstructorName", () {
@@ -544,22 +541,18 @@ a == other.a && b == other.b && c == other.c;""";
 
   group("getEnumPropertyList", () {
     test("1o", () {
-      var result = getEnumPropertyList(
-        [
-          NameTypeClassComment("age", "int", null),
-          NameTypeClassComment("name", "String?", null),
-        ],
-        "\$MyClass",
+      var result = getEnumPropertyList([
+        NameTypeClassComment("age", "int", null),
+        NameTypeClassComment("name", "String?", null),
+      ], "\$MyClass");
+      expectS(
+        result,
+        "typedef MyClassPatch = Map<MyClass\$, dynamic>;\nenum MyClass\$ {age,name}",
       );
-      expectS(result,
-          "typedef MyClassPatch = Map<MyClass\$, dynamic>;\nenum MyClass\$ {age,name}");
     });
 
     test("2o no fields", () {
-      var result = getEnumPropertyList(
-        [],
-        "\$MyClass",
-      );
+      var result = getEnumPropertyList([], "\$MyClass");
       expectS(result, "");
     });
   });
@@ -567,12 +560,8 @@ a == other.a && b == other.b && c == other.c;""";
   group("getCopyWith", () {
     test("1p abstract classname is interfacename", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("a", "String", null)],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "A",
         className: "A",
         isClassAbstract: true,
@@ -585,9 +574,7 @@ String Function()? a,
 
     test("2p abstract", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "int", null),
-        ],
+        classFields: [NameTypeClassComment("a", "int", null)],
         interfaceFields: [
           NameTypeClassComment("a", "int", null),
           NameTypeClassComment("b", "int", null),
@@ -604,12 +591,8 @@ int Function()? a,
 
     test("3p classname is interfacename", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("a", "String", null)],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "A",
         className: "A",
         isClassAbstract: false,
@@ -629,9 +612,7 @@ a: a == null ? this.a as String : a() as String,
           NameTypeClassComment("a", "String", null),
           NameTypeClassComment("b", "T1", null),
         ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
@@ -678,9 +659,7 @@ b: b == null ? this.b as T1 : b() as T1,
           NameTypeClassComment("b", "T1", null),
           NameTypeClassComment("c", "bool", null),
         ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "A",
         className: "C",
         isClassAbstract: false,
@@ -758,9 +737,7 @@ c: c == null ? this.c as bool : c() as bool,
           NameTypeClassComment("a", "String", null),
           NameTypeClassComment("b", "T1", null),
         ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "A",
         className: "D",
         isClassAbstract: false,
@@ -840,9 +817,7 @@ b: b == null ? this.b as T1 : b() as T1,
 
     test("13p yx (see ex29_manual) interface with no fields", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("a", "String", null)],
         interfaceFields: [],
         interfaceName: "X",
         className: "Y",
@@ -858,12 +833,8 @@ a: (this as Y).a,
 
     test("14p yy (see ex29_manual) interface with no fields", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("a", "String", null)],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceName: "Y",
         className: "Y",
         isClassAbstract: false,
@@ -879,12 +850,8 @@ a: a == null ? this.a as String : a() as String,
 
     test("15p aa (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Person", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Person", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Person", null)],
+        interfaceFields: [NameTypeClassComment("a", "Person", null)],
         interfaceName: "A",
         className: "A",
         isClassAbstract: false,
@@ -900,12 +867,8 @@ a: a == null ? this.a as Person : a() as Person,
 
     test("16p ba (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Employee", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Person", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Employee", null)],
+        interfaceFields: [NameTypeClassComment("a", "Person", null)],
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
@@ -921,12 +884,8 @@ a: a == null ? this.a as Employee : a() as Employee,
 
     test("17p bb (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Employee", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Employee", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Employee", null)],
+        interfaceFields: [NameTypeClassComment("a", "Employee", null)],
         interfaceName: "B",
         className: "B",
         isClassAbstract: false,
@@ -942,12 +901,8 @@ a: a == null ? this.a as Employee : a() as Employee,
 
     test("18p ca (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Manager", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Person", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Manager", null)],
+        interfaceFields: [NameTypeClassComment("a", "Person", null)],
         interfaceName: "A",
         className: "C",
         isClassAbstract: false,
@@ -963,12 +918,8 @@ a: a == null ? this.a as Manager : a() as Manager,
 
     test("19p cb (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Manager", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Employee", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Manager", null)],
+        interfaceFields: [NameTypeClassComment("a", "Employee", null)],
         interfaceName: "B",
         className: "C",
         isClassAbstract: false,
@@ -984,12 +935,8 @@ a: a == null ? this.a as Manager : a() as Manager,
 
     test("20p cc (see ex7_manual) where subtypes are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "Manager", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "Manager", null),
-        ],
+        classFields: [NameTypeClassComment("a", "Manager", null)],
+        interfaceFields: [NameTypeClassComment("a", "Manager", null)],
         interfaceName: "C",
         className: "C",
         isClassAbstract: false,
@@ -1061,12 +1008,8 @@ z: z == null ? this.z as String : z() as String,
 
     test("23p a (see ex2_manual) where generics are used", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "T", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("x", "T", null),
-        ],
+        classFields: [NameTypeClassComment("x", "T", null)],
+        interfaceFields: [NameTypeClassComment("x", "T", null)],
         interfaceGenerics: [NameType("T", null)],
         interfaceName: "A",
         className: "A",
@@ -1083,11 +1026,9 @@ T Function()? x,
           NameTypeClassComment("x", "int", null),
           NameTypeClassComment("y", "T", null),
         ],
-        interfaceFields: [
-          NameTypeClassComment("x", "T", null),
-        ],
+        interfaceFields: [NameTypeClassComment("x", "T", null)],
         interfaceGenerics: [NameType("T", null)],
-//        classGenerics: [NameType("T", "\$C")],
+        //        classGenerics: [NameType("T", "\$C")],
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
@@ -1103,12 +1044,8 @@ y: (this as B).y,
 
     test("25p a (see ex21) no default constructor", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("a", "String", null)],
+        interfaceFields: [NameTypeClassComment("a", "String", null)],
         interfaceGenerics: [],
         interfaceName: "A",
         className: "A",
@@ -1124,9 +1061,7 @@ a: a == null ? this.a as String : a() as String,
 
     test("26p function to leave in dollar", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("fn", "bool Function(\$X)", null),
-        ],
+        classFields: [NameTypeClassComment("fn", "bool Function(\$X)", null)],
         interfaceFields: [
           NameTypeClassComment("fn", "bool Function(\$X)", null),
         ],
@@ -1145,9 +1080,7 @@ fn: fn == null ? this.fn as bool Function(\$X) : fn() as bool Function(\$X),
 
     test("27p subtype from a supertype", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "String", null),
-        ],
+        classFields: [NameTypeClassComment("x", "String", null)],
         interfaceFields: [
           NameTypeClassComment("x", "String", null),
           NameTypeClassComment("y", "String", null),
@@ -1170,9 +1103,7 @@ x: x == null ? this.x as String : x() as String,
 
     test("28p subtype from a supertype", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "String", null),
-        ],
+        classFields: [NameTypeClassComment("x", "String", null)],
         interfaceFields: [
           NameTypeClassComment("x", "String", null),
           NameTypeClassComment("y", "String", null),
@@ -1198,9 +1129,7 @@ x: x == null ? this.x as String : x() as String,
 
     test("29p sub to sub sibling with abstract parent", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "String", null),
-        ],
+        classFields: [NameTypeClassComment("x", "String", null)],
         interfaceFields: [
           NameTypeClassComment("x", "String", null),
           NameTypeClassComment("y", "String", null),
@@ -1255,9 +1184,7 @@ z: z == null ? this.z as Z : z() as Z,
 
     test("31p FROM ABSTRACT SUPERCLASS TO SUB CLASS", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "String", null),
-        ],
+        classFields: [NameTypeClassComment("x", "String", null)],
         interfaceFields: [
           NameTypeClassComment("x", "String", null),
           NameTypeClassComment("y", "String", null),
@@ -1280,9 +1207,7 @@ x: x == null ? this.x as String : x() as String,
 
     test("32p private constructor", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("x", "String", null),
-        ],
+        classFields: [NameTypeClassComment("x", "String", null)],
         interfaceFields: [
           NameTypeClassComment("x", "String", null),
           NameTypeClassComment("y", "String", null),
@@ -1308,12 +1233,8 @@ x: x == null ? this.x as String : x() as String,
 
     test("33p private property abstract class", () {
       var result = getCopyWith(
-        classFields: [
-          NameTypeClassComment("_a", "String", null),
-        ],
-        interfaceFields: [
-          NameTypeClassComment("_a", "String", null),
-        ],
+        classFields: [NameTypeClassComment("_a", "String", null)],
+        interfaceFields: [NameTypeClassComment("_a", "String", null)],
         interfaceName: "A",
         className: "A",
         isClassAbstract: true,
@@ -1359,12 +1280,14 @@ c: (this as C).c,
     });
 
     test(
-        "2q if a Function data type and we have a morphy class then don't remove",
-        () {
-      var result =
-          getDataTypeWithoutDollars("bool Function(int blah, \$X blim)");
-      expectS(result, "bool Function(int blah, \$X blim)");
-    });
+      "2q if a Function data type and we have a morphy class then don't remove",
+      () {
+        var result = getDataTypeWithoutDollars(
+          "bool Function(int blah, \$X blim)",
+        );
+        expectS(result, "bool Function(int blah, \$X blim)");
+      },
+    );
   });
 
   group("generateFromJsonHeader", () {
@@ -1388,13 +1311,9 @@ c: (this as C).c,
     });
 
     test("2s with interface", () {
-      var result = generateFromJsonBody(
-        "\$Person",
-        [],
-        [
-          Interface("\$Manager", [], [], [NameType("hairLength", "int")])
-        ],
-      );
+      var result = generateFromJsonBody("\$Person", [], [
+        Interface("\$Manager", [], [], [NameType("hairLength", "int")]),
+      ]);
       var expected = """if (json['_className_'] == null) {
         return _\$PersonFromJson(json);
         }
@@ -1408,15 +1327,11 @@ c: (this as C).c,
     });
 
     test("3s class with 3 generics", () {
-      var result = generateFromJsonBody(
-        "B",
-        [
-          NameType("T", "\$\$C"),
-          NameType("T2", "MyBase"),
-          NameType("T3", null),
-        ],
-        [],
-      );
+      var result = generateFromJsonBody("B", [
+        NameType("T", "\$\$C"),
+        NameType("T2", "MyBase"),
+        NameType("T3", null),
+      ], []);
 
       var expected = """if (json['_className_'] == null) {
         return _\$BFromJson(json);
@@ -1435,13 +1350,9 @@ c: (this as C).c,
     });
 
     test("4s interface with three generics", () {
-      var result = generateFromJsonBody(
-        "A",
-        [],
-        [
-          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], [])
-        ],
-      );
+      var result = generateFromJsonBody("A", [], [
+        Interface("\$B", ["", "", ""], ["T", "T2", "T3"], []),
+      ]);
 
       var expected = """if (json['_className_'] == null) {
         return _\$AFromJson(json);
@@ -1462,13 +1373,9 @@ c: (this as C).c,
     });
 
     test("5s abstract superclass", () {
-      var result = generateFromJsonBody(
-        "\$\$A",
-        [],
-        [
-          Interface("\$B", ["", "", ""], ["T", "T2", "T3"], [])
-        ],
-      );
+      var result = generateFromJsonBody("\$\$A", [], [
+        Interface("\$B", ["", "", ""], ["T", "T2", "T3"], []),
+      ]);
 
       var expected = """if (json['_className_'] == null) {
         return _\$AFromJson(json);
@@ -1508,14 +1415,11 @@ c: (this as C).c,
     });
 
     test("2u generic", () {
-      var result = generateToJson(
-        "\$Pet",
-        [
-          NameType("T", "\$\$C"),
-          NameType("T2", "MyBase"),
-          NameType("T3", null),
-        ],
-      );
+      var result = generateToJson("\$Pet", [
+        NameType("T", "\$\$C"),
+        NameType("T2", "MyBase"),
+        NameType("T3", null),
+      ]);
       var expected = """// ignore: unused_field
         Map<Type, Object? Function(Never)> _fns = {};
 
@@ -1556,9 +1460,7 @@ c: (this as C).c,
   group("createJsonSingleton", () {
     test("1v has one generic", () {
       var classNameTrim = "B";
-      var classGenerics = [
-        NameType("T", "\$\$C"),
-      ];
+      var classGenerics = [NameType("T", "\$\$C")];
 
       var result = createJsonSingleton(classNameTrim, classGenerics);
 
@@ -1629,8 +1531,13 @@ class C_Generics_Sing {
     });
 
     test("3w non abstract, generics, no private constructor", () {
-      var result = createJsonHeader("\$Pet",
-          [NameTypeClass("name", "type", "className")], false, false, false);
+      var result = createJsonHeader(
+        "\$Pet",
+        [NameTypeClass("name", "type", "className")],
+        false,
+        false,
+        false,
+      );
       var expected =
           "@JsonSerializable(explicitToJson: false, genericArgumentFactories: true, )";
       expectS(result, expected);
@@ -1693,56 +1600,58 @@ class C_Generics_Sing {
 
       // Verify method signature and structure
       expect(result.contains("Map<String, dynamic> toJsonLean()"), true);
-      expect(result.contains("_\$PetToJson(this,)"),
-          true); // Note the trailing comma
+      expect(
+        result.contains("_\$PetToJson(this,)"),
+        true,
+      ); // Note the trailing comma
       expect(result.contains("return _sanitizeJson(data)"), true);
     });
   });
 
-//  group("getCopyWithSignature", () {
-//    test("1p", () {
-//      var result = getCopyWithSignature(
-//        [
-//          NameTypeClassComment("a", "int", null),
-//          NameTypeClassComment("b", "String?", null),
-//        ],
-//        "A",
-//      );
-//      expectS(result, """A copyWithA({
-//required int a,
-//required String? b,
-//}) {""");
-//    });
-//  });
+  //  group("getCopyWithSignature", () {
+  //    test("1p", () {
+  //      var result = getCopyWithSignature(
+  //        [
+  //          NameTypeClassComment("a", "int", null),
+  //          NameTypeClassComment("b", "String?", null),
+  //        ],
+  //        "A",
+  //      );
+  //      expectS(result, """A copyWithA({
+  //required int a,
+  //required String? b,
+  //}) {""");
+  //    });
+  //  });
 
-//  group("getValueTImplements", () {
-//    test("1q - no interfaces", () {
-//      var result = getValueTImplements([], "MyClass").map((e) => e.type).toList();
-//
-//      expectS(result, ["MyClass"]);
-//    });
-////
-////    test("2q", () {
-////      var result = getImplements([Interface("\$A", [], [])], "MyClass");
-////
-////      expectS(result, " implements A, ValueT");
-////    });
-////
-////    test("3q", () {
-////      var result = getImplements([
-////        Interface("\$B", ["int"], ["T1"]),
-////        Interface("\$C", [], []),
-////      ], "MyClass");
-////
-////      expectS(result, " implements B<int>, C, ValueT");
-////    });
-////
-////    test("4q", () {
-////      var result = getImplements([
-////        Interface("\$B", ["\$A"], ["T1"]),
-////      ], "MyClass");
-////
-////      expectS(result, " implements B<\$A>, ValueT");
-////    });
-//  });
+  //  group("getValueTImplements", () {
+  //    test("1q - no interfaces", () {
+  //      var result = getValueTImplements([], "MyClass").map((e) => e.type).toList();
+  //
+  //      expectS(result, ["MyClass"]);
+  //    });
+  ////
+  ////    test("2q", () {
+  ////      var result = getImplements([Interface("\$A", [], [])], "MyClass");
+  ////
+  ////      expectS(result, " implements A, ValueT");
+  ////    });
+  ////
+  ////    test("3q", () {
+  ////      var result = getImplements([
+  ////        Interface("\$B", ["int"], ["T1"]),
+  ////        Interface("\$C", [], []),
+  ////      ], "MyClass");
+  ////
+  ////      expectS(result, " implements B<int>, C, ValueT");
+  ////    });
+  ////
+  ////    test("4q", () {
+  ////      var result = getImplements([
+  ////        Interface("\$B", ["\$A"], ["T1"]),
+  ////      ], "MyClass");
+  ////
+  ////      expectS(result, " implements B<\$A>, ValueT");
+  ////    });
+  //  });
 }

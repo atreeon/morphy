@@ -1,10 +1,9 @@
-name: Dart CI
+name: ZikZak Morphy CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     container:
@@ -12,20 +11,39 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Setup morphy
-        working-directory: ./morphy
-        run:  |
+
+      - name: Setup zikzak_morphy_annotation
+        working-directory: ./zikzak_morphy_annotation
+        run: |
           dart pub get
-          dart pub run build_runner build --delete-conflicting-outputs
-      - name: Run tests morphy
-        working-directory: ./morphy
-        run: dart pub run test
+          dart analyze
+
+      - name: Setup zikzak_morphy
+        working-directory: ./zikzak_morphy
+        run: |
+          dart pub get
+          dart analyze
+
+      - name: Run tests zikzak_morphy
+        working-directory: ./zikzak_morphy
+        run: dart test
+
+      - name: Setup factory_test
+        working-directory: ./factory_test
+        run: |
+          dart pub get
+          dart run build_runner build --delete-conflicting-outputs
+
+      - name: Run tests factory_test
+        working-directory: ./factory_test
+        run: dart test
+
       - name: Setup example
         working-directory: ./example
-        run:  |
+        run: |
           dart pub get
-          dart pub run build_runner build --delete-conflicting-outputs
-      - name: Run tests Example
-        working-directory: ./example
-        run: dart pub run test
+          dart run build_runner build --delete-conflicting-outputs
 
+      - name: Run tests example
+        working-directory: ./example
+        run: dart test

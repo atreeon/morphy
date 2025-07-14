@@ -1,7 +1,7 @@
-name: morphy
-description: Provides a clean class definition with extra functionality including; copy with, json serializable, tostring, equals that supports inheritance and polymorphism
+name: zikzak_morphy
+description: A powerful code generation package for Dart/Flutter that provides clean class definitions with copyWith, JSON serialization, toString, equality, and inheritance support
 version: 2.0.0
-homepage: https://github.com/atreeon/morphy
+homepage: https://github.com/arrrrny/morphy
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -14,8 +14,8 @@ environment:
 #       ref: git-ref
 publish_to: none
 dependencies:
-  morphy_annotation:
-    path: ../morphy_annotation
+  zikzak_morphy_annotation:
+    path: ../zikzak_morphy_annotation
   analyzer: ^7.5.7
   build: ^2.5.4
   source_gen: ^2.0.0

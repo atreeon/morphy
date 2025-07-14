@@ -1,6 +1,6 @@
-import 'package:morphy/src/common/NameType.dart';
-import 'package:morphy/src/common/classes.dart';
-import 'package:morphy/src/helpers.dart';
+import 'package:zikzak_morphy/src/common/NameType.dart';
+import 'package:zikzak_morphy/src/common/classes.dart';
+import 'package:zikzak_morphy/src/helpers.dart';
 
 import 'method_generator.dart';
 import 'factory_method.dart';

@@ -1,7 +1,7 @@
 //import 'package:analyzer_models/analyzer_models.dart';
 import 'package:dartx/dartx.dart';
-import 'package:morphy/src/common/NameType.dart';
-import 'package:morphy/src/common/classes.dart';
+import 'package:zikzak_morphy/src/common/NameType.dart';
+import 'package:zikzak_morphy/src/common/classes.dart';
 
 import 'method_generator.dart';
 

@@ -136,8 +136,8 @@ class ConstructorParameterGenerator {
         }
         return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
       } else {
-        // For changeTo, use only patch values for new fields
-        return '$name: _patchMap[$targetClassName\$.$name] ?? this.$name';
+        // For fields that don't exist in source class, use only patch values
+        return '$name: _patchMap[$targetClassName\$.$name]';
       }
     });
 

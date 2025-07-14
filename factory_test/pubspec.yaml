@@ -1,17 +1,17 @@
 name: factory_test
-description: Test project for morphy factory method functionality
+description: Test project for zikzak_morphy factory method functionality
 version: 1.0.0
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
 
 dependencies:
-  morphy_annotation:
-    path: ../morphy_annotation
+  zikzak_morphy_annotation:
+    path: ../zikzak_morphy_annotation
 
 dev_dependencies:
   test: ^1.26.2
   build_runner: ^2.5.4
-  morphy:
-    path: ../morphy
+  zikzak_morphy:
+    path: ../zikzak_morphy
   json_serializable: ^6.8.0

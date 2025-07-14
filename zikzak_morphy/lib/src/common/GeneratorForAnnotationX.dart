@@ -7,8 +7,8 @@ import 'dart:async';
 import 'package:analyzer/dart/element/element.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:build/build.dart';
-import 'package:morphy/src/MorphyGenerator.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy/src/MorphyGenerator.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:source_gen/source_gen.dart';
 // ignore: import_of_legacy_library_into_null_safe
