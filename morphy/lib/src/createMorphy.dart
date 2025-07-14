@@ -31,12 +31,24 @@ String createMorphy(
 
   if (generateJson) {
     sb.writeln(createJsonSingleton(classNameTrimmed, classGenerics));
-    sb.writeln(createJsonHeader(className, classGenerics, hidePublicConstructor,
-        explicitToJson, generateCompareTo));
+    sb.writeln(
+      createJsonHeader(
+        className,
+        classGenerics,
+        hidePublicConstructor,
+        explicitToJson,
+        generateCompareTo,
+      ),
+    );
   }
 
-  sb.write(getClassDefinition(
-      isAbstract: isAbstract, nonSealed: nonSealed, className: className));
+  sb.write(
+    getClassDefinition(
+      isAbstract: isAbstract,
+      nonSealed: nonSealed,
+      className: className,
+    ),
+  );
 
   if (classGenerics.isNotEmpty) {
     sb.write(getClassGenerics(classGenerics));
@@ -48,15 +60,25 @@ String createMorphy(
     // If factory methods exist, implement instead of extend
     if (factoryMethods.isNotEmpty) {
       // Consolidate the main class and interfaces into single implements clause
-      var allImplements = <String>[className]; // Keep the original $ClassName
+      // Include generic parameters for the main class
+      var mainClassWithGenerics = className;
+      if (classGenerics.isNotEmpty) {
+        var genericParams = classGenerics.map((e) => e.name).join(', ');
+        mainClassWithGenerics = '$className<$genericParams>';
+      }
+      var allImplements = <String>[
+        mainClassWithGenerics,
+      ]; // Keep the original $ClassName
       if (interfacesFromImplements.isNotEmpty) {
-        allImplements.addAll(interfacesFromImplements.map((e) {
-          var type = e.interfaceName.replaceAll("\$", "");
-          if (e.typeParams.isEmpty) {
-            return type;
-          }
-          return "${type}<${e.typeParams.map((e) => e.type).join(", ")}>";
-        }));
+        allImplements.addAll(
+          interfacesFromImplements.map((e) {
+            var type = e.interfaceName.replaceAll("\$", "");
+            if (e.typeParams.isEmpty) {
+              return type;
+            }
+            return "${type}<${e.typeParams.map((e) => e.type).join(", ")}>";
+          }),
+        );
       }
       sb.write(" implements ${allImplements.join(', ')}");
     } else {
@@ -133,7 +155,7 @@ String createMorphy(
     sb.writeln(getEquals(allFields, classNameTrimmed));
     sb.writeln('\n');
   }
-//
+  //
   var interfacesX = [
     ...interfacesAllInclSubInterfaces,
     Interface.fromGenerics(
@@ -151,6 +173,9 @@ String createMorphy(
           interfaceName: x.interfaceName,
           className: className,
           isClassAbstract: isAbstract,
+          interfaceGenerics: classGenerics
+              .map((e) => NameType(e.name, e.name))
+              .toList(),
         ),
       );
     });
@@ -168,27 +193,31 @@ String createMorphy(
     sb.writeln(generateToJsonLean(className));
   }
   var knownClasses = [
-    ...interfacesAllInclSubInterfaces
-        .map((i) => i.interfaceName.replaceAll("\$", "")),
+    ...interfacesAllInclSubInterfaces.map(
+      (i) => i.interfaceName.replaceAll("\$", ""),
+    ),
     classNameTrimmed,
   ].toSet().toList();
   sb.writeln("}");
   if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
     // Create a list of all known classes from the interfaces
 
-    sb.writeln(generateCompareExtension(
-      isAbstract,
-      className,
-      classNameTrimmed,
-      allFields,
-      interfacesAllInclSubInterfaces, // Pass all known interfaces
-      knownClasses, // Pass all known classes
-      generateCompareTo,
-    ));
+    sb.writeln(
+      generateCompareExtension(
+        isAbstract,
+        className,
+        classNameTrimmed,
+        allFields,
+        interfacesAllInclSubInterfaces, // Pass all known interfaces
+        knownClasses, // Pass all known classes
+        generateCompareTo,
+      ),
+    );
   }
   if (interfacesX.any((element) => element.isExplicitSubType)) {
     sb.writeln(
-        "extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {");
+      "extension ${classNameTrimmed}ChangeToE on ${classNameTrimmed} {",
+    );
 
     interfacesX.where((element) => element.isExplicitSubType).forEach((x) {
       sb.writeln(
@@ -206,13 +235,23 @@ String createMorphy(
 
   sb.writeln(getEnumPropertyList(allFields, className));
 
-  sb.writeln(getPatchClass(allFields, className, knownClasses));
+  sb.writeln(
+    getPatchClass(
+      allFields,
+      className,
+      knownClasses,
+      classGenerics.map((e) => e.name).toList(),
+    ),
+  );
   // return commentEveryLine(sb.toString());
   return sb.toString();
 }
 
-String generateFactoryMethod(FactoryMethodInfo factory, String classNameTrimmed,
-    List<NameTypeClassComment> allFields) {
+String generateFactoryMethod(
+  FactoryMethodInfo factory,
+  String classNameTrimmed,
+  List<NameTypeClassComment> allFields,
+) {
   var sb = StringBuffer();
 
   // Generate factory method signature
@@ -221,23 +260,31 @@ String generateFactoryMethod(FactoryMethodInfo factory, String classNameTrimmed,
   if (factory.parameters.isNotEmpty) {
     if (factory.parameters.any((p) => p.isNamed)) {
       sb.write("{");
-      sb.write(factory.parameters.map((p) {
-        var prefix = p.isRequired ? "required " : "";
-        var suffix = p.hasDefaultValue && p.defaultValue != null
-            ? " = ${p.defaultValue}"
-            : "";
-        var cleanType = p.type.replaceAll('\$', '');
-        return "${prefix}${cleanType} ${p.name}${suffix}";
-      }).join(", "));
+      sb.write(
+        factory.parameters
+            .map((p) {
+              var prefix = p.isRequired ? "required " : "";
+              var suffix = p.hasDefaultValue && p.defaultValue != null
+                  ? " = ${p.defaultValue}"
+                  : "";
+              var cleanType = p.type.replaceAll('\$', '');
+              return "${prefix}${cleanType} ${p.name}${suffix}";
+            })
+            .join(", "),
+      );
       sb.write("}");
     } else {
-      sb.write(factory.parameters.map((p) {
-        var suffix = p.hasDefaultValue && p.defaultValue != null
-            ? " = ${p.defaultValue}"
-            : "";
-        var cleanType = p.type.replaceAll('\$', '');
-        return "${cleanType} ${p.name}${suffix}";
-      }).join(", "));
+      sb.write(
+        factory.parameters
+            .map((p) {
+              var suffix = p.hasDefaultValue && p.defaultValue != null
+                  ? " = ${p.defaultValue}"
+                  : "";
+              var cleanType = p.type.replaceAll('\$', '');
+              return "${cleanType} ${p.name}${suffix}";
+            })
+            .join(", "),
+      );
     }
   }
 
@@ -252,8 +299,10 @@ String generateFactoryMethod(FactoryMethodInfo factory, String classNameTrimmed,
 
   // Transform the body to use the correct constructor name
   bodyCode = bodyCode
-      .replaceAll('${factory.className.replaceAll('\$', '')}._',
-          '${classNameTrimmed}._')
+      .replaceAll(
+        '${factory.className.replaceAll('\$', '')}._',
+        '${classNameTrimmed}._',
+      )
       .replaceAll('\$', '');
 
   sb.writeln("${bodyCode};");

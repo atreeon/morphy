@@ -7,9 +7,9 @@ part 'ex60_copywith_generic_test.morphy.dart';
 
 main() {
   test("1", () {
-    var a = A<int>(x:1, y:2);
+    var a = A<int>(x: 1, y: 2);
 
-    var aAsInt = a.copyWith_A<int>(x: () => 2);
+    var aAsInt = a.copyWithA(x: () => 2);
 
     expect(aAsInt.runtimeType, A<int>);
   });
@@ -20,4 +20,3 @@ abstract class $A<T> {
   T get x;
   T get y;
 }
-

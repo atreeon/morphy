@@ -29,8 +29,8 @@ class MethodGenerator {
         final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
         ${_generatePatchAssignments(interfaceFields, classFields, true)}
         final _patchMap = _patcher.toPatch();
-        return $cleanClassName._$typeParams(
-          ${_generateConstructorParams(classFields, interfaceFields, cleanInterfaceName, false)}
+        return $cleanClassName$typeParams._(
+          ${_generateConstructorParams(classFields, interfaceFields, cleanInterfaceName, false, interfaceGenerics)}
         );
       }''';
   }
@@ -56,55 +56,65 @@ class MethodGenerator {
         ${_generatePatchAssignments(interfaceFields, classFields, true)}
         final _patchMap = _patcher.toPatch();
         return $cleanInterfaceName$typeParams(
-          ${_generateConstructorParams(interfaceFields, classFields, cleanInterfaceName, true)}
+          ${_generateConstructorParams(interfaceFields, classFields, cleanInterfaceName, true, interfaceGenerics)}
         );
       }''';
   }
 
   static String _generatePatchAssignments(
-      List<NameType> fields, List<NameType> sourceFields, bool isCopyWith) {
+    List<NameType> fields,
+    List<NameType> sourceFields,
+    bool isCopyWith,
+  ) {
     var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
 
-    return fields.map((f) {
-      var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
-      var isRequired = !f.type!.endsWith('?');
-      var hasField = sourceFieldNames.contains(f.name);
-      var capitalizedName =
-          name.substring(0, 1).toUpperCase() + name.substring(1);
-      if (isRequired && !hasField) {
-        // Required fields - direct assignment
-        return "_patcher.with$capitalizedName($name());";
-      } else {
-        // Optional fields - null check
-        return """
+    return fields
+        .map((f) {
+          var name = f.name.startsWith("_") ? f.name.substring(1) : f.name;
+          var isRequired = !f.type!.endsWith('?');
+          var hasField = sourceFieldNames.contains(f.name);
+          var capitalizedName =
+              name.substring(0, 1).toUpperCase() + name.substring(1);
+          if (isRequired && !hasField) {
+            // Required fields - direct assignment
+            return "_patcher.with$capitalizedName($name());";
+          } else {
+            // Optional fields - null check
+            return """
         if ($name != null) {
           _patcher.with$capitalizedName($name());
         }""";
-      }
-    }).join("\n");
+          }
+        })
+        .join("\n");
   }
 
   static String _generateParameters(
-      List<NameType> fields, List<NameType> sourceFields, bool isCopyWith) {
+    List<NameType> fields,
+    List<NameType> sourceFields,
+    bool isCopyWith,
+  ) {
     var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
 
-    return fields.map((f) {
-      var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
-      var hasField = sourceFieldNames.contains(f.name);
-      var isRequired = !f.type!.endsWith('?');
+    return fields
+        .map((f) {
+          var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
+          var hasField = sourceFieldNames.contains(f.name);
+          var isRequired = !f.type!.endsWith('?');
 
-      // For copyWith - all optional
-      if (isCopyWith) {
-        return '${FieldTypeAnalyzer.cleanType(f.type)} Function()? $name';
-      }
+          // For copyWith - all optional
+          if (isCopyWith) {
+            return '${FieldTypeAnalyzer.cleanType(f.type)} Function()? $name';
+          }
 
-      // For changeTo - required only if field is required AND not in source
-      if (isRequired && !hasField) {
-        return 'required ${FieldTypeAnalyzer.cleanType(f.type)} Function() $name';
-      }
+          // For changeTo - required only if field is required AND not in source
+          if (isRequired && !hasField) {
+            return 'required ${FieldTypeAnalyzer.cleanType(f.type)} Function() $name';
+          }
 
-      return '${FieldTypeAnalyzer.cleanType(f.type)} Function()? $name';
-    }).join(',\n      ');
+          return '${FieldTypeAnalyzer.cleanType(f.type)} Function()? $name';
+        })
+        .join(',\n      ');
   }
 
   // static String _generateConstructorParams(List<NameType> targetClassFields,
@@ -144,20 +154,32 @@ class MethodGenerator {
   //   return constructorFields.join(',\n        ');
   // }
 
-  static String _generateConstructorParams(List<NameType> targetClassFields,
-      List<NameType> sourceFields, String targetClassName, bool isChangeTo) {
+  static String _generateConstructorParams(
+    List<NameType> targetClassFields,
+    List<NameType> sourceFields,
+    String targetClassName,
+    bool isChangeTo, [
+    List<NameType> generics = const [],
+  ]) {
     var sourceFieldNames = sourceFields.map((e) => e.name).toSet();
+    var genericTypeNames = generics
+        .map((g) => FieldTypeAnalyzer.cleanType(g.type))
+        .toSet();
 
     var constructorFields = targetClassFields.map((f) {
       var name = f.name.startsWith('_') ? f.name.substring(1) : f.name;
       var hasField = sourceFieldNames.contains(f.name);
       var baseType = FieldTypeAnalyzer.cleanType(f.type).replaceAll("?", "");
       var isEnum = f.isEnum;
+      var isGenericType = genericTypeNames.contains(baseType);
 
       if (hasField) {
-        if (!PRIMITIVE_TYPES.any((primitiveType) =>
-                baseType.replaceAll("?", "").startsWith(primitiveType)) &&
-            !isEnum) {
+        if (!PRIMITIVE_TYPES.any(
+              (primitiveType) =>
+                  baseType.replaceAll("?", "").startsWith(primitiveType),
+            ) &&
+            !isEnum &&
+            !isGenericType) {
           return '''$name: (_patchMap[$targetClassName\$.$name] is ${baseType}Patch)
             ? (this.$name?.copyWith$baseType(
                 patchInput: _patchMap[$targetClassName\$.$name]
@@ -201,16 +223,20 @@ class NameCleaner {
     if (type == null || type == 'null') return 'dynamic';
 
     // Handle double nullability and dollar signs
-    type =
-        type.replaceAll('\$\$', '').replaceAll('\$', '').replaceAll('??', '?');
+    type = type
+        .replaceAll('\$\$', '')
+        .replaceAll('\$', '')
+        .replaceAll('??', '?');
 
     if (type.contains('<')) {
       var match = RegExp(r'([^<]+)<(.+)>').firstMatch(type);
       if (match != null) {
         var genericType = clean(match.group(1) ?? '');
         var typeParams = match.group(2) ?? '';
-        var cleanedParams =
-            typeParams.split(',').map((t) => cleanType(t.trim())).join(', ');
+        var cleanedParams = typeParams
+            .split(',')
+            .map((t) => cleanType(t.trim()))
+            .join(', ');
         return '$genericType<$cleanedParams>';
       }
     }
@@ -246,8 +272,9 @@ class FieldTypeAnalyzer {
     if (type == null || type == 'null') return 'dynamic';
 
     // Remove double nullable and $ prefixes
-    var cleaned =
-        type.replaceAll('??', '?').replaceAll(RegExp(r'\$+(?![^<]*>)'), '');
+    var cleaned = type
+        .replaceAll('??', '?')
+        .replaceAll(RegExp(r'\$+(?![^<]*>)'), '');
 
     // Handle generic types
     if (cleaned.contains('<')) {
@@ -255,8 +282,10 @@ class FieldTypeAnalyzer {
       if (match != null) {
         var genericType = match.group(1) ?? '';
         var params = match.group(2) ?? '';
-        var cleanParams =
-            params.split(',').map((t) => cleanType(t.trim())).join(', ');
+        var cleanParams = params
+            .split(',')
+            .map((t) => cleanType(t.trim()))
+            .join(', ');
         return '$genericType<$cleanParams>';
       }
     }
