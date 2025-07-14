@@ -1,4 +1,4 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex27_bug.morphy.dart';
 
@@ -11,7 +11,8 @@ abstract class $UserLectureInfoPopupVM {
 }
 
 @Morphy()
-abstract class $UserLectureInfoPopupVM_worstWords implements $UserLectureInfoPopupVM {
+abstract class $UserLectureInfoPopupVM_worstWords
+    implements $UserLectureInfoPopupVM {
   String get worstWordDue;
   String get stageOfStages;
 }

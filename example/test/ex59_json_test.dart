@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex59_json_test.g.dart';

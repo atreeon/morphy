@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex53_abstract_json_test.g.dart';
 

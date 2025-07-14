@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 // COPY WITH FROM SUPER CLASS TO SUB CLASS
 
@@ -23,23 +23,18 @@ abstract class $C {
 }
 
 extension A_E on A {
-  B copyToB({
-    Opt<String>? x,
-    required String y,
-    required $C z,
-  }) {
-    return B(
-      x: x == null ? this.x : x.value as String,
-      y: y,
-      z: z as C,
-    );
+  B copyToB({Opt<String>? x, required String y, required $C z}) {
+    return B(x: x == null ? this.x : x.value as String, y: y, z: z as C);
   }
 }
 
 main() {
   test("a to b (super to sub)", () {
     A a = A(x: "x");
-    B b = a.copyToB(y: "y", z: C(v: "v"));
+    B b = a.copyToB(
+      y: "y",
+      z: C(v: "v"),
+    );
 
     expect(b.toString(), "(B-x:x|y:y|z:(C-v:v))");
   });

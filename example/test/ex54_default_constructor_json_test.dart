@@ -1,11 +1,14 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex54_default_constructor_json_test.g.dart';
 
 part 'ex54_default_constructor_json_test.morphy.dart';
 
-@Morphy(generateJson: true, explicitSubTypes: [$Todo2_complete, $Todo2_incomplete])
+@Morphy(
+  generateJson: true,
+  explicitSubTypes: [$Todo2_complete, $Todo2_incomplete],
+)
 abstract class $$Todo2 {
   String get title;
 
@@ -27,17 +30,10 @@ Todo2_incomplete todo2_incomplete_Factory({
   String? id,
   String description = '',
 }) {
-  assert(
-    id == null || id.isNotEmpty,
-    'id must either be null or not empty',
-  );
+  assert(id == null || id.isNotEmpty, 'id must either be null or not empty');
   var _id = id ?? "xxx";
 
-  return Todo2_incomplete._(
-    id: _id,
-    title: title,
-    description: description,
-  );
+  return Todo2_incomplete._(id: _id, title: title, description: description);
 }
 
 void main() {

@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 //SELF REFERENCING CLASS
 part 'ex32_self_referencing_class_test.morphy.dart';
@@ -15,13 +15,7 @@ abstract class $A {
 
 main() {
   test("1", () {
-    var a = A.constant(
-      b: 1,
-      a: A.constant(
-        b: 2,
-        a: null,
-      ),
-    );
+    var a = A.constant(b: 1, a: A.constant(b: 2, a: null));
 
     expect(a.b, 1);
     expect(a.a!.b, 2);

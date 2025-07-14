@@ -1,4 +1,4 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'factory_method_test.morphy.dart';
@@ -27,7 +27,7 @@ abstract class $Actor {
   int? get yearsActive;
 }
 
-@morphy
+@Morphy(generateCopyWithFn: true)
 abstract class $Employee implements $Person {
   String? get department;
   double? get salary;

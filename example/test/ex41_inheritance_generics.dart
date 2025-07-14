@@ -1,4 +1,4 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex41_inheritance_generics.morphy.dart';
 

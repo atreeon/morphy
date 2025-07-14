@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex51_json_inheritance_generic_from_test.g.dart';
 part 'ex51_json_inheritance_generic_from_test.morphy.dart';
@@ -15,13 +15,15 @@ main() {
         'id': '2',
         'blah': {'xyz': 'my custom', '_className_': 'X'},
         '_className_': 'B',
-        '_T_': 'X'
-      }
+        '_T_': 'X',
+      },
     ];
 
     B_Generics_Sing().fns = {
-      ["String"]: (Map<String, dynamic> json) => _$BFromJson<String>(json, (x) => x as String),
-      ["X"]: (Map<String, dynamic> json) => _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>)),
+      ["String"]: (Map<String, dynamic> json) =>
+          _$BFromJson<String>(json, (x) => x as String),
+      ["X"]: (Map<String, dynamic> json) =>
+          _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>)),
     };
 
     var result = jsonList.map((e) => A.fromJson(e)).toList();
@@ -29,7 +31,10 @@ main() {
     var expected = [
       A(id: "1"),
       B(id: "2", blah: "sdf"),
-      B(id: "2", blah: X(xyz: "my custom")),
+      B(
+        id: "2",
+        blah: X(xyz: "my custom"),
+      ),
     ];
 
     expect(result, expected);
@@ -45,18 +50,23 @@ main() {
         'id': '2',
         'blah': {'xyz': 'my custom', '_className_': 'X'},
         '_className_': 'B',
-        '_T_': 'X'
-      }
+        '_T_': 'X',
+      },
     ];
 
-    B_Generics_Sing().fns[["String"]] = (Map<String, dynamic> json) => _$BFromJson<String>(json, (x) => x as String);
-    B_Generics_Sing().fns[["X"]] = (Map<String, dynamic> json) => _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>));
+    B_Generics_Sing().fns[["String"]] = (Map<String, dynamic> json) =>
+        _$BFromJson<String>(json, (x) => x as String);
+    B_Generics_Sing().fns[["X"]] = (Map<String, dynamic> json) =>
+        _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>));
 
     var result = jsonList.map((e) => A.fromJson(e)).toList();
 
     var expected = [
       B(id: "2", blah: "sdf"),
-      B(id: "2", blah: X(xyz: "my custom")),
+      B(
+        id: "2",
+        blah: X(xyz: "my custom"),
+      ),
     ];
 
     expect(result, expected);

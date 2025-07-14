@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex23_comments_test.morphy.dart';
 
@@ -16,10 +16,7 @@ abstract class $Cat {
 
 main() {
   test("1", () {
-    var a = Cat(
-      type: "cat",
-      colour: "blue",
-    );
+    var a = Cat(type: "cat", colour: "blue");
 
     expect(a.type, "cat");
   });

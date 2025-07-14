@@ -1,5 +1,5 @@
 //import 'package:test/test.dart';
-//import 'package:morphy_annotation/morphy_annotation.dart';
+//import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 //import 'package:meta/meta.dart';
 //
 //part 'ex6_test.morphy.dart';

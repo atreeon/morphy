@@ -1,5 +1,5 @@
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex25_class_build_order_test.morphy.dart';
 part 'ex25_class_build_order_test.morphy2.dart';
@@ -22,9 +22,7 @@ abstract class $ScheduleVM_Item {
 
 main() {
   test("1", () {
-    var a = ScheduleVM(
-      schedules: [ScheduleVM_Item(value: "value")],
-    );
+    var a = ScheduleVM(schedules: [ScheduleVM_Item(value: "value")]);
 
     var result = a.schedules.map((e) => getItemValue(e)).toList();
 

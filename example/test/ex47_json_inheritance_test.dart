@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 
 import 'package:test/test.dart';
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 
 part 'ex47_json_inheritance_test.g.dart';
 part 'ex47_json_inheritance_test.morphy.dart';
@@ -23,14 +23,14 @@ main() {
   test("1 toJson", () {
     var a = A(id: "a");
     var b = B(id: "b");
-    var c = C(id: "c", items: [1,  2, 3]);
+    var c = C(id: "c", items: [1, 2, 3]);
 
     expect(a.toJson(), {'id': 'a', '_className_': 'A'});
     expect(b.toJson(), {'id': 'b', '_className_': 'B'});
     expect(c.toJson(), {
       'id': 'c',
       'items': [1, 2, 3],
-      '_className_': 'C'
+      '_className_': 'C',
     });
   });
 

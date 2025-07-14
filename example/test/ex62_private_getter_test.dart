@@ -1,4 +1,4 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex62_private_getter_test.morphy.dart';
@@ -21,10 +21,10 @@ main() {
 
 extension Pet_E on $$Pet {
   int age() => switch (this) {
-        Cat() => (_ageInYears ?? 1) * 7,
-        Dog() => (_ageInYears ?? 1) * 5,
-        _ => throw "Not implemented",
-      };
+    Cat() => (_ageInYears ?? 1) * 7,
+    Dog() => (_ageInYears ?? 1) * 5,
+    _ => throw "Not implemented",
+  };
 }
 
 @morphy

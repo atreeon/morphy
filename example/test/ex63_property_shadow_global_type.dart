@@ -1,4 +1,4 @@
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex63_property_shadow_global_type.morphy.dart';
@@ -23,9 +23,7 @@ main() {
     expect(test.bool, [2, 'abc']);
     expect(Test.fromJson(test.toJson()).toJson(), test.toJson());
 
-    final test2 = Test2(
-      PositionalFunction: (a, [b = 3, c = 5]) => a + b + c
-    );
+    final test2 = Test2(PositionalFunction: (a, [b = 3, c = 5]) => a + b + c);
     final f = test2.PositionalFunction;
     expect(f(5, 5), 15);
   });

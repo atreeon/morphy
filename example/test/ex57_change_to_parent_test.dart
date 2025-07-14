@@ -1,7 +1,7 @@
 // ignore_for_file: unnecessary_cast
 // ignore_for_file: unused_element
 
-import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:zikzak_morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
 part 'ex57_change_to_parent_test.morphy.dart';
