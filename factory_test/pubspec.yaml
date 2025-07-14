@@ -1,0 +1,17 @@
+name: factory_test
+description: Test project for morphy factory method functionality
+version: 1.0.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  morphy_annotation:
+    path: ../morphy_annotation
+
+dev_dependencies:
+  test: ^1.24.0
+  build_runner: ^2.4.0
+  morphy:
+    path: ../morphy
+  json_serializable: ^6.3.2

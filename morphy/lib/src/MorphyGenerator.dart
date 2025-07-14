@@ -9,6 +9,7 @@ import 'package:morphy/src/common/classes.dart';
 import 'package:morphy/src/common/helpers.dart';
 import 'package:morphy/src/createMorphy.dart';
 import 'package:morphy/src/helpers.dart';
+import 'package:morphy/src/factory_method.dart';
 import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:path/path.dart' as p;
@@ -131,6 +132,9 @@ class MorphyGenerator<TValueT extends MorphyX>
     var allFields = getAllFieldsIncludingSubtypes(element);
     var allFieldsDistinct = getDistinctFields(allFields, interfaces);
 
+    // Get factory methods from the abstract class
+    var factoryMethods = getFactoryMethods(element);
+
     var classGenerics = element.typeParameters.map((e) {
       final bound = e.bound;
       return NameTypeClassComment(
@@ -193,6 +197,7 @@ class MorphyGenerator<TValueT extends MorphyX>
       nonSealed,
       annotation.read('explicitToJson').boolValue,
       annotation.read('generateCompareTo').boolValue,
+      factoryMethods,
     ));
 
     return sb.toString();
@@ -341,5 +346,75 @@ $imports
     }
 
     return types;
+  }
+
+  List<FactoryMethodInfo> getFactoryMethods(ClassElement element) {
+    var factoryMethods = <FactoryMethodInfo>[];
+
+    for (var constructor in element.constructors) {
+      if (constructor.isFactory && constructor.name.isNotEmpty) {
+        var methodName = constructor.name;
+        var parameters = constructor.parameters.map((param) {
+          return FactoryParameterInfo(
+            name: param.name,
+            type: param.type.toString(),
+            isRequired: param.isRequiredNamed || param.isRequiredPositional,
+            isNamed: param.isNamed,
+            hasDefaultValue: param.hasDefaultValue,
+            defaultValue: param.defaultValueCode,
+          );
+        }).toList();
+
+        // Get the constructor body if available (for simple factory constructors)
+        var bodyCode = _extractFactoryBody(constructor);
+
+        factoryMethods.add(FactoryMethodInfo(
+          name: methodName,
+          parameters: parameters,
+          bodyCode: bodyCode,
+          className: element.name,
+        ));
+      }
+    }
+
+    return factoryMethods;
+  }
+
+  String _extractFactoryBody(ConstructorElement constructor) {
+    // Try to extract the factory body from source
+    try {
+      var source = constructor.source?.contents?.data;
+      if (source != null) {
+        // Find the factory method in source
+        var lines = source.split('\n');
+        var factoryName = constructor.name;
+        var className = constructor.enclosingElement.name;
+
+        // Look for the specific factory method
+        var factoryPattern = RegExp(r'factory\s+\$' +
+            className +
+            r'\.' +
+            factoryName +
+            r'\([^)]*\)\s*=>\s*(.+);');
+
+        for (var line in lines) {
+          var match = factoryPattern.firstMatch(line.trim());
+          if (match != null) {
+            var body = match.group(1) ?? '';
+            // Transform $ClassName to ClassName
+            body = body.replaceAll(RegExp(r'\$(\w+)'), r'\1');
+            return 'return ' + body + ';';
+          }
+        }
+      }
+    } catch (e) {
+      // Fall back to default if parsing fails
+    }
+
+    // Default implementation - use constructor parameters
+    var className = constructor.enclosingElement.name.replaceAll('\$', '');
+    var paramList =
+        constructor.parameters.map((p) => '${p.name}: ${p.name}').join(', ');
+    return 'return ${className}._(${paramList});';
   }
 }
