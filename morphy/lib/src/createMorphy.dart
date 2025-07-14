@@ -47,18 +47,33 @@ String createMorphy(
     // For concrete classes or non-sealed abstract classes ($-prefixed)
     // If factory methods exist, implement instead of extend
     if (factoryMethods.isNotEmpty) {
-      sb.write(" implements ${className}");
+      // Consolidate the main class and interfaces into single implements clause
+      var allImplements = <String>[className]; // Keep the original $ClassName
+      if (interfacesFromImplements.isNotEmpty) {
+        allImplements.addAll(interfacesFromImplements.map((e) {
+          var type = e.interfaceName.replaceAll("\$", "");
+          if (e.typeParams.isEmpty) {
+            return type;
+          }
+          return "${type}<${e.typeParams.map((e) => e.type).join(", ")}>";
+        }));
+      }
+      sb.write(" implements ${allImplements.join(', ')}");
     } else {
       sb.write(" extends ${className}");
+      if (interfacesFromImplements.isNotEmpty) {
+        sb.write(getImplements(interfacesFromImplements, className));
+      }
+    }
+  } else {
+    // For sealed abstract classes, only add implements for interfaces
+    if (interfacesFromImplements.isNotEmpty) {
+      sb.write(getImplements(interfacesFromImplements, className));
     }
   }
 
-  if (classGenerics.isNotEmpty) {
+  if (classGenerics.isNotEmpty && factoryMethods.isEmpty) {
     sb.write(getExtendsGenerics(classGenerics));
-  }
-
-  if (interfacesFromImplements.isNotEmpty) {
-    sb.write(getImplements(interfacesFromImplements, className));
   }
 
   sb.writeln(" {");

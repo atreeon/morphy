@@ -72,10 +72,8 @@ class MorphyGenerator<TValueT extends MorphyX>
 
         // Check if they're in the same library (includes part files)
         var isSameLibrary = sealedLibrary == implementationLibrary ||
-            implementationLibrary.parts
-                .any((part) => part.library == sealedLibrary) ||
-            sealedLibrary.parts
-                .any((part) => part.library == implementationLibrary);
+            implementationLibrary.definingCompilationUnit.library == sealedLibrary ||
+            sealedLibrary.definingCompilationUnit.library == implementationLibrary;
 
         if (!isSameLibrary) {
           throw Exception(
@@ -263,8 +261,8 @@ class MorphyGenerator<TValueT extends MorphyX>
       var targetLibrary = typeElement.library;
       if (targetLibrary != null &&
           targetLibrary != sourceLibrary &&
-          !sourceLibrary.libraryImports
-              .any((import) => import.importedLibrary == targetLibrary)) {
+          !sourceLibrary.importedLibraries
+              .any((library) => library == targetLibrary)) {
         var targetUri = targetLibrary.source.uri;
 
         String importUri;
@@ -381,38 +379,101 @@ $imports
   }
 
   String _extractFactoryBody(ConstructorElement constructor) {
-    // Try to extract the factory body from source
+    // Try to extract the factory body from source using simple pattern matching
     try {
       var source = constructor.source?.contents?.data;
       if (source != null) {
-        // Find the factory method in source
-        var lines = source.split('\n');
         var factoryName = constructor.name;
-        var className = constructor.enclosingElement.name;
+        var className = constructor.enclosingElement3.name.replaceAll('\$', '');
 
-        // Look for the specific factory method
-        var factoryPattern = RegExp(r'factory\s+\$' +
-            className +
-            r'\.' +
-            factoryName +
-            r'\([^)]*\)\s*=>\s*(.+);');
+        print('DEBUG: Extracting factory body for \$$className.$factoryName');
+        print('DEBUG: Source length: ${source.length}');
+        print('DEBUG: First 500 chars of source:');
+        print(source.substring(0, (source.length).clamp(0, 500)));
+        print('DEBUG: Last 500 chars of source:');
+        var startPos = (source.length - 500).clamp(0, source.length);
+        print(source.substring(startPos));
 
-        for (var line in lines) {
-          var match = factoryPattern.firstMatch(line.trim());
-          if (match != null) {
-            var body = match.group(1) ?? '';
+        // Create a more flexible pattern that handles multi-line factory methods
+        // First escape special regex characters in class and factory names
+        var escapedClassName = RegExp.escape(className);
+        var escapedFactoryName = RegExp.escape(factoryName);
+
+        // Find the start of the factory method
+        var factoryStartPattern = RegExp(
+          r'factory\s+\$' + escapedClassName + r'\.' + escapedFactoryName + r'\s*\([^)]*\)\s*=>\s*',
+          multiLine: true
+        );
+
+        var startMatch = factoryStartPattern.firstMatch(source);
+        if (startMatch != null) {
+          var startPos = startMatch.end;
+          var remainingSource = source.substring(startPos);
+
+          // Find the matching semicolon that ends the factory
+          var depth = 0;
+          var inString = false;
+          var stringChar = '';
+          var endPos = -1;
+
+          for (int i = 0; i < remainingSource.length; i++) {
+            var char = remainingSource[i];
+
+            if (!inString) {
+              if (char == '"' || char == "'") {
+                inString = true;
+                stringChar = char;
+              } else if (char == '(') {
+                depth++;
+              } else if (char == ')') {
+                depth--;
+              } else if (char == ';' && depth == 0) {
+                endPos = i;
+                break;
+              }
+            } else {
+              if (char == stringChar && (i == 0 || remainingSource[i-1] != r'\')) {
+                inString = false;
+              }
+            }
+          }
+
+          if (endPos != -1) {
+            var body = remainingSource.substring(0, endPos).trim();
+            print('DEBUG: Extracted factory body: $body');
+
             // Transform $ClassName to ClassName
             body = body.replaceAll(RegExp(r'\$(\w+)'), r'\1');
+            print('DEBUG: Final body: return $body;');
             return 'return ' + body + ';';
+          } else {
+            print('DEBUG: Could not find end of factory method');
+          }
+        } else {
+          print('DEBUG: No factory start pattern found');
+          // Debug: show what we're looking for vs what we have
+          print('DEBUG: Looking for pattern: factory\\s+\\\$${escapedClassName}\\.${escapedFactoryName}\\s*\\([^)]*\\)\\s*=>\\s*');
+          var lines = source.split('\n');
+          for (int i = 0; i < lines.length; i++) {
+            if (lines[i].contains('factory') && lines[i].contains(factoryName)) {
+              print('DEBUG: Found factory line ${i+1}: ${lines[i].trim()}');
+              if (i + 1 < lines.length) {
+                print('DEBUG: Next line ${i+2}: ${lines[i+1].trim()}');
+              }
+            }
           }
         }
+      } else {
+        print('DEBUG: No source data available');
       }
     } catch (e) {
+      print('DEBUG: Exception in factory extraction: $e');
       // Fall back to default if parsing fails
     }
 
+    print('DEBUG: Falling back to default implementation');
     // Default implementation - use constructor parameters
-    var className = constructor.enclosingElement.name.replaceAll('\$', '');
+    var className = constructor.enclosingElement3.name.replaceAll('\$', '');
     var paramList =
         constructor.parameters.map((p) => '${p.name}: ${p.name}').join(', ');
     return 'return ${className}._(${paramList});';

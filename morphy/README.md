@@ -265,13 +265,48 @@ We also allow multiple inheritance.
     expect(frankie is Cat, true);
     expect(frankie is Dog, true);
 
-### Custom Constructors
+### Factory Methods
 
-To allow custom constructors you can simply create a publicly accessible factory function that calls the constructor (ie just a method that calls the default constructor).
-If you'd like to hide the automatic constructor set the `hidePublicConstructor` on the Morphy annotation to true.
-If you do hide the default constructor,
-then in order for the custom factory function (A_FactoryFunction in the example below) to be able to call the hidden (or private) default constructor,
-your factory function should live in the same file you defined your class.
+You can define factory methods directly in your abstract class definition. This provides a clean, idiomatic way to create named constructors without manual factory functions.
+
+```dart
+@morphy
+abstract class $Person {
+  String? get firstName;
+  String? get lastName;
+  int? get age;
+
+  factory $Person.fromNames({
+    required String firstName,
+    required String lastName,
+  }) => Person._(firstName: firstName, lastName: lastName, age: null);
+
+  factory $Person.withAge(String firstName, String lastName, int age) =>
+      Person._(firstName: firstName, lastName: lastName, age: age);
+
+  factory $Person.empty() =>
+      Person._(firstName: null, lastName: null, age: null);
+}
+```
+
+This generates clean factory constructors in the concrete class:
+
+```dart
+var person1 = Person.fromNames(firstName: "John", lastName: "Doe");
+var person2 = Person.withAge("Jane", "Smith", 30);
+var person3 = Person.empty();
+```
+
+**Key Features:**
+- Factory methods are automatically transformed from `$Person.fromNames` to `Person.fromNames`
+- Parameters and body are preserved and transformed appropriately
+- Full type safety and IntelliSense support
+- Works with inheritance and polymorphism
+- No manual boilerplate required
+
+### Custom Constructors (Legacy Approach)
+
+You can also use the legacy approach with factory functions. To hide the automatic constructor set the `hidePublicConstructor` on the Morphy annotation to true.
 
     @Morphy(hidePublicConstructor: true)
     abstract class $A {
@@ -346,6 +381,75 @@ If we start our property with an underscore then we make the getter private but 
 
        expect(cat.age(), 21);
        expect(dog.age(), 15);
+
+### Patch System
+
+Morphy generates a powerful patch system for each class that allows for flexible object manipulation and change tracking.
+
+#### Basic Patch Usage
+
+Every generated class comes with a corresponding `Patch` class:
+
+```dart
+@morphy
+abstract class $User {
+  String get name;
+  int get age;
+  String? get email;
+}
+
+// Generated patch class: UserPatch
+var patch = UserPatch()
+  ..withName("John")
+  ..withAge(25);
+
+var user = User(name: "Jane", age: 20, email: null);
+var updatedUser = patch.applyTo(user);
+// Result: User(name: "John", age: 25, email: null)
+```
+
+#### Patch Features
+
+**1. Create patches from differences:**
+```dart
+var user1 = User(name: "John", age: 25, email: "john@example.com");
+var user2 = User(name: "John", age: 30, email: "john@newdomain.com");
+
+var diff = user1.compareToUser(user2);
+// diff contains only the changed fields
+```
+
+**2. Create patches from maps:**
+```dart
+var patch = UserPatch.create({
+  'name': 'Alice',
+  'age': 28
+});
+```
+
+**3. JSON serialization:**
+```dart
+var patch = UserPatch()..withName("Bob")..withAge(35);
+var json = patch.toJson(); // {'name': 'Bob', 'age': 35}
+var restored = UserPatch.fromJson(json);
+```
+
+**4. Chain patches:**
+```dart
+var user = User(name: "Start", age: 20, email: null);
+var result = user
+  .copyWithUser(name: () => "Middle")
+  .copyWithUser(age: () => 25)
+  .copyWithUser(email: () => "final@example.com");
+```
+
+#### Use Cases
+
+- **State Management**: Track and apply incremental changes
+- **API Updates**: Send only changed fields to backend
+- **Undo/Redo**: Store patches for reversible operations
+- **Form Handling**: Apply form changes without rebuilding entire objects
+- **Change Tracking**: Compare object states and generate diffs
 
 ### Other
 
