@@ -48,13 +48,6 @@ abstract class $$Animal {
   int get lifespan;
 }
 
-// Test non-sealed abstract classes
-@Morphy(nonSealed: true)
-abstract class $$Vehicle {
-  String get type;
-  int get wheels;
-}
-
 // Test inheritance with factory methods
 @morphy
 abstract class $Dog implements $$Animal {
