@@ -98,6 +98,76 @@ A default toString implementation is also included.
     expect(flossy.toString(), "(Pet-name:Flossy|age:5)");
 ```
 
+### Factory Methods
+
+Morphy supports factory methods with custom implementation logic. Define factory methods in your abstract class and Morphy will generate them in the concrete class.
+
+```dart
+@morphy
+abstract class $User {
+  String get name;
+  int get age;
+  String? get email;
+
+  factory $User.create(String name, int age) =>
+      User._(name: name, age: age, email: null);
+
+  factory $User.withEmail(String name, int age, String email) =>
+      User._(name: name, age: age, email: email);
+}
+
+// Usage:
+var user1 = User.create("John", 30);
+var user2 = User.withEmail("Jane", 25, "jane@example.com");
+```
+
+#### Factory Methods with Complex Logic
+
+Factory methods can contain complex initialization logic:
+
+```dart
+@morphy
+abstract class $Animal {
+  String get species;
+  int get age;
+}
+
+@morphy
+abstract class $Dog implements $Animal {
+  String get breed;
+
+  factory $Dog.puppy(String breed) =>
+      Dog._(species: "Canis lupus", age: 0, breed: breed);
+
+  factory $Dog.rescue(String breed, int age) =>
+      Dog._(species: "Canis lupus", age: age, breed: breed);
+}
+
+var puppy = Dog.puppy("Golden Retriever");
+var rescue = Dog.rescue("Mixed", 3);
+```
+
+#### Hidden Constructors
+
+Combine factory methods with `hidePublicConstructor: true` to only allow creation through factory methods:
+
+```dart
+@Morphy(hidePublicConstructor: true)
+abstract class $SecureUser {
+  String get username;
+  String get hashedPassword;
+
+  factory $SecureUser.create(String username, String rawPassword) =>
+      SecureUser._(username: username, hashedPassword: _hash(rawPassword));
+}
+
+String _hash(String input) => "hashed_$input";
+
+// Only factory method is available:
+var user = SecureUser.create("john", "password123");
+// var user = SecureUser(...); // This would be an error!
+```
+
 ### Inheritance
 
 You can inherit one morphy class from another - use the implements keyword and the class definition name (the one with the dollar).

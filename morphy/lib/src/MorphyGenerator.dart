@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/src/builder/build_step.dart';
@@ -8,11 +9,11 @@ import 'package:morphy/src/common/NameType.dart';
 import 'package:morphy/src/common/classes.dart';
 import 'package:morphy/src/common/helpers.dart';
 import 'package:morphy/src/createMorphy.dart';
-import 'package:morphy/src/helpers.dart';
 import 'package:morphy/src/factory_method.dart';
+import 'package:morphy/src/helpers.dart';
 import 'package:morphy_annotation/morphy_annotation.dart';
-import 'package:source_gen/source_gen.dart';
 import 'package:path/path.dart' as p;
+import 'package:source_gen/source_gen.dart';
 
 class MorphyGenerator<TValueT extends MorphyX>
     extends GeneratorForAnnotationX<TValueT> {
@@ -71,14 +72,18 @@ class MorphyGenerator<TValueT extends MorphyX>
         var implementationLibrary = element.library;
 
         // Check if they're in the same library (includes part files)
-        var isSameLibrary = sealedLibrary == implementationLibrary ||
-            implementationLibrary.definingCompilationUnit.library == sealedLibrary ||
-            sealedLibrary.definingCompilationUnit.library == implementationLibrary;
+        var isSameLibrary =
+            sealedLibrary == implementationLibrary ||
+            implementationLibrary.definingCompilationUnit.library ==
+                sealedLibrary ||
+            sealedLibrary.definingCompilationUnit.library ==
+                implementationLibrary;
 
         if (!isSameLibrary) {
           throw Exception(
-              'Class ${element.name} must be in the same library as its sealed superclass ${interfaceName}. ' +
-                  'Either move it to the same library or use "part of" directive.');
+            'Class ${element.name} must be in the same library as its sealed superclass ${interfaceName}. ' +
+                'Either move it to the same library or use "part of" directive.',
+          );
         }
       }
     }
@@ -136,7 +141,10 @@ class MorphyGenerator<TValueT extends MorphyX>
     var classGenerics = element.typeParameters.map((e) {
       final bound = e.bound;
       return NameTypeClassComment(
-          e.name, bound == null ? null : typeToString(bound), null);
+        e.name,
+        bound == null ? null : typeToString(bound),
+        null,
+      );
     }).toList();
 
     var typesExplicit = <Interface>[];
@@ -155,9 +163,9 @@ class MorphyGenerator<TValueT extends MorphyX>
             final bound = x.bound;
             return NameType(x.name, bound == null ? null : typeToString(bound));
           }).toList(),
-          getAllFieldsIncludingSubtypes(el)
-              .where((x) => x.name != "hashCode")
-              .toList(),
+          getAllFieldsIncludingSubtypes(
+            el,
+          ).where((x) => x.name != "hashCode").toList(),
           true,
         );
       }).toList();
@@ -165,44 +173,51 @@ class MorphyGenerator<TValueT extends MorphyX>
 
     // Process all interfaces including the inheritance chain
     var allValueTInterfaces = allInterfaces
-        .map((e) => Interface.fromGenerics(
-              e.element.name,
-              e.element.typeParameters.map((TypeParameterElement x) {
-                final bound = x.bound;
-                return NameType(
-                    x.name, bound == null ? null : typeToString(bound));
-              }).toList(),
-              getAllFieldsIncludingSubtypes(e.element as ClassElement)
-                  .where((x) => x.name != "hashCode")
-                  .toList(),
-            ))
+        .map(
+          (e) => Interface.fromGenerics(
+            e.element.name,
+            e.element.typeParameters.map((TypeParameterElement x) {
+              final bound = x.bound;
+              return NameType(
+                x.name,
+                bound == null ? null : typeToString(bound),
+              );
+            }).toList(),
+            getAllFieldsIncludingSubtypes(
+              e.element as ClassElement,
+            ).where((x) => x.name != "hashCode").toList(),
+          ),
+        )
         .union(typesExplicit)
         .distinctBy((element) => element.interfaceName)
         .toList();
 
-    sb.writeln(createMorphy(
-      isAbstract,
-      allFieldsDistinct,
-      element.name,
-      docComment ?? "",
-      interfaces,
-      allValueTInterfaces,
-      classGenerics,
-      hasConstConstructor,
-      annotation.read('generateJson').boolValue,
-      annotation.read('hidePublicConstructor').boolValue,
-      typesExplicit,
-      nonSealed,
-      annotation.read('explicitToJson').boolValue,
-      annotation.read('generateCompareTo').boolValue,
-      factoryMethods,
-    ));
+    sb.writeln(
+      createMorphy(
+        isAbstract,
+        allFieldsDistinct,
+        element.name,
+        docComment ?? "",
+        interfaces,
+        allValueTInterfaces,
+        classGenerics,
+        hasConstConstructor,
+        annotation.read('generateJson').boolValue,
+        annotation.read('hidePublicConstructor').boolValue,
+        typesExplicit,
+        nonSealed,
+        annotation.read('explicitToJson').boolValue,
+        annotation.read('generateCompareTo').boolValue,
+        factoryMethods,
+      ),
+    );
 
     return sb.toString();
   }
 
   List<NameTypeClassComment> getAllFieldsIncludingSubtypes(
-      ClassElement element) {
+    ClassElement element,
+  ) {
     var fields = <NameTypeClassComment>[];
     var processedTypes = <String>{};
 
@@ -210,8 +225,12 @@ class MorphyGenerator<TValueT extends MorphyX>
       if (processedTypes.contains(element.name)) return;
       processedTypes.add(element.name);
 
-      fields.addAll(getAllFields(element.allSupertypes, element)
-          .where((x) => x.name != "hashCode"));
+      fields.addAll(
+        getAllFields(
+          element.allSupertypes,
+          element,
+        ).where((x) => x.name != "hashCode"),
+      );
 
       // Process interfaces
       for (var interface in element.interfaces) {
@@ -259,10 +278,10 @@ class MorphyGenerator<TValueT extends MorphyX>
 
     for (var typeElement in requiredTypes) {
       var targetLibrary = typeElement.library;
-      if (targetLibrary != null &&
-          targetLibrary != sourceLibrary &&
-          !sourceLibrary.importedLibraries
-              .any((library) => library == targetLibrary)) {
+      if (targetLibrary != sourceLibrary &&
+          !sourceLibrary.importedLibraries.any(
+            (library) => library == targetLibrary,
+          )) {
         var targetUri = targetLibrary.source.uri;
 
         String importUri;
@@ -272,11 +291,14 @@ class MorphyGenerator<TValueT extends MorphyX>
               targetUri.toString().startsWith(packagePrefix)) {
             // Both URIs are in the same package, compute relative path
             var sourcePath = sourceUri.path.substring(
-                packageName.length + 1); // Remove 'package:' and package name
+              packageName.length + 1,
+            ); // Remove 'package:' and package name
             var targetPath = targetUri.path.substring(packageName.length + 1);
 
-            var relativePath =
-                p.relative(targetPath, from: p.dirname(sourcePath));
+            var relativePath = p.relative(
+              targetPath,
+              from: p.dirname(sourcePath),
+            );
             // Ensure the relative path uses forward slashes
             importUri = relativePath.replaceAll('\\', '/');
           } else {
@@ -289,8 +311,10 @@ class MorphyGenerator<TValueT extends MorphyX>
           var sourcePath = sourceUri.toFilePath();
           var targetPath = targetUri.toFilePath();
 
-          var relativePath =
-              p.relative(targetPath, from: p.dirname(sourcePath));
+          var relativePath = p.relative(
+            targetPath,
+            from: p.dirname(sourcePath),
+          );
           // Ensure the relative path uses forward slashes
           importUri = relativePath.replaceAll('\\', '/');
         } else {
@@ -303,8 +327,9 @@ class MorphyGenerator<TValueT extends MorphyX>
     }
 
     if (missingImports.isNotEmpty) {
-      var imports =
-          missingImports.map((importUri) => "import '$importUri';").join('\n');
+      var imports = missingImports
+          .map((importUri) => "import '$importUri';")
+          .join('\n');
       throw Exception('''
   Missing required imports in ${sourceLibrary.source.uri}:
 $imports
@@ -353,9 +378,48 @@ $imports
       if (constructor.isFactory && constructor.name.isNotEmpty) {
         var methodName = constructor.name;
         var parameters = constructor.parameters.map((param) {
+          var paramType = param.type.toString();
+
+          // Debug: Print the type resolution for TreeNode
+          if (element.name.contains('TreeNode')) {
+            print(
+              'TreeNode factory parameter: ${param.name} has type: $paramType',
+            );
+            print('Type element: ${param.type.element}');
+            print('Type display name: ${param.type.element?.displayName}');
+          }
+
+          // Handle self-referencing types
+          if (paramType.contains('InvalidType') || paramType == 'dynamic') {
+            // Check if this is a self-reference to the current class
+            var className = element.name.replaceAll('\$', '');
+            if (param.type.element?.displayName == element.name ||
+                param.type.element?.displayName == className) {
+              paramType = className;
+            } else {
+              // Try to resolve from the parameter's source
+              var source = param.source?.contents.data;
+              if (source != null) {
+                var paramIndex = constructor.parameters.indexOf(param);
+                var constructorSource = constructor.source.contents.data;
+                // Extract the parameter type from source
+                var paramPattern = RegExp(
+                  r'(\w+(?:<[^>]+>)?)\s+' + RegExp.escape(param.name),
+                );
+                var match = paramPattern.firstMatch(constructorSource);
+                if (match != null) {
+                  var sourceType = match.group(1)!;
+                  if (sourceType.contains(className)) {
+                    paramType = sourceType.replaceAll('\$', '');
+                  }
+                }
+              }
+            }
+          }
+
           return FactoryParameterInfo(
             name: param.name,
-            type: param.type.toString(),
+            type: paramType,
             isRequired: param.isRequiredNamed || param.isRequiredPositional,
             isNamed: param.isNamed,
             hasDefaultValue: param.hasDefaultValue,
@@ -366,12 +430,14 @@ $imports
         // Get the constructor body if available (for simple factory constructors)
         var bodyCode = _extractFactoryBody(constructor);
 
-        factoryMethods.add(FactoryMethodInfo(
-          name: methodName,
-          parameters: parameters,
-          bodyCode: bodyCode,
-          className: element.name,
-        ));
+        factoryMethods.add(
+          FactoryMethodInfo(
+            name: methodName,
+            parameters: parameters,
+            bodyCode: bodyCode,
+            className: element.name,
+          ),
+        );
       }
     }
 
@@ -381,101 +447,75 @@ $imports
   String _extractFactoryBody(ConstructorElement constructor) {
     // Try to extract the factory body from source using simple pattern matching
     try {
-      var source = constructor.source?.contents?.data;
-      if (source != null) {
-        var factoryName = constructor.name;
-        var className = constructor.enclosingElement3.name.replaceAll('\$', '');
+      var source = constructor.source.contents.data;
+      var factoryName = constructor.name;
+      var className = constructor.enclosingElement3.name.replaceAll('\$', '');
 
-        print('DEBUG: Extracting factory body for \$$className.$factoryName');
-        print('DEBUG: Source length: ${source.length}');
-        print('DEBUG: First 500 chars of source:');
-        print(source.substring(0, (source.length).clamp(0, 500)));
-        print('DEBUG: Last 500 chars of source:');
-        var startPos = (source.length - 500).clamp(0, source.length);
-        print(source.substring(startPos));
+      // Create a more flexible pattern that handles multi-line factory methods
+      // First escape special regex characters in class and factory names
+      var escapedClassName = RegExp.escape(className);
+      var escapedFactoryName = RegExp.escape(factoryName);
 
-        // Create a more flexible pattern that handles multi-line factory methods
-        // First escape special regex characters in class and factory names
-        var escapedClassName = RegExp.escape(className);
-        var escapedFactoryName = RegExp.escape(factoryName);
+      // Find the start of the factory method
+      var factoryStartPattern = RegExp(
+        r'factory\s+\$' +
+            escapedClassName +
+            r'\.' +
+            escapedFactoryName +
+            r'\s*\([^)]*\)\s*=>\s*',
+        multiLine: true,
+      );
 
-        // Find the start of the factory method
-        var factoryStartPattern = RegExp(
-          r'factory\s+\$' + escapedClassName + r'\.' + escapedFactoryName + r'\s*\([^)]*\)\s*=>\s*',
-          multiLine: true
-        );
+      var startMatch = factoryStartPattern.firstMatch(source);
+      if (startMatch != null) {
+        var startPos = startMatch.end;
+        var remainingSource = source.substring(startPos);
 
-        var startMatch = factoryStartPattern.firstMatch(source);
-        if (startMatch != null) {
-          var startPos = startMatch.end;
-          var remainingSource = source.substring(startPos);
+        // Find the matching semicolon that ends the factory
+        var depth = 0;
+        var inString = false;
+        var stringChar = '';
+        var endPos = -1;
 
-          // Find the matching semicolon that ends the factory
-          var depth = 0;
-          var inString = false;
-          var stringChar = '';
-          var endPos = -1;
+        for (int i = 0; i < remainingSource.length; i++) {
+          var char = remainingSource[i];
 
-          for (int i = 0; i < remainingSource.length; i++) {
-            var char = remainingSource[i];
-
-            if (!inString) {
-              if (char == '"' || char == "'") {
-                inString = true;
-                stringChar = char;
-              } else if (char == '(') {
-                depth++;
-              } else if (char == ')') {
-                depth--;
-              } else if (char == ';' && depth == 0) {
-                endPos = i;
-                break;
-              }
-            } else {
-              if (char == stringChar && (i == 0 || remainingSource[i-1] != r'\')) {
-                inString = false;
-              }
+          if (!inString) {
+            if (char == '"' || char == "'") {
+              inString = true;
+              stringChar = char;
+            } else if (char == '(') {
+              depth++;
+            } else if (char == ')') {
+              depth--;
+            } else if (char == ';' && depth == 0) {
+              endPos = i;
+              break;
             }
-          }
-
-          if (endPos != -1) {
-            var body = remainingSource.substring(0, endPos).trim();
-            print('DEBUG: Extracted factory body: $body');
-
-            // Transform $ClassName to ClassName
-            body = body.replaceAll(RegExp(r'\$(\w+)'), r'\1');
-            print('DEBUG: Final body: return $body;');
-            return 'return ' + body + ';';
           } else {
-            print('DEBUG: Could not find end of factory method');
-          }
-        } else {
-          print('DEBUG: No factory start pattern found');
-          // Debug: show what we're looking for vs what we have
-          print('DEBUG: Looking for pattern: factory\\s+\\\$${escapedClassName}\\.${escapedFactoryName}\\s*\\([^)]*\\)\\s*=>\\s*');
-          var lines = source.split('\n');
-          for (int i = 0; i < lines.length; i++) {
-            if (lines[i].contains('factory') && lines[i].contains(factoryName)) {
-              print('DEBUG: Found factory line ${i+1}: ${lines[i].trim()}');
-              if (i + 1 < lines.length) {
-                print('DEBUG: Next line ${i+2}: ${lines[i+1].trim()}');
-              }
+            if (char == stringChar &&
+                (i == 0 || remainingSource[i - 1] != r'\')) {
+              inString = false;
             }
           }
         }
-      } else {
-        print('DEBUG: No source data available');
+
+        if (endPos != -1) {
+          var body = remainingSource.substring(0, endPos).trim();
+
+          // Transform $ClassName to ClassName
+          body = body.replaceAll(RegExp(r'\$(\w+)'), r'\1');
+          return 'return ' + body + ';';
+        }
       }
     } catch (e) {
-      print('DEBUG: Exception in factory extraction: $e');
       // Fall back to default if parsing fails
     }
-
-    print('DEBUG: Falling back to default implementation');
     // Default implementation - use constructor parameters
     var className = constructor.enclosingElement3.name.replaceAll('\$', '');
-    var paramList =
-        constructor.parameters.map((p) => '${p.name}: ${p.name}').join(', ');
+    var paramList = constructor.parameters
+        .map((p) => '${p.name}: ${p.name}')
+        .join(', ');
     return 'return ${className}._(${paramList});';
   }
 }

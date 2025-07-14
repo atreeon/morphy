@@ -7,14 +7,14 @@ part of 'ex8_enums_test.dart';
 // **************************************************************************
 
 Pet _$PetFromJson(Map<String, dynamic> json) => Pet(
-      type: json['type'] as String,
-      blim: $enumDecode(_$eBlimEnumMap, json['blim']),
-    );
+  type: json['type'] as String,
+  blim: $enumDecode(_$eBlimEnumMap, json['blim']),
+);
 
 Map<String, dynamic> _$PetToJson(Pet instance) => <String, dynamic>{
-      'type': instance.type,
-      'blim': _$eBlimEnumMap[instance.blim]!,
-    };
+  'type': instance.type,
+  'blim': _$eBlimEnumMap[instance.blim]!,
+};
 
 const _$eBlimEnumMap = {
   eBlim.one: 'one',
