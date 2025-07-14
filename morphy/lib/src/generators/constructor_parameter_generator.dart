@@ -57,7 +57,7 @@ class ConstructorParameterGenerator {
         )) {
           final patchType = MethodGeneratorCommons.getPatchType(baseType);
           return '''$name: (_patchMap[$targetClassName\$.$name] is $patchType)
-            ? (this.$name?.copyWith$baseType(
+            ? (this.$name?.patchWith$baseType(
                 patchInput: _patchMap[$targetClassName\$.$name]
               ) ?? (() {
                 try {
@@ -115,7 +115,7 @@ class ConstructorParameterGenerator {
         )) {
           final patchType = MethodGeneratorCommons.getPatchType(baseType);
           return '''$name: (_patchMap[$targetClassName\$.$name] is $patchType)
-            ? (this.$name?.copyWith$baseType(
+            ? (this.$name?.patchWith$baseType(
                 patchInput: _patchMap[$targetClassName\$.$name]
               ) ?? (() {
                 try {

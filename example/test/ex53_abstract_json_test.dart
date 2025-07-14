@@ -11,7 +11,7 @@ part 'ex53_abstract_json_test.morphy.dart';
   generateJson: true,
   explicitSubTypes: [$Todo2_complete, $Todo2_incomplete],
 )
-abstract class $$Todo2 {
+abstract class $Todo2 {
   String get title;
 
   String? get id;
@@ -20,10 +20,10 @@ abstract class $$Todo2 {
 }
 
 @Morphy(generateJson: true)
-abstract class $Todo2_incomplete implements $$Todo2 {}
+abstract class $Todo2_incomplete implements $Todo2 {}
 
 @Morphy(generateJson: true)
-abstract class $Todo2_complete implements $$Todo2 {
+abstract class $Todo2_complete implements $Todo2 {
   DateTime get completedDate;
 }
 

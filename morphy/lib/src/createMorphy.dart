@@ -61,7 +61,15 @@ String createMorphy(
     // If factory methods exist, implement instead of extend
     if (factoryMethods.isNotEmpty) {
       // Consolidate the main class and interfaces into single implements clause
-      var allImplements = <String>[className]; // Keep the original $ClassName
+      var mainClassName = className;
+      if (classGenerics.isNotEmpty) {
+        // For implements clause, use generic type parameters without bounds
+        var typeParams = classGenerics.map((g) => g.name).join(', ');
+        mainClassName += '<$typeParams>';
+      }
+      var allImplements = <String>[
+        mainClassName,
+      ]; // Keep the original $ClassName with generics
       if (interfacesFromImplements.isNotEmpty) {
         allImplements.addAll(
           interfacesFromImplements.map((e) {

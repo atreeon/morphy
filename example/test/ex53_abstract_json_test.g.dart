@@ -6,6 +6,18 @@ part of 'ex53_abstract_json_test.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Todo2 _$Todo2FromJson(Map<String, dynamic> json) => Todo2(
+  title: json['title'] as String,
+  id: json['id'] as String?,
+  description: json['description'] as String,
+);
+
+Map<String, dynamic> _$Todo2ToJson(Todo2 instance) => <String, dynamic>{
+  'title': instance.title,
+  'id': instance.id,
+  'description': instance.description,
+};
+
 Todo2_incomplete _$Todo2_incompleteFromJson(Map<String, dynamic> json) =>
     Todo2_incomplete(
       title: json['title'] as String,
