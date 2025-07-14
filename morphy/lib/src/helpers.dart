@@ -224,16 +224,11 @@ String getPatchClass(
   if (fields.isEmpty) {
     // Generate a minimal patch class for classes with no fields
     String classNameTrimmed = '${className.replaceAll("\$", "")}';
-    String enumName = '${classNameTrimmed}\$';
     var sb = StringBuffer();
-
-    sb.writeln("enum $enumName { }");
-    sb.writeln();
 
     sb.writeln(
       "class ${classNameTrimmed}Patch implements Patch<$classNameTrimmed> {",
     );
-    sb.writeln("  final Map<$enumName, dynamic> _patch = {};");
     sb.writeln();
 
     sb.writeln(
@@ -244,13 +239,13 @@ String getPatchClass(
     sb.writeln();
 
     sb.writeln(
-      "  static ${classNameTrimmed}Patch fromPatch(Map<${classNameTrimmed}\$, dynamic> patch) {",
+      "  static ${classNameTrimmed}Patch fromPatch(Map<String, dynamic> patch) {",
     );
     sb.writeln("    return ${classNameTrimmed}Patch();");
     sb.writeln("  }");
     sb.writeln();
 
-    sb.writeln("  Map<$enumName, dynamic> toPatch() => Map.from(_patch);");
+    sb.writeln("  Map<String, dynamic> toPatch() => {};");
     sb.writeln();
 
     sb.writeln("  $classNameTrimmed applyTo($classNameTrimmed entity) {");
