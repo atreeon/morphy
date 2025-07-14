@@ -20,6 +20,7 @@ class MethodGenerator {
     required List<NameType> interfaceGenerics,
     bool generateCopyWithFn = false,
     List<String> knownClasses = const [],
+    List<NameType> classGenerics = const [],
   }) {
     final methods = <String>[];
 
@@ -33,6 +34,7 @@ class MethodGenerator {
       interfaceGenerics: interfaceGenerics,
       generateCopyWithFn: generateCopyWithFn,
       knownClasses: knownClasses,
+      classGenerics: classGenerics,
     );
 
     if (copyWithMethods.isNotEmpty) {
@@ -49,6 +51,7 @@ class MethodGenerator {
       interfaceGenerics: interfaceGenerics,
       generatePatchWithFn: generateCopyWithFn, // Use same flag for consistency
       knownClasses: knownClasses,
+      classGenerics: classGenerics,
     );
 
     if (patchWithMethods.isNotEmpty) {
@@ -68,6 +71,7 @@ class MethodGenerator {
     List<NameType> interfaceGenerics = const [],
     List<String> knownClasses = const [],
     bool isInterfaceSealed = false,
+    List<NameType> classGenerics = const [],
   }) {
     return MethodGeneratorFacade.generateChangeToMethods(
       classFields: classFields,
@@ -78,6 +82,7 @@ class MethodGenerator {
       interfaceGenerics: interfaceGenerics,
       knownClasses: knownClasses,
       isInterfaceSealed: isInterfaceSealed,
+      classGenerics: classGenerics,
     );
   }
 
@@ -109,6 +114,7 @@ class MethodGenerator {
     bool generateCopyWithFn = false,
     List<String> knownClasses = const [],
     bool isInterfaceSealed = false,
+    List<NameType> classGenerics = const [],
   }) {
     return MethodGeneratorFacade.generateAllMethods(
       classFields: classFields,
@@ -122,6 +128,7 @@ class MethodGenerator {
       generateChangeToFn: generateCopyWithFn,
       knownClasses: knownClasses,
       isInterfaceSealed: isInterfaceSealed,
+      classGenerics: classGenerics,
     );
   }
 
@@ -135,6 +142,7 @@ class MethodGenerator {
     bool generateCopyWithFn = false,
     List<String> knownClasses = const [],
     Map<String, bool> interfaceSealedMap = const {},
+    List<NameType> classGenerics = const [],
   }) {
     return MethodGeneratorFacade.generateMultipleInterfaceMethods(
       classFields: classFields,
@@ -146,6 +154,7 @@ class MethodGenerator {
       generatePatchWithFn: generateCopyWithFn,
       knownClasses: knownClasses,
       interfaceSealedMap: interfaceSealedMap,
+      classGenerics: classGenerics,
     );
   }
 

@@ -15,11 +15,18 @@ class ChangeToMethodGenerator {
     List<NameType> interfaceGenerics = const [],
     List<String> knownClasses = const [],
     bool isInterfaceSealed = false,
+    List<NameType> classGenerics = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName) || isInterfaceSealed) return '';
 
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final parameters = ParameterGenerator.generateChangeToParameters(
       interfaceFields,
@@ -111,8 +118,9 @@ class ChangeToMethodGenerator {
     required Map<String, List<NameType>> interfaceGenericsMap,
     required String className,
     required bool isClassAbstract,
-    required Map<String, bool> interfaceSealedMap,
     List<String> knownClasses = const [],
+    Map<String, bool> interfaceSealedMap = const {},
+    List<NameType> classGenerics = const [],
   }) {
     final methods = <String>[];
 
@@ -130,6 +138,7 @@ class ChangeToMethodGenerator {
         interfaceGenerics: interfaceGenerics,
         knownClasses: knownClasses,
         isInterfaceSealed: isInterfaceSealed,
+        classGenerics: classGenerics,
       );
 
       if (method.isNotEmpty) {

@@ -171,11 +171,12 @@ String createMorphy(
     sb.writeln('\n');
   }
   //
+
   var interfacesX = [
     ...interfacesAllInclSubInterfaces,
     Interface.fromGenerics(
       className,
-      classGenerics.map((e) => NameType(e.name, e.type)).toList(),
+      classGenerics.map((e) => NameType(e.name, e.type ?? e.name)).toList(),
       allFields,
     ),
   ];
@@ -188,7 +189,7 @@ String createMorphy(
     classNameTrimmed,
   ].toSet().toList();
 
-  if (!isAbstract) {
+  if (!isAbstract || (isAbstract && nonSealed)) {
     interfacesX.where((element) => !element.isExplicitSubType).forEach((x) {
       sb.writeln(
         MethodGenerator.generateCopyWithMethods(
@@ -200,6 +201,9 @@ String createMorphy(
           interfaceGenerics: x.typeParams,
           generateCopyWithFn: generateCopyWithFn,
           knownClasses: knownClasses,
+          classGenerics: classGenerics
+              .map((e) => NameType(e.name, e.type))
+              .toList(),
         ),
       );
       // Generate changeTo methods for inherited interfaces (upward conversion: child to parent)
@@ -214,6 +218,9 @@ String createMorphy(
             interfaceGenerics: x.typeParams,
             knownClasses: knownClasses,
             isInterfaceSealed: x.isSealed,
+            classGenerics: classGenerics
+                .map((e) => NameType(e.name, e.type))
+                .toList(),
           ),
         );
       }
@@ -232,7 +239,9 @@ String createMorphy(
     sb.writeln(generateToJsonLean(className));
   }
   sb.writeln("}");
-  if (!isAbstract && !className.startsWith('\$\$') && generateCompareTo) {
+  if ((!isAbstract || (isAbstract && nonSealed)) &&
+      !className.startsWith('\$\$') &&
+      generateCompareTo) {
     // Create a list of all known classes from the interfaces
 
     sb.writeln(
@@ -264,6 +273,9 @@ String createMorphy(
           interfaceGenerics: x.typeParams,
           knownClasses: knownClasses,
           isInterfaceSealed: x.isSealed,
+          classGenerics: classGenerics
+              .map((e) => NameType(e.name, e.type))
+              .toList(),
         ),
       );
     });

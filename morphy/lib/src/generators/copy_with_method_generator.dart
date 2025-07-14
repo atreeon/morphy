@@ -13,13 +13,20 @@ class CopyWithMethodGenerator {
     required String className,
     required bool isClassAbstract,
     required List<NameType> interfaceGenerics,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       interfaceFields,
@@ -47,7 +54,10 @@ class CopyWithMethodGenerator {
     List<String> knownClasses = const [],
   }) {
     final cleanClassName = NameCleaner.clean(className);
-    final typeParams = TypeResolver.generateTypeParams(classGenerics, isAbstractInterface: true);
+    final typeParams = TypeResolver.generateTypeParams(
+      classGenerics,
+      isAbstractInterface: true,
+    );
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       classFields,
@@ -84,6 +94,7 @@ class CopyWithMethodGenerator {
     required Map<String, List<NameType>> interfaceGenericsMap,
     required String className,
     required bool isClassAbstract,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     final methods = <String>[];
@@ -99,6 +110,7 @@ class CopyWithMethodGenerator {
         className: className,
         isClassAbstract: isClassAbstract,
         interfaceGenerics: interfaceGenerics,
+        classGenerics: classGenerics,
         knownClasses: knownClasses,
       );
 
@@ -117,13 +129,20 @@ class CopyWithMethodGenerator {
     required String interfaceName,
     required String className,
     required List<NameType> interfaceGenerics,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final parameters = ParameterGenerator.generateFunctionParameters(
       interfaceFields,

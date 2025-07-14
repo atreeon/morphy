@@ -13,13 +13,20 @@ class PatchWithMethodGenerator {
     required String className,
     required bool isClassAbstract,
     required List<NameType> interfaceGenerics,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final constructorParams =
         ConstructorParameterGenerator.generatePatchWithConstructorParams(
@@ -48,7 +55,10 @@ class PatchWithMethodGenerator {
     List<String> knownClasses = const [],
   }) {
     final cleanClassName = NameCleaner.clean(className);
-    final typeParams = TypeResolver.generateTypeParams(classGenerics, isAbstractInterface: true);
+    final typeParams = TypeResolver.generateTypeParams(
+      classGenerics,
+      isAbstractInterface: true,
+    );
 
     final constructorParams = _generateSimpleClassPatchConstructorParams(
       classFields,
@@ -85,6 +95,7 @@ class PatchWithMethodGenerator {
     required Map<String, List<NameType>> interfaceGenericsMap,
     required String className,
     required bool isClassAbstract,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     final methods = <String>[];
@@ -100,6 +111,7 @@ class PatchWithMethodGenerator {
         className: className,
         isClassAbstract: isClassAbstract,
         interfaceGenerics: interfaceGenerics,
+        classGenerics: classGenerics,
         knownClasses: knownClasses,
       );
 
@@ -118,13 +130,20 @@ class PatchWithMethodGenerator {
     required String interfaceName,
     required String className,
     required List<NameType> interfaceGenerics,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       interfaceFields,
@@ -164,13 +183,20 @@ class PatchWithMethodGenerator {
     required String interfaceName,
     required String className,
     required List<NameType> interfaceGenerics,
+    List<NameType> classGenerics = const [],
     List<String> knownClasses = const [],
   }) {
     if (NameCleaner.isAbstract(interfaceName)) return '';
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
+    // Use class generics for type parameters when class is generic
+    final typeParams = classGenerics.isNotEmpty
+        ? TypeResolver.generateTypeParams(
+            classGenerics,
+            isAbstractInterface: true,
+          )
+        : '';
 
     final parameters = ParameterGenerator.generateFunctionParameters(
       interfaceFields,
@@ -208,7 +234,10 @@ class PatchWithMethodGenerator {
     required List<NameType> interfaceGenerics,
   }) {
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(
+      interfaceGenerics,
+      isAbstractInterface: true,
+    );
 
     return '''
       $cleanInterfaceName$typeParams patchWith$cleanInterfaceName({

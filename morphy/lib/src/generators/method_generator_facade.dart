@@ -18,6 +18,7 @@ class MethodGeneratorFacade {
     required List<NameType> interfaceGenerics,
     bool generateCopyWithFn = false,
     List<String> knownClasses = const [],
+    List<NameType> classGenerics = const [],
   }) {
     final methods = <String>[];
 
@@ -29,6 +30,7 @@ class MethodGeneratorFacade {
       className: className,
       isClassAbstract: isClassAbstract,
       interfaceGenerics: interfaceGenerics,
+      classGenerics: classGenerics,
       knownClasses: knownClasses,
     );
 
@@ -38,18 +40,19 @@ class MethodGeneratorFacade {
 
     // Generate function-based copyWith method if requested
     if (generateCopyWithFn) {
-      final copyWithFnMethod =
+      final functionMethod =
           CopyWithMethodGenerator.generateCopyWithFunctionMethod(
             classFields: classFields,
             interfaceFields: interfaceFields,
             interfaceName: interfaceName,
             className: className,
             interfaceGenerics: interfaceGenerics,
+            classGenerics: classGenerics,
             knownClasses: knownClasses,
           );
 
-      if (copyWithFnMethod.isNotEmpty) {
-        methods.add(copyWithFnMethod);
+      if (functionMethod.isNotEmpty) {
+        methods.add(functionMethod);
       }
     }
 
@@ -65,8 +68,8 @@ class MethodGeneratorFacade {
     required bool isClassAbstract,
     required List<NameType> interfaceGenerics,
     bool generatePatchWithFn = false,
-    bool generateHybrid = false,
     List<String> knownClasses = const [],
+    List<NameType> classGenerics = const [],
   }) {
     final methods = <String>[];
 
@@ -78,28 +81,12 @@ class MethodGeneratorFacade {
       className: className,
       isClassAbstract: isClassAbstract,
       interfaceGenerics: interfaceGenerics,
+      classGenerics: classGenerics,
       knownClasses: knownClasses,
     );
 
     if (patchWithMethod.isNotEmpty) {
       methods.add(patchWithMethod);
-    }
-
-    // Generate hybrid patchWith method if requested
-    if (generateHybrid) {
-      final hybridMethod =
-          PatchWithMethodGenerator.generateHybridPatchWithMethod(
-            classFields: classFields,
-            interfaceFields: interfaceFields,
-            interfaceName: interfaceName,
-            className: className,
-            interfaceGenerics: interfaceGenerics,
-            knownClasses: knownClasses,
-          );
-
-      if (hybridMethod.isNotEmpty) {
-        methods.add(hybridMethod);
-      }
     }
 
     // Generate function-based patchWith method if requested
@@ -133,6 +120,7 @@ class MethodGeneratorFacade {
     List<String> knownClasses = const [],
     bool isInterfaceSealed = false,
     bool generateChangeToFn = false,
+    List<NameType> classGenerics = const [],
   }) {
     final methods = <String>[];
 
@@ -146,6 +134,7 @@ class MethodGeneratorFacade {
       interfaceGenerics: interfaceGenerics,
       knownClasses: knownClasses,
       isInterfaceSealed: isInterfaceSealed,
+      classGenerics: classGenerics,
     );
 
     if (changeToMethod.isNotEmpty) {
@@ -200,9 +189,9 @@ class MethodGeneratorFacade {
     required List<NameType> interfaceGenerics,
     bool generateCopyWithFn = false,
     bool generatePatchWithFn = false,
-    bool generateHybridPatch = false,
     bool generateChangeToFn = false,
     List<String> knownClasses = const [],
+    List<NameType> classGenerics = const [],
     bool isInterfaceSealed = false,
   }) {
     final methods = <String>[];
@@ -217,6 +206,7 @@ class MethodGeneratorFacade {
       interfaceGenerics: interfaceGenerics,
       generateCopyWithFn: generateCopyWithFn,
       knownClasses: knownClasses,
+      classGenerics: classGenerics,
     );
 
     if (copyWithMethods.isNotEmpty) {
@@ -232,8 +222,8 @@ class MethodGeneratorFacade {
       isClassAbstract: isClassAbstract,
       interfaceGenerics: interfaceGenerics,
       generatePatchWithFn: generatePatchWithFn,
-      generateHybrid: generateHybridPatch,
       knownClasses: knownClasses,
+      classGenerics: classGenerics,
     );
 
     if (patchWithMethods.isNotEmpty) {
@@ -250,7 +240,7 @@ class MethodGeneratorFacade {
       interfaceGenerics: interfaceGenerics,
       knownClasses: knownClasses,
       isInterfaceSealed: isInterfaceSealed,
-      generateChangeToFn: generateChangeToFn,
+      classGenerics: classGenerics,
     );
 
     if (changeToMethods.isNotEmpty) {
@@ -269,9 +259,8 @@ class MethodGeneratorFacade {
     required bool isClassAbstract,
     bool generateCopyWithFn = false,
     bool generatePatchWithFn = false,
-    bool generateHybridPatch = false,
-    bool generateChangeToFn = false,
     List<String> knownClasses = const [],
+    List<NameType> classGenerics = const [],
     Map<String, bool> interfaceSealedMap = const {},
   }) {
     final allMethods = <String>[];
@@ -284,6 +273,7 @@ class MethodGeneratorFacade {
           interfaceGenericsMap: interfaceGenericsMap,
           className: className,
           isClassAbstract: isClassAbstract,
+          classGenerics: classGenerics,
           knownClasses: knownClasses,
         );
 
@@ -299,6 +289,7 @@ class MethodGeneratorFacade {
           interfaceGenericsMap: interfaceGenericsMap,
           className: className,
           isClassAbstract: isClassAbstract,
+          classGenerics: classGenerics,
           knownClasses: knownClasses,
         );
 
@@ -402,7 +393,6 @@ class MethodGeneratorFacade {
     return {
       'generateCopyWithFn': enableFunctionMethods,
       'generatePatchWithFn': enableFunctionMethods,
-      'generateHybridPatch': enableHybridMethods,
       'generateChangeToFn': enableFunctionMethods,
       'generateChangeTo': enableChangeToMethods,
     };

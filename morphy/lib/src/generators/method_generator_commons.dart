@@ -99,12 +99,11 @@ class TypeResolver {
       return type;
     }
 
-    // For concrete implementations with generic type parameters,
-    // preserve the generic type parameter names instead of resolving to bounds
+    // For concrete implementations, replace generic parameter names with concrete types
     for (var generic in interfaceGenerics) {
       if (type == generic.name) {
-        // Keep the generic type parameter name for generic classes
-        return generic.name;
+        // Replace with the concrete type
+        return generic.type ?? 'dynamic';
       }
     }
 
