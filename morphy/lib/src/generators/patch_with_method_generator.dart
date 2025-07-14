@@ -19,7 +19,7 @@ class PatchWithMethodGenerator {
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
 
     final constructorParams =
         ConstructorParameterGenerator.generatePatchWithConstructorParams(
@@ -31,7 +31,7 @@ class PatchWithMethodGenerator {
         );
 
     return '''
-      $cleanClassName patchWith$cleanInterfaceName({
+      $cleanClassName$typeParams patchWith$cleanInterfaceName({
         ${cleanInterfaceName}Patch? patchInput,
       }) {
         final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
@@ -48,7 +48,7 @@ class PatchWithMethodGenerator {
     List<String> knownClasses = const [],
   }) {
     final cleanClassName = NameCleaner.clean(className);
-    final typeParams = TypeResolver.generateTypeParams(classGenerics);
+    final typeParams = TypeResolver.generateTypeParams(classGenerics, isAbstractInterface: true);
 
     final constructorParams = _generateSimpleClassPatchConstructorParams(
       classFields,
@@ -56,7 +56,7 @@ class PatchWithMethodGenerator {
     );
 
     return '''
-      $cleanClassName patchWith$cleanClassName({
+      $cleanClassName$typeParams patchWith$cleanClassName({
         ${cleanClassName}Patch? patchInput,
       }) {
         final _patcher = patchInput ?? ${cleanClassName}Patch();
@@ -124,7 +124,7 @@ class PatchWithMethodGenerator {
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       interfaceFields,
@@ -147,7 +147,7 @@ class PatchWithMethodGenerator {
         );
 
     return '''
-      $cleanClassName patchWith${cleanInterfaceName}Hybrid({
+      $cleanClassName$typeParams patchWith${cleanInterfaceName}Hybrid({
         ${cleanInterfaceName}Patch? patchInput,${parameters.isNotEmpty ? '\n        $parameters' : ''}
       }) {
         final _patcher = patchInput ?? ${cleanInterfaceName}Patch();
@@ -170,7 +170,7 @@ class PatchWithMethodGenerator {
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
 
     final parameters = ParameterGenerator.generateFunctionParameters(
       interfaceFields,
@@ -191,7 +191,7 @@ class PatchWithMethodGenerator {
         );
 
     return '''
-      $cleanClassName patchWith${cleanInterfaceName}Fn({
+      $cleanClassName$typeParams patchWith${cleanInterfaceName}Fn({
         ${cleanInterfaceName}Patch? patchInput,${parameters.isNotEmpty ? '\n        $parameters' : ''}
       }) {
         final _patcher = patchInput ?? ${cleanInterfaceName}Patch();

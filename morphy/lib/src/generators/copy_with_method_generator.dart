@@ -19,7 +19,7 @@ class CopyWithMethodGenerator {
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       interfaceFields,
@@ -34,7 +34,7 @@ class CopyWithMethodGenerator {
         );
 
     return '''
-      $cleanClassName copyWith$cleanInterfaceName(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
+      $cleanClassName$typeParams copyWith$cleanInterfaceName(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
         return $cleanClassName._(${constructorParams.isNotEmpty ? '\n          $constructorParams\n        ' : ''});
       }''';
   }
@@ -47,7 +47,7 @@ class CopyWithMethodGenerator {
     List<String> knownClasses = const [],
   }) {
     final cleanClassName = NameCleaner.clean(className);
-    final typeParams = TypeResolver.generateTypeParams(classGenerics);
+    final typeParams = TypeResolver.generateTypeParams(classGenerics, isAbstractInterface: true);
 
     final parameters = ParameterGenerator.generateCopyWithParameters(
       classFields,
@@ -60,7 +60,7 @@ class CopyWithMethodGenerator {
     );
 
     return '''
-      $cleanClassName copyWith$cleanClassName(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
+      $cleanClassName$typeParams copyWith$cleanClassName(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
         return $cleanClassName._(${constructorParams.isNotEmpty ? '\n          $constructorParams\n        ' : ''});
       }''';
   }
@@ -123,7 +123,7 @@ class CopyWithMethodGenerator {
 
     final cleanClassName = NameCleaner.clean(className);
     final cleanInterfaceName = NameCleaner.clean(interfaceName);
-    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics);
+    final typeParams = TypeResolver.generateTypeParams(interfaceGenerics, isAbstractInterface: true);
 
     final parameters = ParameterGenerator.generateFunctionParameters(
       interfaceFields,
@@ -137,7 +137,7 @@ class CopyWithMethodGenerator {
     );
 
     return '''
-      $cleanClassName copyWith${cleanInterfaceName}Fn(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
+      $cleanClassName$typeParams copyWith${cleanInterfaceName}Fn(${parameters.isNotEmpty ? '{\n        $parameters\n      }' : ''}) {
         return $cleanClassName._(${constructorParams.isNotEmpty ? '\n          $constructorParams\n        ' : ''});
       }''';
   }

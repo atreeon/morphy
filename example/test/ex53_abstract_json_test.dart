@@ -39,7 +39,7 @@ main() {
     ];
 
     var resultInJsonFormat = todoObjects
-        .map((todo2) => todo2.toJsonCustom())
+        .map((todo2) => todo2.toJson())
         .toList();
 
     var expectedJson = [
