@@ -195,6 +195,8 @@ Build the generated files then use the toJson_2 method to generate the JSON
     var json = flossy.toJson_2({});
     expect(json, {'name': 'Flossy', 'age': 5, '_className_': 'Pet'});
 
+Any related morphy classes will also need to have the `generateJson` set to true.
+
 ### Convert Json to Object
 
 Use the factory method `Pet.fromJson()` to create the new object.

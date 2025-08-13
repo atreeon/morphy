@@ -33,11 +33,11 @@ String removeDollarsFromPropertyType(String propertyType) {
 }
 
 List<NameTypeClassComment> getDistinctFields(
-  List<NameTypeClassComment> fieldsRaw,
-  List<InterfaceWithComment> interfaces,
-) {
+    List<NameTypeClassComment> fieldsRaw,
+    List<InterfaceWithComment> interfaces,
+    ) {
   var fields = fieldsRaw.map(
-    (f) {
+        (f) {
       var isMorphy = (f.type?.startsWith("\$") ?? false) && !(f.type?.endsWith(")") ?? false);
       return NameTypeClassComment(
         f.name,
@@ -51,10 +51,10 @@ List<NameTypeClassComment> getDistinctFields(
 
   var interfaces2 = interfaces //
       .map((x) => Interface.fromGenerics(
-            x.interfaceName.replaceAll("\$", ""),
-            x.typeParams,
-            x.fields,
-          ))
+    x.interfaceName.replaceAll("\$", ""),
+    x.typeParams,
+    x.fields,
+  ))
       .toList();
 //
 //    return Interface2(interface.type.replaceAll("\$", ""), result);
@@ -69,7 +69,7 @@ List<NameTypeClassComment> getDistinctFields(
       var paramNameType = i[0]
           .typeParams
           .where((interfaceGeneric) => //
-              interfaceGeneric.name == classField.type)
+      interfaceGeneric.name == classField.type)
           .toList();
       if (paramNameType.length > 0) {
         var name = removeDollarsFromPropertyType(paramNameType[0].type!);
@@ -144,7 +144,7 @@ String getEnumPropertyList(List<NameTypeClassComment> fields, String className) 
 
   var first = "enum ${className.replaceAll("\$", "")}\$ {";
   var last = fields.map((e) => //
-      e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
+  e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
   return first + last;
 }
 
@@ -169,30 +169,30 @@ String getProperties(List<NameTypeClassComment> fields) {
 }
 
 String getPropertiesAbstract(List<NameTypeClassComment> fields) => //
-    fields
-        .map((e) => //
-            e.comment == null
-                ? "${getDataTypeWithoutDollars(e.type ?? "")} get ${e.name};" //
-                : "${e.comment}\n${e.type} get ${e.name};")
-        .join("\n");
+fields
+    .map((e) => //
+e.comment == null
+    ? "${getDataTypeWithoutDollars(e.type ?? "")} get ${e.name};" //
+    : "${e.comment}\n${e.type} get ${e.name};")
+    .join("\n");
 
 String getConstructorRows(List<NameType> fields) => //
-    fields
-        .map((e) {
-          var required = e.type!.substring(e.type!.length - 1) == "?" ? "" : "required ";
-          var thisOrType = e.name.startsWith("_") ? "${e.type} " : "this.";
-          var propertyName = e.name[0] == '_' ? e.name.substring(1) : e.name;
-          return "$required$thisOrType$propertyName,";
-        })
-        .join("\n")
-        .trim();
+fields
+    .map((e) {
+  var required = e.type!.substring(e.type!.length - 1) == "?" ? "" : "required ";
+  var thisOrType = e.name.startsWith("_") ? "${e.type} " : "this.";
+  var propertyName = e.name[0] == '_' ? e.name.substring(1) : e.name;
+  return "$required$thisOrType$propertyName,";
+})
+    .join("\n")
+    .trim();
 
 String getInitialiser(List<NameType> fields) {
   var result = fields
       .where((e) => e.name.startsWith('_'))
       .map((e) {
-        return "${e.name} = ${e.name.substring(1)}";
-      })
+    return "${e.name} = ${e.name.substring(1)}";
+  })
       .join(",")
       .trim();
 
@@ -235,7 +235,7 @@ String stripListString(String listString) {
 
 String getToString2(List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) {
-    return """String toString2() => "$className()""";
+    return 'String toString2() => "$className()";';
   }
 
   var startString = "\\\"";
@@ -272,23 +272,23 @@ String getToString2(List<NameTypeClassComment> fields, String className) {
 
     var value2 = e.type?.startsWith("List<") ?? false
         ? (e.type?.endsWith("?") ?? false) //
-            ? listNullable
-            : listValue
+        ? listNullable
+        : listValue
         : switch (e.type) {
-            "String" => stringValue,
-            "String?" => stringNullable,
-            "DateTime" => dateTimeValue,
-            "DateTime?" => dateTimeNullable,
-            "int" => intValue,
-            "int?" => intNullable,
-            _ => (e.isMorphy ?? false) //
-                ? e.type?.contains('?') ?? false
-                    ? morphyNullable
-                    : morphyValue
-                : e.type?.contains('?') ?? false
-                    ? defaultNullable
-                    : defaultValue,
-          };
+      "String" => stringValue,
+      "String?" => stringNullable,
+      "DateTime" => dateTimeValue,
+      "DateTime?" => dateTimeNullable,
+      "int" => intValue,
+      "int?" => intNullable,
+      _ => (e.isMorphy ?? false) //
+          ? e.type?.contains('?') ?? false
+          ? morphyNullable
+          : morphyValue
+          : e.type?.contains('?') ?? false
+          ? defaultNullable
+          : defaultValue,
+    };
 
     return "${e.name}:$value2";
   }).joinToString(separator: ",");
@@ -370,8 +370,8 @@ String getCopyWith({
 
   var interfaceGenericStringWithExtends = interfaceGenerics //
       .map((e) => e.type == null //
-          ? e.name
-          : "${e.name} extends ${e.type}")
+      ? e.name
+      : "${e.name} extends ${e.type}")
       .joinToString(separator: ", ");
 
   if (interfaceGenericStringWithExtends.length > 0) {
@@ -410,8 +410,8 @@ String getCopyWith({
   // identify fields in the interface not in the class
   var requiredFields = isExplicitSubType //
       ? interfaceFields //
-          .where((x) => classFields.none((cf) => cf.name == x.name))
-          .toList()
+      .where((x) => classFields.none((cf) => cf.name == x.name))
+      .toList()
       : <NameType>[];
 
   if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
@@ -428,7 +428,7 @@ String getCopyWith({
     var interfaceType = interfaceFields
         .firstWhere(
           (element) => element.name == e.name,
-        )
+    )
         .type;
 
     var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;

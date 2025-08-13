@@ -1,6 +1,6 @@
 name: morphy_annotation
 description: annotation for morphy which provides a clean class definition with extra functionality including; copy with, json serializable, tostring, equals that supports inheritance and polymorphism
-version: 1.4.0
+version: 1.4.1
 homepage: https://github.com/atreeon/morphy
 
 environment:

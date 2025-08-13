@@ -1,3 +1,6 @@
+## 1.4.1
+- fixed bug with String2
+
 ## 1.4.0
 - recreatable objects using String2
 

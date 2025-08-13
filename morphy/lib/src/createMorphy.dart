@@ -45,6 +45,7 @@ String createMorphy(
   }
   sb.writeln(" {");
   if (isAbstract) {
+    sb.writeln("  String toString2();");
     sb.writeln(getPropertiesAbstract(allFields));
   } else {
     sb.writeln(getProperties(allFields));
@@ -83,9 +84,9 @@ String createMorphy(
         sb.writeln("}) ${getInitialiser(allFields)};");
       }
       sb.writeln(getToString(allFields, classNameTrim));
-      sb.writeln(getToString2(allFields, classNameTrim));
     }
 
+    sb.writeln(getToString2(allFields, classNameTrim));
     sb.writeln(getHashCode(allFields));
     sb.writeln(getEquals(allFields, classNameTrim));
   }
@@ -129,7 +130,7 @@ String createMorphy(
   sb.writeln();
   sb.writeln("extension ${className}_changeTo_E on ${className} {");
 
-  if(!isAbstract){
+  if (!isAbstract) {
     sb.writeln(
       getCopyWith(
         classFields: allFields,
