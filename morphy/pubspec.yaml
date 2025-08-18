@@ -17,9 +17,9 @@ dependencies:
 #      ref: toString2
 #      path: morphy_annotation
   morphy_annotation: ^1.4.1
-  analyzer: '>=6.0.0 <=7.0.0'
+  analyzer: ^7.4.0
   build: ^2.1.0
-  source_gen: ^1.1.1
+  source_gen: ^3.0.0
   dartx: ^1.2.0
   quiver: ^3.2.1
 
