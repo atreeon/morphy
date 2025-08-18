@@ -1,3 +1,6 @@
+## 1.4.2
+- update dependencies to source_gen 2.x and analyzer >=6.9.0 <8.0.0
+
 ## 1.4.1
 - fixed bug with String2
 

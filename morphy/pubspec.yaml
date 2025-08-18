@@ -1,6 +1,6 @@
 name: morphy
 description: Provides a clean class definition with extra functionality including; copy with, json serializable, tostring, equals that supports inheritance and polymorphism
-version: 1.4.1
+version: 1.4.2
 homepage: https://github.com/atreeon/morphy
 
 environment:
@@ -17,9 +17,9 @@ dependencies:
 #      ref: toString2
 #      path: morphy_annotation
   morphy_annotation: ^1.4.1
-  analyzer: '>=6.0.0 <=7.0.0'
+  analyzer: '>=6.9.0 <8.0.0'
   build: ^2.1.0
-  source_gen: ^1.1.1
+  source_gen: ^2.0.0
   dartx: ^1.2.0
   quiver: ^3.2.1
 
