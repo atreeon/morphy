@@ -9,8 +9,43 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:source_gen/source_gen.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:source_gen/src/output_helpers.dart';
+
+/// Normalizes generator output into a stream of non-empty [String] values.
+///
+/// Adapted from `package:source_gen` to avoid importing its internal APIs.
+Stream<String> normalizeGeneratorOutput(dynamic output) async* {
+  if (output == null) return;
+
+  if (output is String) {
+    if (output.trim().isEmpty) return;
+    yield output;
+    return;
+  }
+
+  if (output is Iterable) {
+    for (var item in output) {
+      yield* normalizeGeneratorOutput(item);
+    }
+    return;
+  }
+
+  if (output is Stream) {
+    await for (var item in output) {
+      yield* normalizeGeneratorOutput(item);
+    }
+    return;
+  }
+
+  if (output is Future) {
+    yield* normalizeGeneratorOutput(await output);
+    return;
+  }
+
+  throw InvalidGenerationSourceError(
+    'Invalid value returned from generator: '
+    '${output.runtimeType}',
+  );
+}
 
 /// Extend this type to create a [Generator] that invokes
 /// [generateForAnnotatedElement] for every element in the source file annotated
