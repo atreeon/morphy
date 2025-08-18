@@ -1,3 +1,6 @@
+## 1.4.2
+- require analyzer ^7.4.0 and source_gen ^3.0.0
+
 ## 1.4.1
 - fixed bug with String2
 
