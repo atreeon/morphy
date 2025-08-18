@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/element2.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:build/build.dart';
 // ignore: import_of_legacy_library_into_null_safe
@@ -42,17 +42,13 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {
     final values = Set<String>();
 
-    var classElements = library.allElements //
-        .whereType<ClassElement>()
+    var classElements = library
+        .allElements //
+        .whereType<ClassElement2>()
         .toList();
 
     for (var annotatedElement in library.annotatedWith(typeChecker)) {
-      final generatedValue = generateForAnnotatedElement(
-        annotatedElement.element,
-        annotatedElement.annotation,
-        buildStep,
-        classElements,
-      );
+      final generatedValue = generateForAnnotatedElement(annotatedElement.element, annotatedElement.annotation, buildStep, classElements);
       await for (var value in normalizeGeneratorOutput(generatedValue)) {
         assert(value.length == value.trim().length);
         values.add(value);
@@ -75,10 +71,5 @@ abstract class GeneratorForAnnotationX<T> extends Generator {
   /// or whitespace-only [String] instances are also ignored.
   ///
   /// THIS IS MY OVERRIDE METHOD
-  dynamic generateForAnnotatedElement(
-    Element element,
-    ConstantReader annotation,
-    BuildStep buildStep,
-    List<ClassElement> allClassElements,
-  );
+  dynamic generateForAnnotatedElement(Element2 element, ConstantReader annotation, BuildStep buildStep, List<ClassElement2> allClassElements);
 }

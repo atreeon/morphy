@@ -1,3 +1,8 @@
+## 1.4.2
+- Use build 3.0.0-dev.
+- Use source_gen 3.0.0-dev.
+- Support Dart 3.8.0 and analyzer 7.5.9 as a minumum.
+
 ## 1.4.1
 - fixed bug with String2
 
