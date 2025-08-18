@@ -303,14 +303,14 @@ packages:
       path: "../morphy"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.3.0"
   morphy_annotation:
     dependency: "direct overridden"
     description:
       path: "../morphy_annotation"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.3.0"
   node_preamble:
     dependency: transitive
     description:
