@@ -50,9 +50,6 @@ jobs:
             fi
           done
 
-      - name: Dry run publish morphy_annotation
-        run: dart pub publish --dry-run --directory=morphy_annotation
-
       - name: Publish morphy_annotation
         run: dart pub publish --force --directory=morphy_annotation
 
