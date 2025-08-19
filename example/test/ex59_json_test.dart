@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:morphy_annotation/morphy_annotation.dart';
 import 'package:test/test.dart';
 
@@ -10,11 +8,7 @@ part 'ex59_json_test.morphy.dart';
 
 main() {
   test("1", () {
-    var building = Building(people: [
-      Person(age: 1),
-      Athlete(age: 2, speed: 3),
-      BaseballPlayer(age: 4, speed: 5, height: 6),
-    ]);
+    var building = Building(people: [Person(age: 1), Athlete(age: 2, speed: 3), BaseballPlayer(age: 4, speed: 5, height: 6)]);
 
     var json = building.toJson_2();
     var building2 = Building.fromJson(json);
