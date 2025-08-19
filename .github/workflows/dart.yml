@@ -27,6 +27,9 @@ jobs:
         run: |
           dart pub get
 
+      - name: Clean stale tool state
+        run: rm -rf .dart_tool/build .dart_tool/test .dart_tool/package_config.json
+
       - name: Setup morphy
         working-directory: morphy
         run: |
@@ -36,6 +39,9 @@ jobs:
       - name: Run tests morphy
         working-directory: morphy
         run: dart pub run test
+
+      - name: Clean stale tool state
+        run: rm -rf .dart_tool/build .dart_tool/test .dart_tool/package_config.json
 
       - name: Setup example
         working-directory: example
