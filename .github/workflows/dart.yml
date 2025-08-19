@@ -12,7 +12,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: "3.8.2"  # pick the exact version you want
+          sdk: "3.8.0"  # pick the exact version you want
 
 #      - name: Provide frontend_server snapshot for Dart 3.8.x
 #        run: |
