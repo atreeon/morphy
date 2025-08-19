@@ -12,7 +12,8 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: stable
+          sdk: "3.8.3"
+#          sdk: stable
 
       - name: Setup annotation
         working-directory: morphy_annotation

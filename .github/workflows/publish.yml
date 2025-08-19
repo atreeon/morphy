@@ -14,8 +14,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: stable
-
+          sdk: "3.8.3"
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
