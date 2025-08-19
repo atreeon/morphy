@@ -6,11 +6,16 @@ homepage: https://github.com/atreeon/morphy
 environment:
   sdk: ">=3.8.0 <4.0.0"
 
-#dependency_overrides:
-#  morphy_annotation:
-#    path: ../morphy_annotation
-
 dependencies:
+  analyzer: ">=7.5.9 <8.0.0"
+  build: ^3.0.0
+  source_gen: ^3.0.0
+  morphy_annotation: ^1.4.2
+  dartx: ^1.2.0
+
+dev_dependencies:
+  test: ^1.21.0
+
 #  morphy_annotation: ^1.4.2
 
 #    path: ../morphy_annotation
@@ -19,12 +24,8 @@ dependencies:
 #      url: https://github.com/atreeon/morphy.git
 #      ref: toString2
 #      path: morphy_annotation
-  analyzer: ">=7.5.9 <8.0.0"
-  build: ^3.0.0
-  source_gen: ^3.0.0
-  morphy_annotation: ^1.4.2
-  dartx: ^1.2.0
-  quiver: ^3.2.1
 
-dev_dependencies:
-  test: ^1.24.8
+#dependency_overrides:
+#  morphy_annotation:
+#    path: ../morphy_annotation
+
