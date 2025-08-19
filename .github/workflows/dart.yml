@@ -32,6 +32,12 @@ jobs:
           channel: ${{ matrix.channel }}
           cache: ${{ matrix.channel == 'stable' }}
 
+      # warm the cache so snapshots exist
+      - name: Warm Flutter cache
+        run: |
+          flutter --version
+          flutter precache --universal
+
       # (optional) remove example folder inside packages that don't need it; not
       # necessary in your layout, but keeping parity with freezed pattern:
       # - name: Removing example folder
