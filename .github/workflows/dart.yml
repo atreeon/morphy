@@ -12,7 +12,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: "3.5.3"  # pick the exact version you want
+          sdk: "3.8.3"  # pick the exact version you want
 
 #      - uses: dart-lang/setup-dart@v1
 #        with:
@@ -31,7 +31,7 @@ jobs:
         working-directory: morphy
         run: |
           dart pub get
-          dart run build_runner build
+          dart run build_runner build --delete-conflicting-outputs
 
       - name: Run tests morphy
         working-directory: morphy
