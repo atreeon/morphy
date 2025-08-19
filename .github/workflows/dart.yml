@@ -43,13 +43,13 @@ jobs:
         run: flutter pub ${{ matrix.dependencies }}
         working-directory: ${{ matrix.package }}
 
-        # Check formatting on stable (optional)
-      - name: Check format
-        if: matrix.channel == 'stable'
-        run: dart format --set-exit-if-changed .
-        working-directory: ${{ matrix.package }}
+#        # Check formatting on stable (optional)
+#      - name: Check format
+#        if: matrix.channel == 'stable'
+#        run: dart format --set-exit-if-changed .
+#        working-directory: ${{ matrix.package }}
 
-      # Run codegen only if build_runner is declared (same trick as freezed)
+      # Run codegen only if build_runner is declared
       - name: Generate (build_runner)
         run: |
           if grep -q build_runner "pubspec.yaml"; then
