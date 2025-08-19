@@ -21,19 +21,20 @@ jobs:
 
       - name: Setup annotation
         working-directory: morphy_annotation
-        run: |
-          dart pub get
+        run: dart pub get
 
 #      - name: Clean stale tool state
 #        run: rm -rf .dart_tool/build .dart_tool/test .dart_tool/package_config.json
 #
-      - name: Setup morphy
+      - name: Morphy get
         working-directory: morphy
-        run: |
-          dart pub get
-          dart run build_runner build --delete-conflicting-outputs
+        run: dart pub get
 
-      - name: Run tests morphy
+      - name: Morphy build
+        working-directory: morphy
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Morphy test
         working-directory: morphy
         run: dart test
 
