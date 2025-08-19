@@ -8,7 +8,6 @@ dependency_overrides:
     path: ../morphy_annotation
 
 dependencies:
-  meta: any
   morphy_annotation:
     path: ../morphy_annotation
 

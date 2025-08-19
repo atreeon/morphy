@@ -11,6 +11,9 @@ environment:
 #    path: ../morphy_annotation
 
 dependencies:
+#  morphy_annotation: ^1.4.2
+
+#    path: ../morphy_annotation
 #  morphy_annotation:
 #    git:
 #      url: https://github.com/atreeon/morphy.git
