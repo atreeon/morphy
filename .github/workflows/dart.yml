@@ -12,7 +12,7 @@ jobs:
 
       - uses: dart-lang/setup-dart@v1
         with:
-          sdk: "3.8.3"
+          sdk: "3.8.2"
 #          sdk: stable
 
       - name: Setup annotation
