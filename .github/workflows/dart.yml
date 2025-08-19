@@ -10,10 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: dart-lang/setup-dart@v1
+      - name: Set up Flutter (macos)
+        uses: subosito/flutter-action@v2
         with:
-          sdk: "3.8.2"
-#          sdk: stable
+          channel: stable #change this if we are a litte bit behind or have a custom version
+          flutter-version-file: morphy/pubspec.yaml
+
+
+#      - uses: dart-lang/setup-dart@v1
+#        with:
+#          sdk: "3.8.2"
+##          sdk: stable
 
       - name: Setup annotation
         working-directory: morphy_annotation

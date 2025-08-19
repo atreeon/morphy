@@ -5,6 +5,7 @@ homepage: https://github.com/atreeon/morphy
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
+  flutter: 3.35.1
 
 #dependency_overrides:
 #  morphy_annotation:
