@@ -1,61 +1,75 @@
-name: Dart CI
+name: Build
 
 on:
+  push:
+    branches: [ master ]
   pull_request:
+#  schedule:
+#    - cron: "0 10 * * *"
 
 jobs:
-  build:
-    runs-on: macos-latest
+  morphy-ci:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package:
+          - morphy
+          - morphy_annotation
+          - example
+        channel: [ stable ]
+        dependencies: [ get, downgrade ]
+        exclude:
+          - channel: stable
+            dependencies: downgrade
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: dart-lang/setup-dart@v1
+      # Use Flutter SDK (brings its own Dart + frontend_server)
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: "3.8.0"  # pick the exact version you want
+          channel: ${{ matrix.channel }}
+          cache: ${{ matrix.channel == 'stable' }}
 
-#      - name: Provide frontend_server snapshot for Dart 3.8.x
-#        run: |
-#          set -e
-#          echo "DART_HOME: $DART_HOME"
-#          # Grab a small Flutter to borrow the snapshot from (linux-x64)
-#          curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.3-stable.tar.xz | tar -xJ
-#          mkdir -p "$DART_HOME/bin/snapshots"
-#          ln -sf "$PWD/flutter/bin/cache/artifacts/engine/linux-x64/frontend_server.dart.snapshot" \
-#              "$DART_HOME/bin/snapshots/frontend_server.dart.snapshot"
-#          ls -l "$DART_HOME/bin/snapshots"
+      # (optional) remove example folder inside packages that don't need it; not
+      # necessary in your layout, but keeping parity with freezed pattern:
+      # - name: Removing example folder
+      #   if: matrix.package != 'example'
+      #   run: rm -rf example
+      #   working-directory: ${{ matrix.package }}
 
-      - run: |
-          dart --version
-          echo "DART_HOME: $DART_HOME"
-          ls -l "$DART_HOME/bin/snapshots" || true
+      - name: Install dependencies
+        run: flutter pub ${{ matrix.dependencies }}
+        working-directory: ${{ matrix.package }}
 
-#      - uses: dart-lang/setup-dart@v1
-#        with:
-#          sdk: "3.8.2"
-##          sdk: stable
+        # Check formatting on stable (optional)
+      - name: Check format
+        if: matrix.channel == 'stable'
+        run: dart format --set-exit-if-changed .
+        working-directory: ${{ matrix.package }}
 
-      - name: Setup annotation
-        working-directory: morphy_annotation
-        run: dart pub get
-
-#      - name: Clean stale tool state
-#        run: rm -rf .dart_tool/build .dart_tool/test .dart_tool/package_config.json
-#
-      - name: Morphy get
-        working-directory: morphy
-        run: dart pub get
-
-      - name: Morphy test
-        working-directory: morphy
-        run: dart test
-
-      - name: Setup example
-        working-directory: example
+      # Run codegen only if build_runner is declared (same trick as freezed)
+      - name: Generate (build_runner)
         run: |
-          dart pub get
-          dart run build_runner build --delete-conflicting-outputs
+          if grep -q build_runner "pubspec.yaml"; then
+            dart pub run build_runner build --delete-conflicting-outputs
+          fi
+        working-directory: ${{ matrix.package }}
 
-      - name: Run tests Example
-        working-directory: example
-        run: dart test
+      # Analyze with Flutter’s analyzer (works for Dart & Flutter pkgs)
+      - name: Analyze
+        run: flutter analyze
+        working-directory: ${{ matrix.package }}
+
+      # Choose test runner:
+      # - use flutter test for the Flutter example
+      # - use dart test for pure Dart packages
+      - name: Test
+        run: |
+          if grep -q "^name: example$" "pubspec.yaml"; then
+            flutter test -r expanded
+          else
+            dart test -r expanded
+          fi
+        working-directory: ${{ matrix.package }}
