@@ -14,6 +14,17 @@ jobs:
         with:
           sdk: "3.8.2"  # pick the exact version you want
 
+      - name: Provide frontend_server snapshot for Dart 3.8.x
+        run: |
+          set -e
+          echo "DART_HOME: $DART_HOME"
+          # Grab a small Flutter to borrow the snapshot from (linux-x64)
+          curl -L https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.24.3-stable.tar.xz | tar -xJ
+          mkdir -p "$DART_HOME/bin/snapshots"
+          ln -sf "$PWD/flutter/bin/cache/artifacts/engine/linux-x64/frontend_server.dart.snapshot" \
+              "$DART_HOME/bin/snapshots/frontend_server.dart.snapshot"
+          ls -l "$DART_HOME/bin/snapshots"
+
       - run: |
           dart --version
           echo "DART_HOME: $DART_HOME"
