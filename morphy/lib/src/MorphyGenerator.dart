@@ -90,7 +90,7 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
 
             return Interface.fromGenerics(
               (el as InterfaceElement2).name3!, // or .name
-              (el as TypeParameterizedElement2).typeParameters2.map((TypeParameterElement2 x) => NameType(x.name3!, x.bound?.getDisplayString(withNullability: true))).toList(),
+              (el as TypeParameterizedElement2).typeParameters2.map((TypeParameterElement2 x) => NameType(x.name3!, x.bound?.getDisplayString())).toList(),
               getAllFields(el.allSupertypes, el).where((x) => x.name != 'hashCode').toList(),
               true,
             );
@@ -111,7 +111,7 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
 
               return Interface.fromGenerics(
                 cls.name3!, // class name
-                tparams.map((TypeParameterElement2 p) => NameType(p.name3!, p.bound?.getDisplayString(withNullability: true))).toList(),
+                tparams.map((TypeParameterElement2 p) => NameType(p.name3!, p.bound?.getDisplayString())).toList(),
                 getAllFields(cls.allSupertypes, cls).where((x) => x.name != 'hashCode').toList(),
               );
             })

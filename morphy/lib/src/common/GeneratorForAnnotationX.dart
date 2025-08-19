@@ -36,7 +36,7 @@ import 'package:source_gen/src/output_helpers.dart';
 abstract class GeneratorForAnnotationX<T> extends Generator {
   const GeneratorForAnnotationX();
 
-  TypeChecker get typeChecker => TypeChecker.fromRuntime(T);
+  TypeChecker get typeChecker => TypeChecker.typeNamed(T);
 
   @override
   FutureOr<String> generate(LibraryReader library, BuildStep buildStep) async {

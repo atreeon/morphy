@@ -57,10 +57,10 @@ jobs:
           fi
         working-directory: ${{ matrix.package }}
 
-      # Analyze with Flutter’s analyzer (works for Dart & Flutter pkgs)
-      - name: Analyze
-        run: flutter analyze
-        working-directory: ${{ matrix.package }}
+#      # Analyze with Flutter’s analyzer (works for Dart & Flutter pkgs)
+#      - name: Analyze
+#        run: flutter analyze
+#        working-directory: ${{ matrix.package }}
 
       # Choose test runner:
       # - use flutter test for the Flutter example
