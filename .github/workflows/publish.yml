@@ -8,11 +8,16 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    container:
-      image: dart:latest
 
     steps:
       - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
 
       - name: Run tests for morphy
         working-directory: morphy
@@ -25,18 +30,14 @@ jobs:
         working-directory: example
         run: |
           dart pub get
+          dart pub run build_runner clean
           dart pub run build_runner build --delete-conflicting-outputs
           dart pub run test
 
       - name: Authenticate with pub.dev
         env:
           PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
-        run: |
-          echo "$PUB_TOKEN" | dart pub token add https://pub.dev
-
-      - name: Install jq
-        run: |
-          apt-get update && apt-get install -y jq
+        run: echo "$PUB_TOKEN" | dart pub token add https://pub.dev
 
       - name: Ensure versions are bumped
         run: |
