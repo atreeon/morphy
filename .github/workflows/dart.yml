@@ -12,59 +12,41 @@ jobs:
     strategy:
       matrix:
         package: [ morphy_annotation, morphy, example ]
-        channel: [ stable ]
         dependencies: [ get, downgrade ]
         exclude:
-          - channel: stable
-            dependencies: downgrade
+          - dependencies: downgrade  # optional: keep only 'get' if you don't really use downgrade
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - uses: subosito/flutter-action@v2
+      # Standalone Dart SDK (no Flutter on PATH)
+      - uses: dart-lang/setup-dart@v1
         with:
-          channel: ${{ matrix.channel }}
-          cache: ${{ matrix.channel == 'stable' }}
+          sdk: stable
 
-      - name: Warm Flutter cache
-        run: |
-          flutter --version
-          flutter precache --universal
+      # Cache pub packages for speed
+      - name: Cache Pub
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ matrix.package }}-${{ hashFiles(format('{0}/pubspec.lock', matrix.package)) }}
+          restore-keys: |
+            pub-${{ runner.os }}-${{ matrix.package }}-
+            pub-${{ runner.os }}-
 
       - name: Install dependencies
-        run: flutter pub ${{ matrix.dependencies }}
+        run: dart pub ${{ matrix.dependencies }}
         working-directory: ${{ matrix.package }}
 
-      # Decide toolchain once and reuse
-      - name: Detect package type
-        id: detect
-        run: |
-          if grep -qE '^\s*flutter\s*:' pubspec.yaml || grep -qE 'sdk:\s*flutter' pubspec.yaml; then
-            echo "runner=flutter" >> "$GITHUB_OUTPUT"
-          else
-            echo "runner=dart" >> "$GITHUB_OUTPUT"
-          fi
-        working-directory: ${{ matrix.package }}
-
+      # Optional: run build_runner if present
       - name: Generate (build_runner)
-        if: ${{ always() }}
         run: |
           if grep -qE '\bbuild_runner\b' pubspec.yaml; then
-            if [ "${{ steps.detect.outputs.runner }}" = "flutter" ]; then
-              flutter pub run build_runner build --delete-conflicting-outputs
-            else
-              dart run build_runner build --delete-conflicting-outputs
-            fi
+            dart run build_runner build --delete-conflicting-outputs
           fi
         working-directory: ${{ matrix.package }}
 
+      # Tests (pure Dart)
       - name: Test
-        run: |
-          if [ "${{ steps.detect.outputs.runner }}" = "flutter" ]; then
-            echo "Flutter package → flutter test"
-            flutter test -r expanded
-          else
-            echo "Pure Dart package → dart test"
-            dart test -r expanded
-          fi
+        run: dart test -r expanded
         working-directory: ${{ matrix.package }}
