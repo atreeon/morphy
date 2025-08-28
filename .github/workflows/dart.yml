@@ -14,8 +14,8 @@ jobs:
     strategy:
       matrix:
         package:
-          - morphy
           - morphy_annotation
+          - morphy
           - example
         channel: [ stable ]
         dependencies: [ get, downgrade ]

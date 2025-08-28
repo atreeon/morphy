@@ -172,7 +172,33 @@ Sometimes you might want to turn a super class into a subclass (Pet into a Cat)
     expect(bagpussCat.whiskerLength, 13.75);
     expect(bagpussCat.runtimeType, Cat);
 
-(subclass to super and sibling to sibling may also work.  A later release will iron out any edge cases)
+Or a sibling class into a sibling class (Cat into Dog)
+
+    @Morphy(explicitSubTypes: [$Dog])
+    abstract class $Cat implements $Pet {
+        ...
+    }
+
+    var bagpussCat = Cat(whiskerLength: 13.75, name: "Bagpuss", age: 4);
+
+    var colinDog = bagpussCat.changeTo_Dog(woofSound: "rowf");
+
+    expect(colinDog.woofSound, "rowf");
+    expect(colinDog.runtimeType, Dog);
+
+Or a subclass into a super class (Cat into Pet)
+
+    @Morphy(explicitSubTypes: [$Cat, $Dog])
+    abstract class $Pet {
+        ...
+    }
+
+    var bagpussCat = Cat(whiskerLength: 13.75, name: "Bagpuss", age: 4);
+
+    var bagpussAsPet = bagpussCat.changeTo_Pet();
+
+    expect(bagpussAsPet.name, "Bagpuss");
+    expect(bagpussAsPet.runtimeType, Pet);
 
 ### Convert object to Json
 
