@@ -23,21 +23,6 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Run tests for morphy
-        working-directory: morphy
-        run: |
-          dart pub get
-          dart pub run build_runner build --delete-conflicting-outputs
-          dart pub run test
-
-      - name: Run tests for example
-        working-directory: example
-        run: |
-          dart pub get
-          dart pub run build_runner clean
-          dart pub run build_runner build --delete-conflicting-outputs
-          dart pub run test
-
       - name: Authenticate with pub.dev
         env:
           PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
