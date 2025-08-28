@@ -4,8 +4,6 @@ on:
   push:
     branches: [ master ]
   pull_request:
-#  schedule:
-#    - cron: "0 10 * * *"
 
 jobs:
   morphy-ci:
@@ -13,10 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        package:
-          - morphy_annotation
-          - morphy
-          - example
+        package: [ morphy_annotation, morphy, example ]
         channel: [ stable ]
         dependencies: [ get, downgrade ]
         exclude:
@@ -26,56 +21,50 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      # Use Flutter SDK (brings its own Dart + frontend_server)
       - uses: subosito/flutter-action@v2
         with:
           channel: ${{ matrix.channel }}
           cache: ${{ matrix.channel == 'stable' }}
 
-      # warm the cache so snapshots exist
       - name: Warm Flutter cache
         run: |
           flutter --version
           flutter precache --universal
 
-      # (optional) remove example folder inside packages that don't need it; not
-      # necessary in your layout, but keeping parity with freezed pattern:
-      # - name: Removing example folder
-      #   if: matrix.package != 'example'
-      #   run: rm -rf example
-      #   working-directory: ${{ matrix.package }}
-
       - name: Install dependencies
         run: flutter pub ${{ matrix.dependencies }}
         working-directory: ${{ matrix.package }}
 
-#        # Check formatting on stable (optional)
-#      - name: Check format
-#        if: matrix.channel == 'stable'
-#        run: dart format --set-exit-if-changed .
-#        working-directory: ${{ matrix.package }}
-
-      # Run codegen only if build_runner is declared
-      - name: Generate (build_runner)
+      # Decide toolchain once and reuse
+      - name: Detect package type
+        id: detect
         run: |
-          if grep -q build_runner "pubspec.yaml"; then
-            dart pub run build_runner build --delete-conflicting-outputs
+          if grep -qE '^\s*flutter\s*:' pubspec.yaml || grep -qE 'sdk:\s*flutter' pubspec.yaml; then
+            echo "runner=flutter" >> "$GITHUB_OUTPUT"
+          else
+            echo "runner=dart" >> "$GITHUB_OUTPUT"
           fi
         working-directory: ${{ matrix.package }}
 
-#      # Analyze with Flutter’s analyzer (works for Dart & Flutter pkgs)
-#      - name: Analyze
-#        run: flutter analyze
-#        working-directory: ${{ matrix.package }}
+      - name: Generate (build_runner)
+        if: ${{ always() }}
+        run: |
+          if grep -qE '\bbuild_runner\b' pubspec.yaml; then
+            if [ "${{ steps.detect.outputs.runner }}" = "flutter" ]; then
+              flutter pub run build_runner build --delete-conflicting-outputs
+            else
+              dart run build_runner build --delete-conflicting-outputs
+            fi
+          fi
+        working-directory: ${{ matrix.package }}
 
-      # Choose test runner:
-      # - use flutter test for the Flutter example
-      # - use dart test for pure Dart packages
       - name: Test
         run: |
-          if grep -q "^name: example$" "pubspec.yaml"; then
+          if [ "${{ steps.detect.outputs.runner }}" = "flutter" ]; then
+            echo "Flutter package → flutter test"
             flutter test -r expanded
           else
+            echo "Pure Dart package → dart test"
             dart test -r expanded
           fi
         working-directory: ${{ matrix.package }}
