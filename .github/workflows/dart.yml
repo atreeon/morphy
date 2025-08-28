@@ -4,6 +4,8 @@ on:
   push:
     branches: [ master ]
   pull_request:
+#  schedule:
+#    - cron: "0 10 * * *"
 
 jobs:
   morphy-ci:
@@ -11,42 +13,69 @@ jobs:
 
     strategy:
       matrix:
-        package: [ morphy_annotation, morphy, example ]
+        package:
+          - morphy_annotation
+          - morphy
+          - example
+        channel: [ stable ]
         dependencies: [ get, downgrade ]
         exclude:
-          - dependencies: downgrade  # optional: keep only 'get' if you don't really use downgrade
+          - channel: stable
+            dependencies: downgrade
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      # Standalone Dart SDK (no Flutter on PATH)
-      - uses: dart-lang/setup-dart@v1
+      # Use Flutter SDK (brings its own Dart + frontend_server)
+      - uses: subosito/flutter-action@v2
         with:
-          sdk: stable
+          channel: ${{ matrix.channel }}
+          cache: ${{ matrix.channel == 'stable' }}
 
-      # Cache pub packages for speed
-      - name: Cache Pub
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: pub-${{ runner.os }}-${{ matrix.package }}-${{ hashFiles(format('{0}/pubspec.lock', matrix.package)) }}
-          restore-keys: |
-            pub-${{ runner.os }}-${{ matrix.package }}-
-            pub-${{ runner.os }}-
+      # warm the cache so snapshots exist
+      - name: Warm Flutter cache
+        run: |
+          flutter --version
+          flutter precache --universal
+
+      # (optional) remove example folder inside packages that don't need it; not
+      # necessary in your layout, but keeping parity with freezed pattern:
+      # - name: Removing example folder
+      #   if: matrix.package != 'example'
+      #   run: rm -rf example
+      #   working-directory: ${{ matrix.package }}
 
       - name: Install dependencies
-        run: dart pub ${{ matrix.dependencies }}
+        run: flutter pub ${{ matrix.dependencies }}
         working-directory: ${{ matrix.package }}
 
-      # Optional: run build_runner if present
+#        # Check formatting on stable (optional)
+#      - name: Check format
+#        if: matrix.channel == 'stable'
+#        run: dart format --set-exit-if-changed .
+#        working-directory: ${{ matrix.package }}
+
+      # Run codegen only if build_runner is declared
       - name: Generate (build_runner)
         run: |
-          if grep -qE '\bbuild_runner\b' pubspec.yaml; then
-            dart run build_runner build --delete-conflicting-outputs
+          if grep -q build_runner "pubspec.yaml"; then
+            dart pub run build_runner build --delete-conflicting-outputs
           fi
         working-directory: ${{ matrix.package }}
 
-      # Tests (pure Dart)
+#      # Analyze with Flutter’s analyzer (works for Dart & Flutter pkgs)
+#      - name: Analyze
+#        run: flutter analyze
+#        working-directory: ${{ matrix.package }}
+
+      # Choose test runner:
+      # - use flutter test for the Flutter example
+      # - use dart test for pure Dart packages
       - name: Test
-        run: dart test -r expanded
+        run: |
+          if grep -q "^name: example$" "pubspec.yaml"; then
+            flutter test -r expanded
+          else
+            dart test -r expanded
+          fi
         working-directory: ${{ matrix.package }}
