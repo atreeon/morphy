@@ -73,9 +73,11 @@ jobs:
       # - use dart test for pure Dart packages
       - name: Test
         run: |
-          if grep -q "^name: example$" "pubspec.yaml"; then
-            flutter test -r expanded
-          else
             dart test -r expanded
-          fi
+
+#          if grep -q "^name: example$" "pubspec.yaml"; then
+#            flutter test -r expanded
+#          else
+#            dart test -r expanded
+#          fi
         working-directory: ${{ matrix.package }}
