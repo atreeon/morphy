@@ -12,11 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Flutter (macos)
-        uses: subosito/flutter-action@v2
+      # Install Dart SDK only
+      - uses: dart-lang/setup-dart@v1
         with:
-          channel: stable #change this if we are a litte bit behind or have a custom version
-          flutter-version-file: taskoptimistflutter/pubspec.yaml
+          sdk: stable
 #
 #      - uses: dart-lang/setup-dart@v1
 #        with:
