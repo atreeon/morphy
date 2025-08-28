@@ -1,3 +1,6 @@
+## 1.4.2+1
+- added an improved CI script
+
 ## 1.4.2
 - Use build 3.0.0-dev.
 - Use source_gen 3.0.0-dev.

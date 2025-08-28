@@ -30,6 +30,7 @@ main() {
     SubA subA = SubA(x: "x");
     SubB subB = subA.changeTo_SubB(z: "z");
 
+
     expect(subB.toString(), "(SubB-z:z|x:x)");
   });
 }

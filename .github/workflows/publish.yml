@@ -1,0 +1,65 @@
+name: Publish to pub.dev
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter (macos)
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable #change this if we are a litte bit behind or have a custom version
+          flutter-version-file: taskoptimistflutter/pubspec.yaml
+#
+#      - uses: dart-lang/setup-dart@v1
+#        with:
+#          sdk: "3.8.2"
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Run tests for morphy
+        working-directory: morphy
+        run: |
+          dart pub get
+          dart pub run build_runner build --delete-conflicting-outputs
+          dart pub run test
+
+      - name: Run tests for example
+        working-directory: example
+        run: |
+          dart pub get
+          dart pub run build_runner clean
+          dart pub run build_runner build --delete-conflicting-outputs
+          dart pub run test
+
+      - name: Authenticate with pub.dev
+        env:
+          PUB_TOKEN: ${{ secrets.PUB_TOKEN }}
+        run: echo "$PUB_TOKEN" | dart pub token add https://pub.dev
+
+      - name: Ensure versions are bumped
+        run: |
+          for pkg in morphy_annotation morphy; do
+            local_ver=$(grep '^version:' "$pkg/pubspec.yaml" | awk '{print $2}')
+            remote_ver=$(curl -sS "https://pub.dev/api/packages/$pkg" | jq -r '.latest.version')
+            if [ "$local_ver" = "$remote_ver" ]; then
+              echo "::error file=$pkg/pubspec.yaml::Version $local_ver already published on pub.dev"
+              exit 1
+            fi
+          done
+
+      - name: Publish morphy_annotation
+        run: dart pub publish --force --directory=morphy_annotation
+
+      - name: Dry run publish morphy
+        run: dart pub publish --dry-run --directory=morphy
+
+      - name: Publish morphy
+        run: dart pub publish --force --directory=morphy
