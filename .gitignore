@@ -20,6 +20,7 @@
 # so this line is commented out by default.
 #.vscode/
 
+*.g.dart
 *.morphy.dart
 *.morphy2.dart
 
@@ -32,7 +33,7 @@
 .packages
 .pub-cache/
 .pub/
-/build/
+*/build/
 .fvm/
 
 # Flutter macos
@@ -56,3 +57,4 @@ app.*.map.json
 
 # Ignore pub lock files
 pubspec.lock
+

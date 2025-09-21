@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 
 ////import 'package:analyzer_models/analyzer_models.dart';
-import 'package:build/src/builder/build_step.dart';
+import 'package:build/src/build_step.dart';
 import 'package:dartx/dartx.dart';
 import 'package:morphy/src/common/GeneratorForAnnotationX.dart';
 import 'package:morphy/src/common/NameType.dart';
@@ -29,38 +29,49 @@ import 'package:source_gen/source_gen.dart';
 //  return (classFields + superTypeFields).distinctBy((x) => x.name).toList();
 //}
 
-class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<TValueT> {
+class MorphyGenerator<TValueT extends MorphyX>
+    extends GeneratorForAnnotationX<TValueT> {
   @override
-  FutureOr<String> generateForAnnotatedElement(Element2 ce, ConstantReader annotation, BuildStep buildStep, List<ClassElement2> allClasses) {
+  FutureOr<String> generateForAnnotatedElement(
+    Element ce,
+    ConstantReader annotation,
+    BuildStep buildStep,
+    List<ClassElement> allClasses,
+  ) {
     var sb = StringBuffer();
 
     //    sb.writeln("//RULES: you must use implements, not extends");
 
-    if (ce is! ClassElement2) {
+    if (ce is! ClassElement) {
       throw Exception("not a class");
     }
 
-    var hasConstConstructor = ce.constructors2.any((e) => e.isConst);
+    var hasConstConstructor = ce.constructors.any((e) => e.isConst);
 
-    if (ce.supertype?.element3.name3 != "Object") {
+    if (ce.supertype?.element.name != "Object") {
       throw Exception("you must use implements, not extends");
     }
 
     var docComment = ce.documentationComment;
 
-    var isAbstract = ce.name3!.startsWith("\$\$");
-    var allFields = getAllFields(ce.allSupertypes, ce).where((x) => x.name != "hashCode").toList();
+    var isAbstract = ce.name!.startsWith("\$\$");
+    var allFields = getAllFields(
+      ce.allSupertypes,
+      ce,
+    ).where((x) => x.name != "hashCode").toList();
 
-    var className = ce.name3!;
+    var className = ce.name!;
     var interfaces = ce.interfaces
         .map(
           (e) => //
           InterfaceWithComment(
-            e.element3.name3!, //
+            e.element.name!, //
             e.typeArguments.map((e) => e.toString()).toList(),
-            e.element3.typeParameters2.map((x) => x.name3!).toList(),
-            e.element3.fields2.map((e) => NameType(e.name3!, e.type.toString())).toList(),
-            comment: e.element3.documentationComment,
+            e.element.typeParameters.map((x) => x.name!).toList(),
+            e.element.fields
+                .map((e) => NameType(e.name!, e.type.toString()))
+                .toList(),
+            comment: e.element.documentationComment,
           ),
         ) //
         .toList();
@@ -69,8 +80,14 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
     //      sb.writeln("//interfacefields: ${element.fields.toString()})");
     //    });
 
-    var classGenerics = ce.typeParameters2
-        .map((e) => NameTypeClassComment(e.name3!, e.bound == null ? null : e.bound.toString(), null)) //
+    var classGenerics = ce.typeParameters
+        .map(
+          (e) => NameTypeClassComment(
+            e.name3!,
+            e.bound == null ? null : e.bound.toString(),
+            null,
+          ),
+        ) //
         .toList();
 
     var allFieldsDistinct = getDistinctFields(allFields, interfaces);
@@ -82,16 +99,26 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
           .read('explicitSubTypes') //
           .listValue
           .map((x) {
-            if (x.toTypeValue()?.element3 is! Element2) {
-              throw Exception("each type for the copywith def must all be classes");
+            if (x.toTypeValue()?.element is! Element) {
+              throw Exception(
+                "each type for the copywith def must all be classes",
+              );
             }
 
-            var el = x.toTypeValue()!.element3!;
+            var el = x.toTypeValue()!.element!;
 
             return Interface.fromGenerics(
-              (el as InterfaceElement2).name3!, // or .name
-              (el as TypeParameterizedElement2).typeParameters2.map((TypeParameterElement2 x) => NameType(x.name3!, x.bound?.getDisplayString())).toList(),
-              getAllFields(el.allSupertypes, el).where((x) => x.name != 'hashCode').toList(),
+              (el as InterfaceElement).name!, // or .name
+              (el as TypeParameterizedElement).typeParameters
+                  .map(
+                    (TypeParameterElement x) =>
+                        NameType(x.name!, x.bound?.getDisplayString()),
+                  )
+                  .toList(),
+              getAllFields(
+                el.allSupertypes,
+                el,
+              ).where((x) => x.name != 'hashCode').toList(),
               true,
             );
           })
@@ -104,15 +131,24 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
         // Walk implemented interfaces (and their interfaces)
         flatten<InterfaceType>(ce.interfaces, (x) => x.interfaces)
             // Only keep real classes; avoids casts on mixins/extension types.
-            .where((t) => t.element3 is ClassElement2)
+            .where((t) => t.element is ClassElement)
             .map((t) {
-              final cls = t.element3 as ClassElement2; // also a TypeParameterizedElement2
-              final tparams = (cls as TypeParameterizedElement2).typeParameters2;
+              final cls =
+                  t.element as ClassElement; // also a TypeParameterizedElement2
+              final tparams = (cls as TypeParameterizedElement).typeParameters;
 
               return Interface.fromGenerics(
-                cls.name3!, // class name
-                tparams.map((TypeParameterElement2 p) => NameType(p.name3!, p.bound?.getDisplayString())).toList(),
-                getAllFields(cls.allSupertypes, cls).where((x) => x.name != 'hashCode').toList(),
+                cls.name!, // class name
+                tparams
+                    .map(
+                      (TypeParameterElement p) =>
+                          NameType(p.name!, p.bound?.getDisplayString()),
+                    )
+                    .toList(),
+                getAllFields(
+                  cls.allSupertypes,
+                  cls,
+                ).where((x) => x.name != 'hashCode').toList(),
               );
             })
             .union(typesExplicit)
@@ -120,7 +156,22 @@ class MorphyGenerator<TValueT extends MorphyX> extends GeneratorForAnnotationX<T
             .toList();
     ;
 
-    sb.writeln(createMorphy(isAbstract, allFieldsDistinct, className, docComment ?? "", interfaces, allValueTInterfaces, classGenerics, hasConstConstructor, annotation.read('generateJson').boolValue, annotation.read('hidePublicConstructor').boolValue, typesExplicit, annotation.read('nonSealed').boolValue));
+    sb.writeln(
+      createMorphy(
+        isAbstract,
+        allFieldsDistinct,
+        className,
+        docComment ?? "",
+        interfaces,
+        allValueTInterfaces,
+        classGenerics,
+        hasConstConstructor,
+        annotation.read('generateJson').boolValue,
+        annotation.read('hidePublicConstructor').boolValue,
+        typesExplicit,
+        annotation.read('nonSealed').boolValue,
+      ),
+    );
 
     //    sb.writeln(createCopyWith(classDef, otherClasses2).replaceAll("\$", ""));
 
