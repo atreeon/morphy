@@ -487,7 +487,7 @@ String getCopyWith({
       .where((element) => !interfaceFields.map((e) => e.name).contains(element.name));
 
   sb.write(fieldsNotInSignature //
-      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed).${e.name},\n")
+      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed$classGenericStringNoExtends).${e.name},\n")
       .join());
 
   sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");

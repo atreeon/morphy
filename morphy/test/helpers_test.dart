@@ -1083,7 +1083,7 @@ T Function()? x,
 }) {
 return B<T>._(
 x: x == null ? this.x as int : x() as int,
-y: (this as B).y,
+y: (this as B<T>).y,
 ) as A<T>;}""");
     });
 

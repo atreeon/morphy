@@ -1,4 +1,5 @@
 import 'package:morphy_annotation/morphy_annotation.dart';
+import 'package:test/test.dart';
 
 part 'ex68_generics_test.morphy.dart';
 
@@ -72,3 +73,9 @@ abstract class $TouchInput_Date implements $$TouchInput {
 
 @morphy
 abstract class $TouchInput_DependencyTask implements $$TouchInput {}
+
+main() {
+  test("ex68 generics test", () {
+    expect(true, true);
+  });
+}
