@@ -1076,11 +1076,12 @@ T Function()? x,
         interfaceName: "A",
         className: "B",
         isClassAbstract: false,
+        classGenerics: [NameType("T", null)],
       );
       expectS(result, """A<T> copyWith_A<T>({
 T Function()? x,
 }) {
-return B._(
+return B<T>._(
 x: x == null ? this.x as int : x() as int,
 y: (this as B).y,
 ) as A<T>;}""");

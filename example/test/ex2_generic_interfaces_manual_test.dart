@@ -3,6 +3,8 @@ import 'package:test/test.dart';
 
 // ignore_for_file: UNNECESSARY_CAST
 
+//WE NO LONGER SUPPORT THE CHANGING OF GENERIC INTERFACES
+
 abstract class A<T> {
   T get x;
 

@@ -91,11 +91,13 @@ String createMorphy(
     sb.writeln(getEquals(allFields, classNameTrim));
   }
 //
+  var classGenericsNameType = classGenerics.map((e) => NameType(e.name, e.type)).toList();
+
   var interfacesX = [
     ...interfacesAllInclSubInterfaces,
     Interface.fromGenerics(
       className,
-      classGenerics.map((e) => NameType(e.name, e.type)).toList(),
+      classGenericsNameType,
       allFields,
     ),
   ];
@@ -109,6 +111,7 @@ String createMorphy(
         className: className,
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
+        classGenerics: classGenericsNameType,
         isExplicitSubType: x.isExplicitSubType,
       ),
     );
@@ -139,6 +142,7 @@ String createMorphy(
         className: className,
         isClassAbstract: isAbstract,
         interfaceGenerics: classGenerics,
+        classGenerics: classGenericsNameType,
         isExplicitSubType: true,
       ),
     );
@@ -153,6 +157,7 @@ String createMorphy(
         className: className,
         isClassAbstract: isAbstract,
         interfaceGenerics: x.typeParams,
+        classGenerics: classGenericsNameType,
         isExplicitSubType: x.isExplicitSubType,
       ),
     );

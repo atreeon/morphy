@@ -355,6 +355,7 @@ String getCopyWith({
   required String className,
   required bool isClassAbstract,
   required List<NameType> interfaceGenerics,
+  List<NameType>? classGenerics,
   bool isExplicitSubType = false, //for where we specify the explicit subtypes for changeTo
 }) {
   var sb = StringBuffer();
@@ -384,6 +385,15 @@ String getCopyWith({
 
   if (interfaceGenericStringNoExtends.length > 0) {
     interfaceGenericStringNoExtends = "<$interfaceGenericStringNoExtends>";
+  }
+
+  var classGenericsList = classGenerics ?? const <NameType>[];
+  var classGenericStringNoExtends = classGenericsList //
+      .map((e) => e.name)
+      .joinToString(separator: ", ");
+
+  if (classGenericStringNoExtends.length > 0) {
+    classGenericStringNoExtends = "<$classGenericStringNoExtends>";
   }
 
   isExplicitSubType //
@@ -446,10 +456,16 @@ String getCopyWith({
 
   sb.writeln(") {");
 
+  // if (isExplicitSubType) {
+  //   sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}._(");
+  // } else {
+  //   sb.writeln("return $classNameTrimmed._(");
+  // }
+
   if (isExplicitSubType) {
-    sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}._(");
+    sb.writeln("return ${getDataTypeWithoutDollars(interfaceName)}$interfaceGenericStringNoExtends._(");
   } else {
-    sb.writeln("return $classNameTrimmed._(");
+    sb.writeln("return $classNameTrimmed$classGenericStringNoExtends._(");
   }
 
   sb.write(requiredFields //
