@@ -1,5 +1,6 @@
-## 1.4.2+1
-- added an improved CI script
+## 1.4.3
+- Fixed bug with generic copywith
+- No longer support different extends for generic copywith due to issues with type resolution, see ex_2_generic_interface_impossible.dart for an example of the issue.
 
 ## 1.4.2
 - Use build 3.0.0-dev.
