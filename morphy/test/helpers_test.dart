@@ -338,6 +338,68 @@ void main() {
     });
   });
 
+  //add coverage for getToString2
+  group("getToString2", () {
+    test("1 - empty fields", () {
+      var result = getToString2([], "MyClass");
+      expectS(result, r'String toString2() => "MyClass()";');
+    });
+
+    // codex: exercise String and nullable String formatting in getToString2.
+    test("2 - string fields", () {
+      // codex: build fields that hit String and String? branches in the switch.
+      var result = getToString2([NameTypeClassComment("name", "String", null), NameTypeClassComment("nickname", "String?", null)], "MyClass");
+
+      // codex: confirm quoted string output and nullable guard formatting.
+      expectS(result, r'String toString2() => "MyClass(name:\"${ name .toString()}\",nickname:${nickname == null ? null :   "\"${ nickname .toString()}\" " })";');
+    });
+
+    // codex: validate DateTime and nullable DateTime formatting in getToString2.
+    test("3 - datetime fields", () {
+      // codex: build fields that trigger DateTime parsing and nullable guard output.
+      var result = getToString2([NameTypeClassComment("createdAt", "DateTime", null), NameTypeClassComment("updatedAt", "DateTime?", null)], "MyClass");
+
+      // codex: assert DateTime.parse wrapping and nullable formatting are correct.
+      expectS(result, r'String toString2() => "MyClass(createdAt:DateTime.parse(\"${ createdAt .toString()}\"),updatedAt:${updatedAt == null ? null :   "DateTime.parse(\"${ updatedAt .toString()}\") " })";');
+    });
+
+    // codex: verify int and nullable int formatting in getToString2.
+    test("4 - int fields", () {
+      // codex: build fields that hit int and int? branches in the switch.
+      var result = getToString2([NameTypeClassComment("count", "int", null), NameTypeClassComment("max", "int?", null)], "MyClass");
+
+      // codex: check numeric output and nullable guard formatting.
+      expectS(result, r'String toString2() => "MyClass(count:${ count .toString()},max:${max == null ? null :   "${ max .toString()} " })";');
+    });
+
+    // codex: exercise the default branch for non-morphy custom types.
+    test("5 - custom type fields", () {
+      // codex: build fields that fall through to default and nullable default branches.
+      var result = getToString2([NameTypeClassComment("custom", "CustomType", null), NameTypeClassComment("customNullable", "CustomType?", null)], "MyClass");
+
+      // codex: assert default formatting matches the generated output.
+      expectS(result, r'String toString2() => "MyClass(custom:${ custom .toString()},customNullable:${customNullable == null ? null :   "${ customNullable .toString()} " })";');
+    });
+
+    // codex: validate morphy-specific toString2 handling including nullable morphies.
+    test("6 - morphy fields", () {
+      // codex: build fields with isMorphy to trigger toString2 output formatting.
+      var result = getToString2([NameTypeClassComment("morph", "Morph", null, isMorphy: true), NameTypeClassComment("morphNullable", "Morph?", null, isMorphy: true)], "MyClass");
+
+      // codex: confirm morphy and nullable morphy formatting matches expectations.
+      expectS(result, r'String toString2() => "MyClass(morph:${ morph .toString2()},morphNullable:${morphNullable == null ? null :   morphNullable!.toString2()})";');
+    });
+
+    // codex: validate list handling for both nullable and non-nullable lists.
+    test("7 - list fields", () {
+      // codex: build list fields to exercise list mapping with try/catch and nullable guards.
+      var result = getToString2([NameTypeClassComment("items", "List<Thing>", null), NameTypeClassComment("itemsNullable", "List<Thing>?", null)], "MyClass");
+
+      // codex: assert list mapping and nullable list formatting match the generated output.
+      expectS(result, r'String toString2() => "MyClass(items:${items.map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString()},itemsNullable:${itemsNullable == null ? null :   itemsNullable!.map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString() })";');
+    });
+  });
+
   group("getHashCode", () {
     test("1h", () {
       var result = getHashCode([]);
