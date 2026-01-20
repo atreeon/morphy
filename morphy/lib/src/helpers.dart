@@ -233,6 +233,7 @@ String stripListString(String listString) {
 //
 // }
 
+/// Builds a `toString2` implementation for the provided class fields.
 String getToString2(List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) {
     return 'String toString2() => "$className()";';
@@ -270,7 +271,12 @@ String getToString2(List<NameTypeClassComment> fields, String className) {
     var listValue = "$start$field$listBase}";
     var listNullable = "$check $field!$listBase }";
 
-    var value2 = e.type?.startsWith("List<") ?? false
+    // codex: detect function-typed fields so list handling isn't used for list-returning functions.
+    var isFunctionType = e.type?.contains(" Function(") ?? false;
+    // codex: treat List<T> as list only when the field isn't a function type.
+    var isListType = (e.type?.startsWith("List<") ?? false) && !isFunctionType;
+    // codex: use list formatting only for non-function List<T> types, otherwise fall through to type-specific formatting.
+    var value2 = isListType
         ? (e.type?.endsWith("?") ?? false) //
         ? listNullable
         : listValue

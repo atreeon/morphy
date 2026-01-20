@@ -398,6 +398,24 @@ void main() {
       // codex: assert list mapping and nullable list formatting match the generated output.
       expectS(result, r'String toString2() => "MyClass(items:${items.map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString()},itemsNullable:${itemsNullable == null ? null :   itemsNullable!.map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString() })";');
     });
+
+    // codex: cover list-returning function type toString2 handling for get readIds.
+    test("8 - list function type field", () {
+      // codex: build a field with a list-returning function type that still starts with List<.
+      var result = getToString2([NameTypeClassComment("readIds", "List<String> Function(TState state)", null)], "MyClass");
+
+      // codex: assert list mapping output matches the generated formatting for the function-typed list.
+      expectS(result, r'String toString2() => "MyClass(readIds:${ readIds .toString()})";');
+    });
+
+    // codex: cover non-list function type toString2 handling for get readValue.
+    test("9 - function type field", () {
+      // codex: build a field with a function type that should use the default formatting branch.
+      var result = getToString2([NameTypeClassComment("readValue", "bool Function(TState state)", null)], "MyClass");
+
+      // codex: assert default formatting matches the generated output for the function-typed field.
+      expectS(result, r'String toString2() => "MyClass(readValue:${ readValue .toString()})";');
+    });
   });
 
   group("getHashCode", () {
