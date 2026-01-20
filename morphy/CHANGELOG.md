@@ -1,3 +1,6 @@
+## 1.4.4
+- Fixed bug with function type members in equals and toString2
+
 ## 1.4.3
 - Fixed bug with generic copywith
 - No longer support different extends for generic copywith due to issues with type resolution, see ex_2_generic_interface_impossible.dart for an example of the issue.
