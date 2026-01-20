@@ -10,7 +10,11 @@ dependencies:
   analyzer: ">=7.5.9 <8.0.0"
   build: ^3.0.0
   source_gen: ^3.0.0
-  morphy_annotation: ^1.4.4
+  morphy_annotation:
+    git:
+      url: https://github.com/atreeon/morphy.git
+      path: morphy_annotation
+      ref: 1.4.4
   dartx: ^1.2.0
 
 dev_dependencies:
