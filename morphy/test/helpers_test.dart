@@ -460,6 +460,19 @@ a == other.a && b == other.b && c == other.c;""";
 
       expectS(result, expected);
     });
+
+    // codex: ensure function-typed list return values are compared directly, not as lists.
+    test("3i - function returning list", () {
+      // codex: build a list-returning function field to verify it does not use list equality helpers.
+      var result = getEquals([NameTypeClassComment("readIds", "List<String> Function(TState state)", null)], "A");
+
+      // codex: set the expected equality output to use direct field comparison.
+      var expected = """bool operator ==(Object other) => identical(this, other) || other is A && runtimeType == other.runtimeType &&
+readIds == other.readIds;""";
+
+      // codex: assert direct comparison is used for the function-typed list field.
+      expectS(result, expected);
+    });
   });
 
   group("getPropertiesAbstract", () {

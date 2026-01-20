@@ -233,6 +233,7 @@ String stripListString(String listString) {
 //
 // }
 
+// codex: add documentation for getToString2 to match project doc comment requirements.
 /// Builds a `toString2` implementation for the provided class fields.
 String getToString2(List<NameTypeClassComment> fields, String className) {
   if (fields.isEmpty) {
@@ -310,6 +311,8 @@ String getHashCode(List<NameType> fields) {
   return """int get hashCode => hashObjects([$items]);""";
 }
 
+// codex: add documentation for getEquals to meet the repository's DartDoc requirement.
+/// Builds an equality operator implementation for the provided fields.
 String getEquals(List<NameType> fields, String className) {
   var sb = StringBuffer();
 
@@ -318,15 +321,24 @@ String getEquals(List<NameType> fields, String className) {
   sb.writeln(fields.isEmpty ? "" : " &&");
 
   sb.write(fields.map((e) {
-    if ((e.type!.characters.take(5).string == "List<" || e.type!.characters.take(4).string == "Set<")) {
+    // codex: normalize the field type for repeated checks and null-safe access.
+    var type = e.type ?? "";
+    // codex: detect function-typed fields (including list-returning functions) so list logic is skipped.
+    var isFunctionType = type.contains(" Function(");
+    // codex: treat list/set fields as collections only when they are not function types.
+    var isListOrSet = !isFunctionType && (type.characters.take(5).string == "List<" || type.characters.take(4).string == "Set<");
+    // codex: apply unordered list/set comparison only for true collection fields.
+    if (isListOrSet) {
       //todo: hack here, a nullable entry won't compare properly to an empty list
-      if (e.type!.characters.last == "?") {
+      // codex: handle nullable list/set equality by coalescing to an empty collection.
+      if (type.characters.last == "?") {
         return "(${e.name}??[]).equalUnorderedD(other.${e.name}??[])";
       } else {
         return "(${e.name}).equalUnorderedD(other.${e.name})";
       }
     }
 
+    // codex: fall back to direct equality for non-collection fields.
     return "${e.name} == other.${e.name}";
   }).joinToString(separator: " && "));
 
