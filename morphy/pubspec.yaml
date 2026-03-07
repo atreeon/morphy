@@ -14,7 +14,7 @@ dependencies:
     git:
       url: https://github.com/atreeon/morphy.git
       path: morphy_annotation
-      ref: 1.4.6
+      ref: release/1.4.6
   dartx: ^1.2.0
 
 dev_dependencies:
