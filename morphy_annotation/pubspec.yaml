@@ -3,7 +3,6 @@ description: annotation for morphy which provides a clean class definition with 
 version: 1.4.4
 homepage: https://github.com/atreeon/morphy
 
-
 environment:
   sdk: ">=3.8.0 <4.0.0"
 
