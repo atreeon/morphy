@@ -20,8 +20,8 @@ main() {
     ];
 
     B_Generics_Sing().fns = {
-      ["String"]: (Map<String, dynamic> json) => _$BFromJson<String>(json, (x) => x as String),
-      ["X"]: (Map<String, dynamic> json) => _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>)),
+      ["String"]: (Map<String, dynamic> json) => B.fromJsonFactory<String>(json, (x) => x as String),
+      ["X"]: (Map<String, dynamic> json) => B.fromJsonFactory<X>(json, (x) => X.fromJson(x as Map<String, dynamic>)),
     };
 
     var result = jsonList.map((e) => A.fromJson(e)).toList();
@@ -49,8 +49,8 @@ main() {
       }
     ];
 
-    B_Generics_Sing().fns[["String"]] = (Map<String, dynamic> json) => _$BFromJson<String>(json, (x) => x as String);
-    B_Generics_Sing().fns[["X"]] = (Map<String, dynamic> json) => _$BFromJson<X>(json, (x) => X.fromJson(x as Map<String, dynamic>));
+    B_Generics_Sing().fns[["String"]] = (Map<String, dynamic> json) => B.fromJsonFactory<String>(json, (x) => x as String);
+    B_Generics_Sing().fns[["X"]] = (Map<String, dynamic> json) => B.fromJsonFactory<X>(json, (x) => X.fromJson(x as Map<String, dynamic>));
 
     var result = jsonList.map((e) => A.fromJson(e)).toList();
 

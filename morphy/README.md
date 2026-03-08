@@ -281,6 +281,13 @@ and then convert them back again, continuing to preserve their original type
 
 Also generics work and more complicated inheritance hierarchies. (see the tests ex52 in the example folder)
 
+For generic JSON classes you can register concrete `fromJson` handlers using the generated `fromJsonFactory` helper instead of referencing private `_$TypeFromJson` symbols directly:
+
+    B_Generics_Sing().fns = {
+      ["String"]: (json) => B.fromJsonFactory<String>(json, (x) => x as String),
+      ["X"]: (json) => B.fromJsonFactory<X>(json, (x) => X.fromJson(x as Map<String, dynamic>)),
+    };
+
 ### Multiple Inheritance
 
 We also allow multiple inheritance.

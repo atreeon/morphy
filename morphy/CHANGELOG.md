@@ -1,3 +1,7 @@
+## 1.5.0
+- Fixed `toString2` generation for non-null function-typed fields with nullable return types (for example `String? Function(...)`) so generated code does not emit invalid null checks.
+- Added a generated `fromJsonFactory` helper for generic JSON classes to provide a stable registration target and avoid private json_serializable factory warnings.
+
 ## 1.4.4
 - Fixed bug with function type members in equals and toString2
 

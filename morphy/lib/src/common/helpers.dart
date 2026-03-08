@@ -1,4 +1,4 @@
-import 'package:analyzer/dart/element/element2.dart';
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:dartx/dartx.dart';
 
@@ -63,14 +63,16 @@ String getClassComment(List<Interface> interfaces, String? classComment) {
 //   return MethodDetails<TMeta1>(fn.documentationComment, fn.name ?? "", paramsPositional, paramsNamed, typeParameters2, returnType);
 // }
 
-List<NameTypeClassComment> getAllFields(List<InterfaceType> interfaceTypes, InterfaceElement2 element) {
+/// Returns all fields for [element] plus inherited interface fields, preferring
+/// fields declared on [element] when names collide.
+List<NameTypeClassComment> getAllFields(List<InterfaceType> interfaceTypes, InterfaceElement element) {
   var superTypeFields =
       interfaceTypes //
-          .where((x) => x.element3.name3 != "Object")
+          .where((x) => x.element.name != "Object")
           .flatMap(
-            (st) => st.element3.fields2.map(
+            (st) => st.element.fields.map(
               (f) => //
-                  NameTypeClassComment(f.name3!, f.type.toString(), st.element3.name3, comment: f.getter2?.documentationComment),
+                  NameTypeClassComment(f.name!, f.type.toString(), st.element.name!, comment: f.getter?.documentationComment),
             ),
           )
           .toList();
@@ -83,10 +85,10 @@ List<NameTypeClassComment> getAllFields(List<InterfaceType> interfaceTypes, Inte
   //    NameTypeClassComment(f.name, f.type.toString(), element.name, comment: f.getter?.documentationComment)).toList());
   //  }
 
-  var classFields = element.fields2
+  var classFields = element.fields
       .map(
         (f) => //
-            NameTypeClassComment(f.name3!, f.type.toString(), element.name3, comment: f.getter2?.documentationComment),
+            NameTypeClassComment(f.name!, f.type.toString(), element.name!, comment: f.getter?.documentationComment),
       )
       .toList();
 

@@ -8,11 +8,15 @@ String getClassComment(List<Interface> interfaces, String classComment) {
   var a = interfaces
       .where((e) => e is InterfaceWithComment && e.comment != classComment) //
       .map((e) {
-    var interfaceComment = e is InterfaceWithComment && e.comment != null //
-        ? "\n${e.comment}"
-        : "";
-    return "///implements [${e.interfaceName}]\n///\n$interfaceComment\n///";
-  }).toList();
+        var interfaceComment =
+            e is InterfaceWithComment &&
+                e.comment !=
+                    null //
+            ? "\n${e.comment}"
+            : "";
+        return "///implements [${e.interfaceName}]\n///\n$interfaceComment\n///";
+      })
+      .toList();
 
   a.insert(0, classComment + "\n///");
 
@@ -32,33 +36,19 @@ String removeDollarsFromPropertyType(String propertyType) {
   return propertyType.replaceAll(RegExp(r"(?<!<)(?<!<\$)\$\$?"), "");
 }
 
-List<NameTypeClassComment> getDistinctFields(
-    List<NameTypeClassComment> fieldsRaw,
-    List<InterfaceWithComment> interfaces,
-    ) {
-  var fields = fieldsRaw.map(
-        (f) {
-      var isMorphy = (f.type?.startsWith("\$") ?? false) && !(f.type?.endsWith(")") ?? false);
-      return NameTypeClassComment(
-        f.name,
-        f.type,
-        f.className?.replaceAll("\$", ""),
-        comment: f.comment,
-        isMorphy: isMorphy,
-      );
-    },
-  );
+List<NameTypeClassComment> getDistinctFields(List<NameTypeClassComment> fieldsRaw, List<InterfaceWithComment> interfaces) {
+  var fields = fieldsRaw.map((f) {
+    var isMorphy = (f.type?.startsWith("\$") ?? false) && !(f.type?.endsWith(")") ?? false);
+    return NameTypeClassComment(f.name, f.type, f.className?.replaceAll("\$", ""), comment: f.comment, isMorphy: isMorphy);
+  });
 
-  var interfaces2 = interfaces //
-      .map((x) => Interface.fromGenerics(
-    x.interfaceName.replaceAll("\$", ""),
-    x.typeParams,
-    x.fields,
-  ))
-      .toList();
-//
-//    return Interface2(interface.type.replaceAll("\$", ""), result);
-//  }).toList();
+  var interfaces2 =
+      interfaces //
+          .map((x) => Interface.fromGenerics(x.interfaceName.replaceAll("\$", ""), x.typeParams, x.fields))
+          .toList();
+  //
+  //    return Interface2(interface.type.replaceAll("\$", ""), result);
+  //  }).toList();
 
   var sortedFields = fields.sortedBy((element) => element.className ?? "").toList();
   var distinctFields = sortedFields.distinctBy((element) => element.name).toList();
@@ -66,10 +56,11 @@ List<NameTypeClassComment> getDistinctFields(
   var adjustedFields = distinctFields.map((classField) {
     var i = interfaces2.where((x) => x.interfaceName == classField.className).take(1).toList();
     if (i.length > 0) {
-      var paramNameType = i[0]
-          .typeParams
-          .where((interfaceGeneric) => //
-      interfaceGeneric.name == classField.type)
+      var paramNameType = i[0].typeParams
+          .where(
+            (interfaceGeneric) => //
+                interfaceGeneric.name == classField.type,
+          )
           .toList();
       if (paramNameType.length > 0) {
         var name = removeDollarsFromPropertyType(paramNameType[0].type!);
@@ -97,13 +88,15 @@ String getClassGenerics(List<NameType> generics) {
     return "";
   }
 
-  var _generics = generics.map((e) {
-    if (e.type == null) {
-      return e.name;
-    }
+  var _generics = generics
+      .map((e) {
+        if (e.type == null) {
+          return e.name;
+        }
 
-    return "${e.name} extends ${e.type}";
-  }).joinToString(separator: ", ");
+        return "${e.name} extends ${e.type}";
+      })
+      .joinToString(separator: ", ");
 
   return "<$_generics>";
 }
@@ -113,9 +106,10 @@ String getExtendsGenerics(List<NameType> generics) {
     return "";
   }
 
-  var _generics = generics //
-      .map((e) => e.name)
-      .joinToString(separator: ", ");
+  var _generics =
+      generics //
+          .map((e) => e.name)
+          .joinToString(separator: ", ");
 
   return "<$_generics>";
 }
@@ -125,15 +119,17 @@ String getImplements(List<Interface> interfaces, String className) {
     return "";
   }
 
-  var types = interfaces.map((e) {
-    var type = e.interfaceName.replaceAll("\$", "");
+  var types = interfaces
+      .map((e) {
+        var type = e.interfaceName.replaceAll("\$", "");
 
-    if (e.typeParams.isEmpty) {
-      return type;
-    }
+        if (e.typeParams.isEmpty) {
+          return type;
+        }
 
-    return "${type}<${e.typeParams.map((e) => e.type).joinToString(separator: ", ")}>";
-  }).joinToString(separator: ", ");
+        return "${type}<${e.typeParams.map((e) => e.type).joinToString(separator: ", ")}>";
+      })
+      .joinToString(separator: ", ");
 
   return " implements $types";
 }
@@ -143,8 +139,14 @@ String getEnumPropertyList(List<NameTypeClassComment> fields, String className) 
     return '';
 
   var first = "enum ${className.replaceAll("\$", "")}\$ {";
-  var last = fields.map((e) => //
-  e.name.startsWith("_") ? e.name.substring(1) : e.name).join(",") + "}";
+  var last =
+      fields
+          .map(
+            (e) => //
+                e.name.startsWith("_") ? e.name.substring(1) : e.name,
+          )
+          .join(",") +
+      "}";
   return first + last;
 }
 
@@ -161,29 +163,33 @@ String getDataTypeWithoutDollars(String type) {
 }
 
 String getProperties(List<NameTypeClassComment> fields) {
-  return fields.map((e) {
-    var line = "final ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};";
-    var result = e.comment == null ? line : "${e.comment}\n$line";
-    return result;
-  }).join("\n");
+  return fields
+      .map((e) {
+        var line = "final ${getDataTypeWithoutDollars(e.type ?? "")} ${e.name};";
+        var result = e.comment == null ? line : "${e.comment}\n$line";
+        return result;
+      })
+      .join("\n");
 }
 
 String getPropertiesAbstract(List<NameTypeClassComment> fields) => //
 fields
-    .map((e) => //
-e.comment == null
-    ? "${getDataTypeWithoutDollars(e.type ?? "")} get ${e.name};" //
-    : "${e.comment}\n${e.type} get ${e.name};")
+    .map(
+      (e) => //
+      e.comment == null
+          ? "${getDataTypeWithoutDollars(e.type ?? "")} get ${e.name};" //
+          : "${e.comment}\n${e.type} get ${e.name};",
+    )
     .join("\n");
 
 String getConstructorRows(List<NameType> fields) => //
 fields
     .map((e) {
-  var required = e.type!.substring(e.type!.length - 1) == "?" ? "" : "required ";
-  var thisOrType = e.name.startsWith("_") ? "${e.type} " : "this.";
-  var propertyName = e.name[0] == '_' ? e.name.substring(1) : e.name;
-  return "$required$thisOrType$propertyName,";
-})
+      var required = e.type!.substring(e.type!.length - 1) == "?" ? "" : "required ";
+      var thisOrType = e.name.startsWith("_") ? "${e.type} " : "this.";
+      var propertyName = e.name[0] == '_' ? e.name.substring(1) : e.name;
+      return "$required$thisOrType$propertyName,";
+    })
     .join("\n")
     .trim();
 
@@ -191,8 +197,8 @@ String getInitialiser(List<NameType> fields) {
   var result = fields
       .where((e) => e.name.startsWith('_'))
       .map((e) {
-    return "${e.name} = ${e.name.substring(1)}";
-  })
+        return "${e.name} = ${e.name.substring(1)}";
+      })
       .join(",")
       .trim();
 
@@ -247,59 +253,77 @@ String getToString2(List<NameTypeClassComment> fields, String className) {
   var endMorphy = ".toString2()}";
   var endString = "\\\"";
 
-  var items = fields.map((e) {
-    var field = e.name.toString();
+  var items = fields
+      .map((e) {
+        var field = e.name.toString();
 
-    var check = "$start$field$nullCheck ";
+        var check = "$start$field$nullCheck ";
 
-    var stringValue = "$startString$start $field $end$endString";
-    var stringNullable = "$check \"$stringValue \" }";
+        var stringValue = "$startString$start $field $end$endString";
+        var stringNullable = "$check \"$stringValue \" }";
 
-    var dateTimeValue = "DateTime.parse($startString$start $field $end$endString)";
-    var dateTimeNullable = "$check \"$dateTimeValue \" }";
+        var dateTimeValue = "DateTime.parse($startString$start $field $end$endString)";
+        var dateTimeNullable = "$check \"$dateTimeValue \" }";
 
-    var intValue = "$start $field $end";
-    var intNullable = "$check \"$intValue \" }";
+        var intValue = "$start $field $end";
+        var intNullable = "$check \"$intValue \" }";
 
-    // var morphyOutput = "$check $field.toString2()}";
-    var morphyValue = "$start $field $endMorphy";
-    var morphyNullable = "$check $field!.toString2()}";
+        // var morphyOutput = "$check $field.toString2()}";
+        var morphyValue = "$start $field $endMorphy";
+        var morphyNullable = "$check $field!.toString2()}";
 
-    var defaultValue = "$start $field $end";
-    var defaultNullable = "$check \"$defaultValue \" }";
+        var defaultValue = "$start $field $end";
+        var defaultNullable = "$check \"$defaultValue \" }";
 
-    var listBase = ".map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString()";
-    var listValue = "$start$field$listBase}";
-    var listNullable = "$check $field!$listBase }";
+        var listBase = ".map((dynamic x) { try { return x.toString2();} catch (e) {return x.toString();} }).toList().toString()";
+        var listValue = "$start$field$listBase}";
+        var listNullable = "$check $field!$listBase }";
 
-    // codex: detect function-typed fields so list handling isn't used for list-returning functions.
-    var isFunctionType = e.type?.contains(" Function(") ?? false;
-    // codex: treat List<T> as list only when the field isn't a function type.
-    var isListType = (e.type?.startsWith("List<") ?? false) && !isFunctionType;
-    // codex: use list formatting only for non-function List<T> types, otherwise fall through to type-specific formatting.
-    var value2 = isListType
-        ? (e.type?.endsWith("?") ?? false) //
-        ? listNullable
-        : listValue
-        : switch (e.type) {
-      "String" => stringValue,
-      "String?" => stringNullable,
-      "DateTime" => dateTimeValue,
-      "DateTime?" => dateTimeNullable,
-      "int" => intValue,
-      "int?" => intNullable,
-      _ => (e.isMorphy ?? false) //
-          ? e.type?.contains('?') ?? false
-          ? morphyNullable
-          : morphyValue
-          : e.type?.contains('?') ?? false
-          ? defaultNullable
-          : defaultValue,
-    };
+        // codex: detect function-typed fields so list handling isn't used for list-returning functions.
+        var isFunctionType = e.type?.contains(" Function(") ?? false;
+        // codex: only treat top-level nullable types as nullable. A nullable function return type
+        // like `String? Function(...)` must not trigger nullable-field handling.
+        var isTypeNullable = isTopLevelNullableType(e.type);
+        // codex: treat List<T> as list only when the field isn't a function type.
+        var isListType = (e.type?.startsWith("List<") ?? false) && !isFunctionType;
+        // codex: use list formatting only for non-function List<T> types, otherwise fall through to type-specific formatting.
+        var value2 = isListType
+            ? isTypeNullable //
+                  ? listNullable
+                  : listValue
+            : switch (e.type) {
+                "String" => stringValue,
+                "String?" => stringNullable,
+                "DateTime" => dateTimeValue,
+                "DateTime?" => dateTimeNullable,
+                "int" => intValue,
+                "int?" => intNullable,
+                _ =>
+                  (e.isMorphy ?? false) //
+                      ? isTypeNullable
+                            ? morphyNullable
+                            : morphyValue
+                      : isTypeNullable
+                      ? defaultNullable
+                      : defaultValue,
+              };
 
-    return "${e.name}:$value2";
-  }).joinToString(separator: ",");
+        return "${e.name}:$value2";
+      })
+      .joinToString(separator: ",");
   return """String toString2() => "$className($items)\";""";
+}
+
+/// Returns true when the type itself is nullable (for example `Foo?`).
+///
+/// This intentionally ignores nullable return types inside function signatures
+/// such as `String? Function(...)`, where the function value itself is not
+/// nullable.
+bool isTopLevelNullableType(String? type) {
+  if (type == null) //
+    return false;
+
+  return type.trim().endsWith('?');
 }
 
 String getHashCode(List<NameType> fields) {
@@ -320,27 +344,31 @@ String getEquals(List<NameType> fields, String className) {
 
   sb.writeln(fields.isEmpty ? "" : " &&");
 
-  sb.write(fields.map((e) {
-    // codex: normalize the field type for repeated checks and null-safe access.
-    var type = e.type ?? "";
-    // codex: detect function-typed fields (including list-returning functions) so list logic is skipped.
-    var isFunctionType = type.contains(" Function(");
-    // codex: treat list/set fields as collections only when they are not function types.
-    var isListOrSet = !isFunctionType && (type.characters.take(5).string == "List<" || type.characters.take(4).string == "Set<");
-    // codex: apply unordered list/set comparison only for true collection fields.
-    if (isListOrSet) {
-      //todo: hack here, a nullable entry won't compare properly to an empty list
-      // codex: handle nullable list/set equality by coalescing to an empty collection.
-      if (type.characters.last == "?") {
-        return "(${e.name}??[]).equalUnorderedD(other.${e.name}??[])";
-      } else {
-        return "(${e.name}).equalUnorderedD(other.${e.name})";
-      }
-    }
+  sb.write(
+    fields
+        .map((e) {
+          // codex: normalize the field type for repeated checks and null-safe access.
+          var type = e.type ?? "";
+          // codex: detect function-typed fields (including list-returning functions) so list logic is skipped.
+          var isFunctionType = type.contains(" Function(");
+          // codex: treat list/set fields as collections only when they are not function types.
+          var isListOrSet = !isFunctionType && (type.characters.take(5).string == "List<" || type.characters.take(4).string == "Set<");
+          // codex: apply unordered list/set comparison only for true collection fields.
+          if (isListOrSet) {
+            //todo: hack here, a nullable entry won't compare properly to an empty list
+            // codex: handle nullable list/set equality by coalescing to an empty collection.
+            if (type.characters.last == "?") {
+              return "(${e.name}??[]).equalUnorderedD(other.${e.name}??[])";
+            } else {
+              return "(${e.name}).equalUnorderedD(other.${e.name})";
+            }
+          }
 
-    // codex: fall back to direct equality for non-collection fields.
-    return "${e.name} == other.${e.name}";
-  }).joinToString(separator: " && "));
+          // codex: fall back to direct equality for non-collection fields.
+          return "${e.name} == other.${e.name}";
+        })
+        .joinToString(separator: " && "),
+  );
 
   sb.write(";");
 
@@ -387,28 +415,35 @@ String getCopyWith({
   //         : "${e.name} extends ${e.type}")
   //     .joinToString(separator: ", ");
 
-  var interfaceGenericStringWithExtends = interfaceGenerics //
-      .map((e) => e.type == null //
-      ? e.name
-      : "${e.name} extends ${e.type}")
-      .joinToString(separator: ", ");
+  var interfaceGenericStringWithExtends =
+      interfaceGenerics //
+          .map(
+            (e) =>
+                e.type ==
+                    null //
+                ? e.name
+                : "${e.name} extends ${e.type}",
+          )
+          .joinToString(separator: ", ");
 
   if (interfaceGenericStringWithExtends.length > 0) {
     interfaceGenericStringWithExtends = "<$interfaceGenericStringWithExtends>";
   }
 
-  var interfaceGenericStringNoExtends = interfaceGenerics //
-      .map((e) => e.name)
-      .joinToString(separator: ", ");
+  var interfaceGenericStringNoExtends =
+      interfaceGenerics //
+          .map((e) => e.name)
+          .joinToString(separator: ", ");
 
   if (interfaceGenericStringNoExtends.length > 0) {
     interfaceGenericStringNoExtends = "<$interfaceGenericStringNoExtends>";
   }
 
   var classGenericsList = classGenerics ?? const <NameType>[];
-  var classGenericStringNoExtends = classGenericsList //
-      .map((e) => e.name)
-      .joinToString(separator: ", ");
+  var classGenericStringNoExtends =
+      classGenericsList //
+          .map((e) => e.name)
+          .joinToString(separator: ", ");
 
   if (classGenericStringNoExtends.length > 0) {
     classGenericStringNoExtends = "<$classGenericStringNoExtends>";
@@ -432,14 +467,16 @@ String getCopyWith({
   //where property name of interface is the same as the one in the class
   //use the type of the class
 
-  var fieldsForSignature = classFields //
-      .where((element) => interfaceFields.map((e) => e.name).contains(element.name));
+  var fieldsForSignature =
+      classFields //
+          .where((element) => interfaceFields.map((e) => e.name).contains(element.name));
 
   // identify fields in the interface not in the class
-  var requiredFields = isExplicitSubType //
+  var requiredFields =
+      isExplicitSubType //
       ? interfaceFields //
-      .where((x) => classFields.none((cf) => cf.name == x.name))
-      .toList()
+            .where((x) => classFields.none((cf) => cf.name == x.name))
+            .toList()
       : <NameType>[];
 
   if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
@@ -447,22 +484,22 @@ String getCopyWith({
 
   sb.writeln();
 
-  sb.write(requiredFields.map((e) {
-    var interfaceType = interfaceFields.firstWhere((element) => element.name == e.name).type;
-    return "required ${getDataTypeWithoutDollars(interfaceType!)} ${e.name},\n";
-  }).join());
+  sb.write(
+    requiredFields.map((e) {
+      var interfaceType = interfaceFields.firstWhere((element) => element.name == e.name).type;
+      return "required ${getDataTypeWithoutDollars(interfaceType!)} ${e.name},\n";
+    }).join(),
+  );
 
-  sb.write(fieldsForSignature.map((e) {
-    var interfaceType = interfaceFields
-        .firstWhere(
-          (element) => element.name == e.name,
-    )
-        .type;
+  sb.write(
+    fieldsForSignature.map((e) {
+      var interfaceType = interfaceFields.firstWhere((element) => element.name == e.name).type;
 
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+      var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
 
-    return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
-  }).join());
+      return "${getDataTypeWithoutDollars(interfaceType!)} Function()? $name,\n";
+    }).join(),
+  );
 
   if (fieldsForSignature.isNotEmpty || requiredFields.isNotEmpty) //
     sb.write("}");
@@ -486,27 +523,36 @@ String getCopyWith({
     sb.writeln("return $classNameTrimmed$classGenericStringNoExtends._(");
   }
 
-  sb.write(requiredFields //
-      .map((e) {
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
-    var classType = getDataTypeWithoutDollars(e.type!);
-    return "$name: $name as $classType,\n";
-  }).join());
+  sb.write(
+    requiredFields //
+        .map((e) {
+          var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+          var classType = getDataTypeWithoutDollars(e.type!);
+          return "$name: $name as $classType,\n";
+        })
+        .join(),
+  );
 
-  sb.write(fieldsForSignature //
-      .map((e) {
-    var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
+  sb.write(
+    fieldsForSignature //
+        .map((e) {
+          var name = e.name.startsWith("_") ? e.name.substring(1) : e.name;
 
-    var classType = getDataTypeWithoutDollars(classFields.firstWhere((element) => element.name == e.name).type!);
-    return "$name: $name == null ? this.${e.name} as $classType : $name() as $classType,\n";
-  }).join());
+          var classType = getDataTypeWithoutDollars(classFields.firstWhere((element) => element.name == e.name).type!);
+          return "$name: $name == null ? this.${e.name} as $classType : $name() as $classType,\n";
+        })
+        .join(),
+  );
 
-  var fieldsNotInSignature = classFields //
-      .where((element) => !interfaceFields.map((e) => e.name).contains(element.name));
+  var fieldsNotInSignature =
+      classFields //
+          .where((element) => !interfaceFields.map((e) => e.name).contains(element.name));
 
-  sb.write(fieldsNotInSignature //
-      .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed$classGenericStringNoExtends).${e.name},\n")
-      .join());
+  sb.write(
+    fieldsNotInSignature //
+        .map((e) => "${e.name.startsWith('_') ? e.name.substring(1) : e.name}: (this as $classNameTrimmed$classGenericStringNoExtends).${e.name},\n")
+        .join(),
+  );
 
   sb.write(") as $interfaceNameTrimmed$interfaceGenericStringNoExtends;");
 
@@ -559,16 +605,17 @@ String generateFromJsonBody(String className, List<NameType> generics, List<Inte
   var _class = Interface(className, generics.map((e) => e.type ?? "").toList(), generics.map((e) => e.name).toList(), []);
   var _classes = [...interfaces, _class];
 
-  var body = _classes //
-      .where((c) => !c.interfaceName.startsWith("\$\$"))
-      .mapIndexed((i, c) {
-    var _interfaceName = "${c.interfaceName.replaceFirst("\$", "")}";
-    var start = i == 0 ? "if" : "} else if";
-    var genericTypes = c.typeParams.map((e) => "'_${e.name}_'").join(",");
-    // var types = c.typeParams.length == 0 ? "" : "<${c.typeParams.map((t) => "dynamic").join(', ')}>";
+  var body =
+      _classes //
+          .where((c) => !c.interfaceName.startsWith("\$\$"))
+          .mapIndexed((i, c) {
+            var _interfaceName = "${c.interfaceName.replaceFirst("\$", "")}";
+            var start = i == 0 ? "if" : "} else if";
+            var genericTypes = c.typeParams.map((e) => "'_${e.name}_'").join(",");
+            // var types = c.typeParams.length == 0 ? "" : "<${c.typeParams.map((t) => "dynamic").join(', ')}>";
 
-    if (c.typeParams.length > 0) {
-      return """$start (json['_className_'] == "$_interfaceName") {
+            if (c.typeParams.length > 0) {
+              return """$start (json['_className_'] == "$_interfaceName") {
       var fn_fromJson = getFromJsonToGenericFn(
         ${_interfaceName}_Generics_Sing().fns,
         json,
@@ -576,16 +623,18 @@ String generateFromJsonBody(String className, List<NameType> generics, List<Inte
       );    
       return fn_fromJson(json);
 """;
-    } else {
-      return """$start (json['_className_'] == "$_interfaceName") {
+            } else {
+              return """$start (json['_className_'] == "$_interfaceName") {
     return _\$${_interfaceName}FromJson(json, ); 
 """;
-    }
-  }).join("\n");
+            }
+          })
+          .join("\n");
 
   var _className = className.replaceFirst("\$", "").replaceFirst("\$", "");
 
-  var end = """    } else {
+  var end =
+      """    } else {
       throw UnsupportedError("The _className_ '\${json['_className_']}' is not supported by the ${_className}.fromJson constructor.");
     }
   }
@@ -594,26 +643,49 @@ String generateFromJsonBody(String className, List<NameType> generics, List<Inte
   return body + end;
 }
 
+/// Generates JSON helper methods for a concrete generated class.
 String generateToJson(String className, List<NameType> generics) {
   if (className.startsWith("\$\$")) {
     return "Map<String, dynamic> toJson_2([Map<Type, Object? Function(Never)>? fns]);";
   }
 
   var _className = "${className.replaceFirst("\$", "")}";
+  var genericTypeNames = generics.map((e) => e.name).join(", ");
 
-  var getGenericFn = generics //
-      .map((e) => "    var fn_${e.name} = getGenericToJsonFn(_fns, ${e.name});")
-      .join("\n");
+  var getGenericFn =
+      generics //
+          .map((e) => "    var fn_${e.name} = getGenericToJsonFn(_fns, ${e.name});")
+          .join("\n");
 
-  var toJsonParams = generics //
-      .map((e) => "      fn_${e.name} as Object? Function(${e.name})")
-      .join(",\n");
+  var toJsonParams =
+      generics //
+          .map((e) => "      fn_${e.name} as Object? Function(${e.name})")
+          .join(",\n");
 
-  var recordType = generics //
-      .map((e) => "    data['_${e.name}_'] = ${e.name}.toString();")
-      .join("\n");
+  var recordType =
+      generics //
+          .map((e) => "    data['_${e.name}_'] = ${e.name}.toString();")
+          .join("\n");
 
-  var result = """
+  var fromJsonFactoryBody = generics.isNotEmpty
+      ? """
+  /// Wraps the generated `json_serializable` factory for generic registration.
+  static $_className<$genericTypeNames> fromJsonFactory<$genericTypeNames>(
+    Map<String, dynamic> json,
+${generics.map((e) => "    ${e.name} Function(Object? json) fromJson${e.name},").join("\n")}
+  ) {
+    return _\$${_className}FromJson<$genericTypeNames>(
+      json,
+${generics.map((e) => "      fromJson${e.name},").join("\n")}
+    );
+  }
+
+"""
+      : "";
+
+  var result =
+      """
+$fromJsonFactoryBody
   // ignore: unused_field
   Map<Type, Object? Function(Never)> _fns = {};
 
@@ -642,7 +714,8 @@ String createJsonSingleton(String classNameTrim, List<NameType> generics) {
 
   var objects = generics.map((e) => "Object").join(", ");
 
-  var result = """
+  var result =
+      """
 class ${classNameTrim}_Generics_Sing {
   Map<List<String>, $classNameTrim<${objects}> Function(Map<String, dynamic>)> fns = {};
 
